@@ -25,14 +25,61 @@
               v-model="searchForm.tenantId"
               :items="tenantList"
               :label="$t('label.tenant')"
-              :placeholder="searchForm.tenantId ? undefined : '전체'"
+              :placeholder="searchForm.tenantId ? undefined : $t('label.all')"
             ></v-select>
           </v-col>
+          <v-col cols="3">
+            <v-text-field
+              class="default search"
+              v-model="searchForm.branchNm"
+              label="지점명"
+              placeholder=" "
+              hide-details
+              clearable
+              readonly
+              @click="searhPopup"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-select
+              class="default"
+              :menu-props="{ offsetY: true }"
+              v-model="searchForm.deviceKind"
+              :items="cptdDeviceKindList"
+               item-key="codeId"
+              item-text="codeValue"
+              item-value="codeId"
+              :label="'단말종류'"
+              :placeholder="searchForm.deviceKind ? undefined : $t('label.all')"
+              clearable
+            ></v-select>
+          </v-col>
+          <!--<v-col class="text-right">
+            <v-btn
+              text
+              color="btn-tertiary"
+              class="btn-search"
+              :ripple="false"
+              @click="searchBtn"
+            >{{ $t('button.search')}}</v-btn>
+          </v-col>
+          -->
         </v-row>
       </v-container>
       <v-container v-if="isSysCounselors === true" class="catalog-container monitoring">
         <SystemCounselorStatus v-for="(sysCounselor, sysIdx) in sysCounselors" :counselor="sysCounselor" :key="sysIdx"></SystemCounselorStatus>
       </v-container>
+      <v-dialog
+        v-model="dialog"
+        persistent
+        :max-width="600"
+        hide-overlay
+        scrollable
+        >
+      <PopupSearchBanch
+      @popupAction="popupAction"
+      v-if="popup.branchPopup === true"/>
+    </v-dialog>
     </vuescroll>
   </div>
 </template>
@@ -40,21 +87,29 @@
 <script>
 import { getCounselorStatusSearchCondition } from '@/api/counselor'
 import SystemCounselorStatus from '@/components/SystemCounselorStatus'
-
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
+import { getCmnCodeList } from '../../api/cmnCode'
 export default {
   name: 'AiConciergCallStatView',
   components: {
-    SystemCounselorStatus
+    SystemCounselorStatus,
+    PopupSearchBanch
   },
   data () {
     return {
       // 검색영역 시작
       tenants: [],
-      systems: [],
+      deviceKindList: [],
       // 검색조건
       searchForm: {
         tenantId: '',
-        systemId: 'AIH'
+        systemId: 'AIH',
+        branchNm: '',
+        deviceKind: '',
+        codeIdArr: []
+      },
+      popup: {
+        branchPopup: false
       }
       // 검색영역 끝
     }
@@ -97,20 +152,56 @@ export default {
       return its
     },
     isSysCounselors: function () {
-      return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && sc.callYn === 'Y')
+      // alert(this.searchForm.codeIdArr + this.isEmpty(this.searchForm.branchNm) + ' isSysCounselors -' + this.searchForm.branchNm + '-')
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || this.searchForm.deviceKind === sc.deviceKind) && sc.callYn === 'Y')
+      } else {
+        return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || this.searchForm.deviceKind === sc.deviceKind) && (this.searchForm.codeIdArr.includes(sc.branchCd)) && sc.callYn === 'Y')
+      }
     },
     sysCounselors: function () {
-      return (this.getsyscounselors || []).filter(sc => {
-        return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && sc.callYn === 'Y'
-      })
+      // alert(this.searchForm.codeIdArr + this.isEmpty(this.searchForm.branchNm) + ' sysCounselors ' + this.searchForm.branchNm)
+      console.log(' --sysCounselors-- ' + JSON.stringify(this.getsyscounselors))
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        return (this.getsyscounselors || []).filter(sc => {
+          // return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && sc.callYn === 'Y'
+          return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId || this.searchForm.deviceKind === sc.deviceKind) && sc.callYn === 'Y'
+        })
+      } else {
+        return (this.getsyscounselors || []).filter(sc => {
+          // return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && sc.callYn === 'Y'
+          return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId || this.searchForm.deviceKind === sc.deviceKind || this.searchForm.codeIdArr.includes(sc.branchCd)) && sc.callYn === 'Y'
+        })
+      }
+    },
+    cptdDeviceKindList () {
+      const deviceKindList = [
+        {
+          codeValue: this.$t('label.all'),
+          codeId: ''
+        }
+      ]
+      deviceKindList.push(...this.deviceKindList)
+      return deviceKindList
     }
   },
   methods: {
+    isEmpty: function (x) {
+      return (x === null || x === undefined || x === '')
+    },
     async init () {
+      this.getCmnCodeList()
       await this.getCounselorStatusSearchCondition()
     },
     getCounselorStatusSearchCondition () {
-      getCounselorStatusSearchCondition().then(
+      // param setting
+      const searchCondition = {
+        tenantId: this.searchForm.tenantId,
+        deviceKind: this.searchForm.deviceKind, // 단말기 종류
+        codeIdArr: this.searchForm.codeIdArr // 지점명 배열
+      }
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      getCounselorStatusSearchCondition(searchCondition).then(
         response => {
           const status = response.data.status
           if (status === 200) {
@@ -129,6 +220,68 @@ export default {
           }
         }
       )
+    },
+    searhPopup: function () {
+      this.popup.branchPopup = true
+    },
+    popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
+      if (obj != null && obj.length > 0) {
+        let txt = ''
+        for (let i = 0; i < obj.length; i++) {
+          if (i === (obj.length - 1)) {
+            txt = txt + obj[i].codeValue
+          } else {
+            txt = txt + obj[i].codeValue + ','
+          }
+          this.searchForm.codeIdArr.push(obj[i].codeId)
+        }
+        this.searchForm.branchNm = txt
+      }
+      this.popup = popup
+    },
+    dialog: function () {
+      return (this.popup.branchPopup === true)
+    },
+    // 검색버튼
+    searchBtn: function () {
+      console.log('form' + JSON.stringify(this.searchForm))
+      // this.pagination.page = 1
+      this.init()
+    },
+    // 공통코드유형 정보 조회
+    getCmnCodeList: function () {
+      // param setting
+      const searchCondition = {
+        codeType: 'DEVICE',
+        useYn: 'Y'
+      }
+      // retrieve
+      // this.pagination.loading = true
+      getCmnCodeList(searchCondition).then(
+        response => {
+          this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
+          // console.log(' this.deviceKind ' + JSON.stringify(this.deviceKindList))
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({
+              name: '403',
+              query: { t: new Date().getTime() }
+            })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({
+              name: 'Login',
+              query: { t: new Date().getTime() }
+            })
+          }
+        }
+      ).finally(() => {
+        // this.pagination.loading = false
+      })
     }
   }
 }

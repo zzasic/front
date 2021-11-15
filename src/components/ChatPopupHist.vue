@@ -28,6 +28,17 @@
       <vuescroll
         ref='vs'
         @handle-scroll="handleScroll">
+        <!--<div class="custview-right">-->
+          <v-checkbox
+            class="chk-cusview"
+            v-model="onlyStt"
+            label="고객이력"
+            color="#26B9D1"
+            true-value="Y"
+            false-value="N"
+            :ripple="false"
+          ></v-checkbox>
+        <!--</div>-->
         <div class="chat-discussion">
           <div v-for="(hist, idx) in callHistories" :key="idx" class="chat-message" :class="hist.moudule === 'TTS' || hist.moudule === 'CHATBOT_OUT' ? 'left' : 'right'">
             <!-- <div v-if="idx === 0 || $moment.parseZone(callHistories[idx - 1].timestamp, 'x').format('YYYY-MM-DD') !== $moment.parseZone(hist.timestamp, 'x').format('YYYY-MM-DD')">
@@ -126,7 +137,8 @@ export default {
         }
       ],
       ctxX: 0,
-      ctxY: 0
+      ctxY: 0,
+      onlyStt: 'Y'
     }
   },
   computed: {
@@ -134,7 +146,13 @@ export default {
       return !this.counselor.systemId || this.counselor.systemId === 'AICC'
     },
     callHistories: function () {
-      const hists = this.gethists.filter(hs => this.chat.callId === hs.callId)
+      let hists = ''
+      if (this.onlyStt === 'Y') {
+        hists = this.gethists.filter(hs => this.chat.callId === hs.callId && hs.moudule !== 'TTS' && hs.moudule !== 'CHATBOT_OUT')
+      } else {
+        hists = this.gethists.filter(hs => this.chat.callId === hs.callId)
+      }
+      // const hists = this.gethists.filter(hs => this.chat.callId === hs.callId)
       // const hists = dupHists.filter((dup1, index) => {
       //   return dupHists.findIndex((dup2) => dup2.historyId === dup1.historyId) === index
       // })
@@ -184,6 +202,12 @@ export default {
     // console.log('ModalPopup = updated....' + this.chat.callId)
   },
   methods: {
+    getFilter () {
+      // console.log('====' + JSON.stringify(this.callHistories))
+      const ddd = this.callHistories.filter((cal) => cal.moudule !== 'CHATBOT_OUT')
+      console.log('====' + JSON.stringify(ddd))
+      this.callHistories = ddd
+    },
     replaceHtml (str) {
       if (str) {
         return str.replace(/(<[^>]+>|<[^>]>|<\/[^>]>)/g, '').replace(/(\r)*\n/g, '<br>')

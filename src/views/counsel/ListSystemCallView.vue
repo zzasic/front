@@ -7,18 +7,18 @@
       ></PageTitle>
       <v-container class="search-group" no-gutters fluid>
         <v-row no-gutters>
-          <v-col cols="2">
+          <v-col cols="1">
             <v-select
               class="default search"
               :menu-props="{ offsetY: true }"
               v-model="searchForm.system"
               :items="cptdItemsSystemInfoList"
               :label="$t('label.system')"
-              :placeholder="searchForm.system ? undefined : $t('label.choice')"
+              :placeholder="searchForm.system ? undefined : $t('label.all')"
               clearable
             ></v-select>
           </v-col>
-          <v-col cols="2">
+          <v-col cols="1">
             <v-select
               class="default search"
               :menu-props="{ offsetY: true }"
@@ -52,12 +52,15 @@
               v-on:keyup.enter="searchBtn"
             ></v-text-field>
           </v-col>
-          <v-col cols="1">
+          <v-col cols="2">
             <v-select
               class="default"
               :menu-props="{ offsetY: true }"
               v-model="searchForm.deviceKind"
               :items="cptdDeviceKindList"
+               item-key="codeId"
+              item-text="codeValue"
+              item-value="codeId"
               :label="'단말종류'"
               :placeholder="searchForm.deviceKind ? undefined : $t('label.all')"
               clearable
@@ -223,6 +226,9 @@ import {
   getSystemCallList,
   reqGetManualHistory
 } from '../../api/counsel'
+import {
+  getCmnCodeList
+} from '../../api/cmnCode'
 import datepicker from '@/plugins/datepicker'
 
 export default {
@@ -235,6 +241,7 @@ export default {
   created () {
   },
   mounted () {
+    this.getCmnCodeList()
     this.initSystemCallView()
   },
   data () {
@@ -294,6 +301,7 @@ export default {
         custCommu: 'Y',
         codeIdArr: []
       },
+      deviceKindList: [],
       chats: [],
       popup: {
         branchPopup: false
@@ -331,11 +339,11 @@ export default {
     cptdDeviceKindList () {
       const deviceKindList = [
         {
-          text: this.$t('label.all'),
-          value: ''
+          codeValue: this.$t('label.all'),
+          codeId: ''
         }
       ]
-      deviceKindList.push(...this.searchForm.deviceKind)
+      deviceKindList.push(...this.deviceKindList)
       return deviceKindList
     },
     cptdCustCommuYnList () {
@@ -397,6 +405,7 @@ export default {
         response => {
           this.searchForm.tenants = response.data.result.tenantList
           this.searchForm.systemInfos = response.data.result.systemInfoList
+          console.log(' systemInfos ' + JSON.stringify(this.searchForm.systemInfos))
           // this.searchForm.system = this.searchForm.systemInfos[0].value
         }
       )
@@ -514,6 +523,44 @@ export default {
     },
     isEmpty: function (x) {
       return (x === null || x === undefined)
+    },
+    // 공통코드유형 정보 조회
+    getCmnCodeList: function () {
+      // param setting
+      const searchCondition = {
+        codeType: 'DEVICE',
+        useYn: 'Y'
+      }
+      // retrieve
+      // this.pagination.loading = true
+      getCmnCodeList(searchCondition).then(
+        response => {
+          this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
+          console.log(' this.deviceKind ' + JSON.stringify(this.deviceKind))
+          // paging setting
+          // this.pagination.totalRows = response.data.result.cmnCodeListCount
+          // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
+          // this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({
+              name: '403',
+              query: { t: new Date().getTime() }
+            })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({
+              name: 'Login',
+              query: { t: new Date().getTime() }
+            })
+          }
+        }
+      ).finally(() => {
+        // this.pagination.loading = false
+      })
     }
   }
 }
