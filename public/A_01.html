@@ -1,0 +1,413 @@
+    <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Smart Contact Center</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"><!-- mobile -->
+
+        <link href="resource/newcss/lib/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="resource/newcss/lib/jquery-ui.css" rel="stylesheet">
+        <link href="style_local.css" rel="stylesheet"><!-- 1st css -->
+
+        <script src="resource/newjs/lib/jquery.min.js"></script>
+        <script src="resource/newjs/lib/jquery-ui.min.js"></script>
+        <script src="resource/newjs/lib/Chart.min.js"></script>
+        <script src="resource/newjs/lib/jquery.dataTables.js"></script>
+        <script src="resource/newjs/lib/dataTables.bootstrap4.js"></script>
+        <script src="resource/newjs/lib/jquery.placeholder.min.js"></script>
+        <script src="resource/newjs/scripts.js"></script>
+    </head>
+    <body>
+    <div class="top-bar shadow-ui">
+            <div class="gnb-toggle-wrap">
+                <button class="gnb-toggle" type="button" name="button">메뉴 간략하게 보기</button>
+            </div>
+            <h2 class="navigator">운영 관리 <em class="on">/ 상황별 멘트 관리</em></h2>
+
+            <div class="snb">
+                <ul>
+                    <li><span class="snb-name">관리자</span>님</li>
+                    <li><button class="btn-snb point" type="button" name="button">개인정보수정</button></li>
+                    <li><a href="login.html" class="btn-snb">로그아웃</a></li>
+                </ul>
+            </div>
+    </div>
+    <header class="header left-bar">
+        <div class="logo">
+            <a href="main_01.html">
+                AICC
+            </a>
+        </div>
+        <nav>
+            <ul class="gnb depth-1">
+            <li>
+                <a href="#">
+                    <span class="ico menu2">
+
+                    </span>
+                    <span class="tit">
+                        상담 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="B_05.html">상담원 모니터링</a></li>
+                    <li><a href="B_04.html">상담 이력</a></li>
+                    <li><a href="B_03.html">모의상담</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="ico menu1">
+                        visual-link depth1
+                    </span>
+                    <span class="tit">
+                        운영 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="A_01.html">초기인사멘트 관리</a></li>
+                    <li><a href="A_02.html">상황별 멘트관리</a></li>
+                    <li><a href="A_03.html">상황별 예외기준</a></li>
+                    <li><a href="A_05_addModal.html">휴일 관리</a></li>
+                    <li><a href="A_09.html">게시판 관리</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">
+                    <span class="ico menu4">
+
+                    </span>
+                    <span class="tit">
+                        마스터 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="D_02_addModal.html">사용자 관리</a></li>
+                    <li><a href="D_04_addModal.html">공통코드 관리</a></li>
+                    <li><a href="D_05_addModal.html">메뉴 관리</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu5">
+
+                    </span>
+                    <span class="tit">
+                        시스템 모니터링
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="E_01.html">서비스 상태 모니터링</a></li>
+                    <li><a href="E_02.html">배치 현황</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu7">
+
+                    </span>
+                    <span class="tit">
+                        현황 및 통계
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="G_01.html">일별 서비스 현황</a></li>
+                    <li><a href="G_02.html">시간별 서비스 현황</a></li>
+                </ul>
+            </li>
+ 
+        </ul>
+        </nav>
+    </header>
+
+ 
+    <div class="container">
+        <div class="contents">
+            <div class="content-page">
+                <div class="develop-component">
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+                                <span class="helper">
+                                    <i class="helper-ico"></i>
+                                    <span class="helper-desc">
+                                        평일,토요일,일요일, 휴일별 인사멘트를 시간별로 자유롭게 추가 및 수정 하실 수 있습니다.
+                                    </span>
+                                </span>
+                                <div class="ipt-row">
+                                    <span class="ipt-box">
+                                        <label for="slt1">상담사 선택</label>
+                                        <select id="slt1" name="">
+                                            <option value="">기본</option>
+                                            <option value="">홍길동</option>
+                                            <option value="">이철종</option>
+                                            <option value="">김완기</option>
+                                            <option value="">박기동</option>
+                                            <option value="">최정원</option>
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid">
+                        <div class="column">
+                            <ul class="tab-lst">
+                                <li rel="tab-a-1"><a href="#">평일</a></li>
+                                <li rel="tab-a-2"><a href="#">토요일</a></li>
+                                <li rel="tab-a-3"><a href="#">일요일</a></li>
+                                <li rel="tab-a-4"><a href="#">휴일</a></li>
+                            </ul>
+                            <div class="column-body">
+                                <div id="tab-grid1" class="tab-container">
+                                    <div class="tab-a-1 tab-cont">
+                                        <ul class="cd-lst scrollbox">
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt1">시간설정</label>
+                                                        <input id="ipt1" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo1" type="radio" name="rdo-group1" checked>
+                                                        <label for="rdo1">근무</label>
+
+                                                        <input class="rdo-base" id="rdo2" type="radio" name="rdo-group1">
+                                                        <label for="rdo2">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt2">시간설정</label>
+                                                        <input id="ipt2" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo3" type="radio" name="rdo-group2" checked>
+                                                        <label for="rdo3">근무</label>
+
+                                                        <input class="rdo-base" id="rdo4" type="radio" name="rdo-group2">
+                                                        <label for="rdo4">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt3">시간설정</label>
+                                                        <input id="ipt3" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo5" type="radio" name="rdo-group3" checked>
+                                                        <label for="rdo5">근무</label>
+
+                                                        <input class="rdo-base" id="rdo6" type="radio" name="rdo-group3">
+                                                        <label for="rdo6">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt4">시간설정</label>
+                                                        <input id="ipt4" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo7" type="radio" name="rdo-group4" checked>
+                                                        <label for="rdo7">근무</label>
+
+                                                        <input class="rdo-base" id="rdo8" type="radio" name="rdo-group4">
+                                                        <label for="rdo8">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-a-2 tab-cont">
+                                        <ul class="cd-lst scrollbox">
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt1">시간설정</label>
+                                                        <input id="ipt1" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo1" type="radio" name="rdo-group1" checked>
+                                                        <label for="rdo1">근무</label>
+
+                                                        <input class="rdo-base" id="rdo2" type="radio" name="rdo-group1">
+                                                        <label for="rdo2">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-a-3 tab-cont">
+                                        <ul class="cd-lst scrollbox">
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt1">시간설정</label>
+                                                        <input id="ipt1" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo1" type="radio" name="rdo-group1" checked>
+                                                        <label for="rdo1">근무</label>
+
+                                                        <input class="rdo-base" id="rdo2" type="radio" name="rdo-group1">
+                                                        <label for="rdo2">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-a-4 tab-cont">
+                                        <ul class="cd-lst scrollbox">
+                                            <li class="cd-item">
+
+                                                <div class="ipt-row">
+                                                    <span class="ipt-box">
+                                                        <label for="ipt1">시간설정</label>
+                                                        <input id="ipt1" class="small" type="text" placeholder=""> <span class="period">~</span>
+                                                        <input class="small" type="text" placeholder="">
+                                                    </span>
+
+                                                    <span class="ipt-box">
+                                                        <span class="likelabel">상담원 근무 여부</span>
+                                                        <input class="rdo-base" id="rdo1" type="radio" name="rdo-group1" checked>
+                                                        <label for="rdo1">근무</label>
+
+                                                        <input class="rdo-base" id="rdo2" type="radio" name="rdo-group1">
+                                                        <label for="rdo2">비근무</label>
+                                                    </span>
+
+                                                    <div class="ipt-align">
+                                                        <button class="btn-crud delete" type="button" name="button">행삭제</button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="ipt-row">
+                                                    <textarea name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                </div>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                                <div class="boxmodel center">
+                                    <div class="boxmodel-align">
+                                        <button class="btn-base" type="button" name="button">행추가</button>
+                                        <button class="btn-base point" type="button" name="button">저장</button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- footer -->
+<footer class="footer">
+    <ul class="fnb">
+        <li><b>Copyright</b> 2018 LG CNS All Rights Reserved.</li>
+        <!-- <li><a href="#"><b>개인정보처리방침</b></a></li>
+        <li><a href="#">이용약관</a></li> -->
+    </ul>
+</footer>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

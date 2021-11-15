@@ -1,0 +1,560 @@
+    <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>AI Contact Center</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"><!-- mobile -->
+
+        <link href="resource/newcss/lib/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="resource/newcss/lib/jquery-ui.css" rel="stylesheet">
+        <link href="style_local.css" rel="stylesheet"><!-- 1st css -->
+
+        <script src="resource/newjs/lib/jquery.min.js"></script>
+        <script src="resource/newjs/lib/jquery-ui.min.js"></script>
+        <script src="resource/newjs/lib/Chart.min.js"></script>
+        <script src="resource/newjs/lib/jquery.dataTables.js"></script>
+        <script src="resource/newjs/lib/dataTables.bootstrap4.js"></script>
+        <script src="resource/newjs/lib/jquery.placeholder.min.js"></script>
+        <script src="resource/newjs/scripts.js"></script>
+    </head>
+    <body>
+    <div class="top-bar shadow-ui">
+            <div class="gnb-toggle-wrap">
+                <button class="gnb-toggle" type="button" name="button">메뉴 간략하게 보기</button>
+            </div>
+            <h2 class="navigator">운영 관리</h2>
+
+            <div class="snb">
+                <ul>
+                    <li><span class="snb-name">관리자</span>님</li>
+                    <li><button class="btn-snb point" type="button" name="button">개인정보수정</button></li>
+                    <li><a href="login.html" class="btn-snb">로그아웃</a></li>
+                </ul>
+            </div>
+    </div>
+    <header class="header left-bar">
+        <div class="logo">
+            <a href="main_01.html">
+                AICC
+            </a>
+        </div>
+        <nav>
+            <ul class="gnb depth-1">
+            <li>
+                <a href="#">
+                    <span class="ico menu2">
+
+                    </span>
+                    <span class="tit">
+                        상담 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="B_05.html">상담원 모니터링</a></li>
+                    <li><a href="B_04.html">상담 이력</a></li>
+                    <li><a href="B_03.html">모의상담</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="ico menu1">
+                        visual-link depth1
+                    </span>
+                    <span class="tit">
+                        운영 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="A_01.html">초기인사멘트 관리</a></li>
+                    <li><a href="A_02.html">상황별 멘트관리</a></li>
+                    <li><a href="A_03.html">상황별 예외기준</a></li>
+                    <li><a href="A_05_addModal.html">휴일 관리</a></li>
+                    <li><a href="A_09.html">게시판 관리</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">
+                    <span class="ico menu4">
+
+                    </span>
+                    <span class="tit">
+                        마스터 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="D_02_addModal.html">사용자 관리</a></li>
+                    <li><a href="D_04_addModal.html">공통코드 관리</a></li>
+                    <li><a href="D_05_addModal.html">메뉴 관리</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu5">
+
+                    </span>
+                    <span class="tit">
+                        시스템 모니터링
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="E_01.html">서비스 상태 모니터링</a></li>
+                    <li><a href="E_02.html">배치 현황</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu7">
+
+                    </span>
+                    <span class="tit">
+                        현황 및 통계
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="G_01.html">일별 서비스 현황</a></li>
+                    <li><a href="G_02.html">시간별 서비스 현황</a></li>
+                </ul>
+            </li>
+ 
+        </ul>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <div class="contents">
+            <div class="content-page">
+                <div class="develop-component">
+
+                    <div class="grid">
+                        <div class="component-header">
+                            <h2 class="heading">시스템 모니터링</h2>
+                            <a href="#" class="add-el">
+                                전체보기
+                            </a>
+                        </div>
+
+                        <div class="column-body steel">
+                            <div class="today2-status">
+                                <ul class="today2-status-lst">
+                                		<li class="status-item normal"><div><span>SoftPBX</span></div></li>
+                                    <li class="status-item normal"><div><span>SoftPhone</span></div></li>
+                                    <li class="status-item normal"><div><span>Voice G/W</span></div></li>
+                                    <li class="status-item normal"><div><span>STT</span></div></li>
+                                    <li class="status-item abnormal"><div><span>ChatBot</span></div></li>
+                                    <li class="status-item unknown"><div><span>TTS</span></div></li>
+                                </ul>
+                            </div>
+                        </div> 
+                    </div>
+                    
+                    <div class="grid">
+                        <div class="component-header">
+                            <h2 class="heading">상담원 모니터링</h2>
+                            <a href="#" class="add-el">
+                                전체보기
+                            </a>
+                        </div>
+
+                        <div class="column-body">                            
+                            <div class="today-status management">
+                                <div class="today-status-lst">
+                                    <div class="sub-box">
+                                        <span>상당중 [8]</span>
+                                        <div class="consulting-status success"></div>
+                                    </div>
+
+                                    <div class="sub-box">
+                                        <span>상담대기 [4]</span>
+                                        <div class="consulting-status on"></div>
+                                    </div>
+
+                                    <div class="sub-box">
+                                        <span>연결중 [2]</span>
+                                        <div class="consulting-status connecting"></div>
+                                    </div>                                        
+
+                                    <div class="sub-box">
+                                        <span>연결실패 [2]</span>
+                                        <div class="consulting-status fail"></div>
+                                    </div>                               
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                                        
+										<div class="grid col-2 h242">
+                        <div class="column">
+                            <div class="component-header">
+                                <h2 class="heading">상담 현황</h2>
+                                <a href="#" class="add-el">
+                                    더보기
+                                </a>                                
+                            </div>
+
+                            <div class="column-body">
+                                <div class="graph_area">
+                                    <canvas id="testChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="component-header">
+                                <h2 class="heading">게시판</h2>
+                                <a href="#" class="add-el">
+                                    더보기
+                                </a>
+                            </div>
+
+                            <div class="column-body">
+                                <ul class="notice-recent">
+                                    <li class="notice-item">
+                                        <p class="notice-title">
+                                            <span class="color-mark red">필독</span>
+                                            <a href="#">2020년 10월 AICC 시스템 점검 일정 공지</a>
+                                            <span class="notice-time">
+                                                2020-10-01
+                                            </span>
+                                        </p>
+
+                                    </li>
+
+                                    <li class="notice-item">
+                                        <p class="notice-title">
+                                            <span class="color-mark yellow">안내</span>
+                                            <a href="#">2020년 9월 AICC 시스템 점검 일정 공지</a>
+                                            <span class="notice-time">
+                                                2020-09-01
+                                            </span>
+                                        </p>
+
+                                    </li>
+
+                                    <li class="notice-item">
+                                        <p class="notice-title">
+                                            <span class="color-mark green">공지</span>
+                                            <a href="#">2020년 8월 AICC 시스템 점검 일정 공지</a>
+                                            <span class="notice-time">
+                                                2020-08-01
+                                            </span>
+                                        </p>
+
+                                    </li>
+
+                                    <li class="notice-item">
+                                        <p class="notice-title">
+                                            <span class="color-mark blue">FAQ</span>
+                                            <a href="#">2020년 7월 AICC 시스템 점검 일정 공지</a>
+                                            <span class="notice-time">
+                                                2020-07-01
+                                            </span>
+                                        </p>
+
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                     
+                <!-- footer -->
+<footer class="footer">
+    <ul class="fnb">
+        <li><b>Copyright</b> 2018 LG CNS All Rights Reserved.</li>
+        <!-- <li><a href="#"><b>개인정보처리방침</b></a></li>
+        <li><a href="#">이용약관</a></li> -->
+    </ul>
+</footer>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        // chart
+
+        $(document).ready(function(){
+            Chart.pluginService.register({
+                beforeRender: function (chart) {
+                    if (chart.config.options.showAllTooltips) {
+                        // create an array of tooltips
+                        // we can't use the chart tooltip because there is only one tooltip per chart
+                        chart.pluginTooltips = [];
+                        chart.config.data.datasets.forEach(function (dataset, i) {
+                            chart.getDatasetMeta(i).data.forEach(function (sector, j) {
+                                chart.pluginTooltips.push(new Chart.Tooltip({
+                                    _chart: chart.chart,
+                                    _chartInstance: chart,
+                                    _data: chart.data,
+                                    _options: chart.options.tooltips,
+                                    _active: [sector]
+                                }, chart));
+                            });
+                        });
+
+                        // turn off normal tooltips
+                        chart.options.tooltips.enabled = false;
+                    }
+                },
+                afterDraw: function (chart, easing) {
+                    if (chart.config.options.showAllTooltips) {
+                        // we don't want the permanent tooltips to animate, so don't do anything till the animation runs atleast once
+                        if (!chart.allTooltipsOnce) {
+                            if (easing !== 1)
+                                return;
+                            chart.allTooltipsOnce = true;
+                        }
+
+                        // turn on tooltips
+                        chart.options.tooltips.enabled = true;
+                        Chart.helpers.each(chart.pluginTooltips, function (tooltip) {
+                            tooltip.initialize();
+                            tooltip.update();
+                            // we don't actually need this since we are not animating tooltips
+                            tooltip.pivot();
+                            tooltip.transition(easing).draw();
+                        });
+                        chart.options.tooltips.enabled = false;
+                    }
+                }
+            });
+            chartLoad1();
+            //chartLoad2();
+            //chartLoad3();
+        });
+        function chartLoad1(){
+            var ctx = document.getElementById("testChart").getContext("2d");
+            var dataTime = ['intent','완료','상담사','포기'];
+            var graphData = [180,900,800,400];
+
+            var data = {
+                labels: dataTime,
+                datasets: [
+                    {
+                        data: graphData,
+                        backgroundColor: [
+                            "#00bebc",
+                            '#cc0241',
+                            "#11a2e1",
+                            "#b2bdc2"
+                        ],
+                        hoverBackgroundColor: [
+                            "#00bebc",
+                            '#cc0241',
+                            "#11a2e1",
+                            "#b2bdc2"
+                        ]
+                    }]
+            };
+            var myPieChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: data,
+                options: {
+                    showAllTooltips: true,
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                 min: 0,
+                                 max: 1200,
+                                 stepSize : 200
+                             },
+                             scaleLabel: {
+                              display: true,
+                              fontFamily :'Nanum Barun Gothic',
+                              labelString: '(건)',
+                            }
+                        }],
+                        yAxes: [{
+                            categoryPercentage: 1.0,
+                            barPercentage: 0.5,
+                        }]
+                    },
+                    legend: {
+                        display: false,
+                    },
+                    tooltips: {
+         				mode: 'point',
+         				titleFontSize: 16,
+                        titleFontStyle: 'bold',
+                        titleFontColor: '#333',
+                        titleMarginBottom:0,
+         				titleFontFamily: 'Nanum Barun Gothic',
+         				titleMarginBottom: 2,
+                        titleMarginLeft: 10,
+         				backgroundColor: 'rgb(0,0,0,0)',
+         				xPadding: 10,
+         				yAlign:20,
+         				xAlign:20,
+         				callbacks: {
+         					title: function(tooltipItem){
+         						return '' + tooltipItem[0].xLabel;
+         					},
+         					label: function(tooltipItem, data){
+         						return false;
+         					},
+         				},
+         			},
+                }
+            });
+
+        }
+        function chartLoad2(){
+            var ctx = document.getElementById("test2Chart").getContext("2d");
+            var dataTime = ['상담사','건수'];
+            var graphData = [180,800];
+
+            var data = {
+                labels: dataTime,
+                datasets: [
+                    {
+                        data: graphData,
+                        backgroundColor: [
+                            "#00bebc",
+                            '#cc0241',
+                            "#11a2e1",
+                            "#b2bdc2"
+                        ],
+                        hoverBackgroundColor: [
+                            "#00bebc",
+                            '#cc0241',
+                            "#11a2e1",
+                            "#b2bdc2"
+                        ]
+                    }]
+            };
+            var myPieChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: data,
+                options: {
+                    showAllTooltips: true,
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                 min: 0,
+                                 max: 1200,
+                                 stepSize : 200
+                             },
+                             scaleLabel: {
+                              display: true,
+                              fontFamily :'Nanum Barun Gothic',
+                              labelString: '(건)',
+                            }
+                        }],
+                        yAxes: [{
+                            categoryPercentage: 0.7,
+                            barPercentage: 0.5,
+                        }]
+                    },
+                    legend: {
+                        display: false,
+                    },
+                    tooltips: {
+         				mode: 'point',
+         				titleFontSize: 16,
+                        titleFontStyle: 'bold',
+                        titleFontColor: '#333',
+                        titleMarginBottom:0,
+         				titleFontFamily: 'Nanum Barun Gothic',
+         				titleMarginBottom: 2,
+                        titleMarginLeft: 10,
+         				backgroundColor: 'rgb(0,0,0,0)',
+         				xPadding: 10,
+         				yAlign:20,
+         				xAlign:20,
+         				callbacks: {
+         					title: function(tooltipItem){
+         						return '' + tooltipItem[0].xLabel;
+         					},
+         					label: function(tooltipItem, data){
+         						return false;
+         					},
+         				},
+         			},
+                }
+            });
+
+        }
+        function chartLoad3(){
+            var ctx = document.getElementById("test3Chart").getContext("2d");
+            var dataTime = ['AI상담','모의상담'];
+            var graphData = [20,80];
+
+            var data = {
+                labels: dataTime,
+                datasets: [
+                    {
+                        data: graphData,
+                        backgroundColor: [
+                            "#00bebc",
+                            '#cc0241',
+                            "#11a2e1",
+                            "#b2bdc2"
+                        ],
+                        hoverBackgroundColor: [
+                            "#00bebc",
+                            '#cc0241',
+                            "#11a2e1",
+                            "#b2bdc2"
+                        ]
+                    }]
+            };
+            var myPieChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: data,
+                options: {
+                    showAllTooltips: true,
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                 min: 0,
+                                 max: 120,
+                                 stepSize : 20
+                             },
+                             scaleLabel: {
+                              display: true,
+                              fontFamily :'Nanum Barun Gothic',
+                              labelString: '(건)',
+                            }
+                        }],
+                        yAxes: [{
+                            categoryPercentage: 0.7,
+                            barPercentage: 0.5,
+                        }]
+                    },
+                    legend: {
+                        display: false,
+                    },
+                    tooltips: {
+         				mode: 'point',
+         				titleFontSize: 16,
+                        titleFontStyle: 'bold',
+                        titleFontColor: '#333',
+                        titleMarginBottom:0,
+         				titleFontFamily: 'Nanum Barun Gothic',
+         				titleMarginBottom: 2,
+                        titleMarginLeft: 10,
+         				backgroundColor: 'rgb(0,0,0,0)',
+         				xPadding: 10,
+         				yAlign:20,
+         				xAlign:20,
+         				callbacks: {
+         					title: function(tooltipItem){
+         						return '' + tooltipItem[0].xLabel;
+         					},
+         					label: function(tooltipItem, data){
+         						return false;
+         					},
+         				},
+         			},
+                }
+            });
+
+        }
+
+    </script>
+</body>
+</html>

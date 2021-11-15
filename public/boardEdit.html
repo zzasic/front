@@ -1,0 +1,353 @@
+    <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Smart Contact Center</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"><!-- mobile -->
+
+        <link href="resource/newcss/lib/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="resource/newcss/lib/jquery-ui.css" rel="stylesheet">
+        <link href="style_local.css" rel="stylesheet"><!-- 1st css -->
+
+        <script src="resource/newjs/lib/jquery.min.js"></script>
+        <script src="resource/newjs/lib/jquery-ui.min.js"></script>
+        <script src="resource/newjs/lib/Chart.min.js"></script>
+        <script src="resource/newjs/lib/jquery.dataTables.js"></script>
+        <script src="resource/newjs/lib/dataTables.bootstrap4.js"></script>
+        <script src="resource/newjs/lib/jquery.placeholder.min.js"></script>
+        <script src="resource/newjs/scripts.js"></script>
+    </head>
+    <body>
+    <div class="top-bar shadow-ui">
+            <div class="gnb-toggle-wrap">
+                <button class="gnb-toggle" type="button" name="button">메뉴 간략하게 보기</button>
+            </div>
+            <h2 class="navigator">운영관리 <em class="on">/ 게시판 관리</em></h2>
+
+            <div class="snb">
+                <ul>
+                    <li><span class="snb-name">관리자</span>님</li>
+                    <li><button class="btn-snb point" type="button" name="button">개인정보수정</button></li>
+                    <li><a href="login.html" class="btn-snb">로그아웃</a></li>
+                </ul>
+            </div>
+    </div>
+    
+    <header class="header left-bar">
+        <div class="logo">
+            <a href="main_01.html">
+                AICC
+            </a>
+        </div>
+        <nav>
+            <ul class="gnb depth-1">
+            <li>
+                <a href="#">
+                    <span class="ico menu2">
+
+                    </span>
+                    <span class="tit">
+                        상담 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="B_05.html">상담원 모니터링</a></li>
+                    <li><a href="B_04.html">상담 이력</a></li>
+                    <li><a href="B_03.html">모의상담</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="ico menu1">
+                        visual-link depth1
+                    </span>
+                    <span class="tit">
+                        운영 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="A_01.html">초기인사멘트 관리</a></li>
+                    <li><a href="A_02.html">상황별 멘트관리</a></li>
+                    <li><a href="A_03.html">상황별 예외기준</a></li>
+                    <li><a href="A_05_addModal.html">휴일 관리</a></li>
+                    <li><a href="A_09.html">게시판 관리</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">
+                    <span class="ico menu4">
+
+                    </span>
+                    <span class="tit">
+                        마스터 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="D_02_addModal.html">사용자 관리</a></li>
+                    <li><a href="D_04_addModal.html">공통코드 관리</a></li>
+                    <li><a href="D_05_addModal.html">메뉴 관리</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu5">
+
+                    </span>
+                    <span class="tit">
+                        시스템 모니터링
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="E_01.html">서비스 상태 모니터링</a></li>
+                    <li><a href="E_02.html">배치 현황</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu7">
+
+                    </span>
+                    <span class="tit">
+                        현황 및 통계
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="G_01.html">일별 서비스 현황</a></li>
+                    <li><a href="G_02.html">시간별 서비스 현황</a></li>
+                </ul>
+            </li>
+ 
+        </ul>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <div class="contents">
+            <div class="content-page">
+                <div class="develop-component">
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+
+                                <div class="lg-board edit">
+                                    <div class="board-table">
+                                        <table class="table">
+                                            <caption>게시판 글쓰기 및 수정</caption>
+                                            <colgroup>
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                                <col style="width:auto">
+                                            </colgroup>
+
+                                            <tbody>
+                                                <tr>
+                                                    <th><label for="slt1">말머리</label></th>
+                                                    <td colspan="3">
+                                                        <div class="ipt-row">
+                                                            <span class="ipt-box">
+                                                                <select id="slt1" name="">
+                                                                    <option value="">option</option>
+                                                                    <option value="">option</option>
+                                                                </select>
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th>작성자</th>
+                                                    <td>관리자</td>
+                                                    <th>
+                                                        <label for="sDate">게시기간</label>
+                                                    </th>
+                                                    <td>
+                                                        <span class="ipt-box">
+                                                            <span class="ipt-ico">
+                                                                <input id="sDate" class="datepicker" type="text" maxlength="8" name="" value="" readonly>
+                                                                <label class="btnico caleandar" for="sDate">시작날짜 선택</label>
+                                                            </span>
+
+
+                                                            <select class="tiny" name="">
+                                                                <option value="">12</option>
+                                                            </select>
+                                                            <span class="period">:</span>
+                                                            <select class="tiny" name="">
+                                                                <option value="">59</option>
+                                                            </select>
+
+                                                            <span class="period">~</span>
+
+                                                            <span class="ipt-ico">
+                                                                <input id="eDate" class="datepicker" type="text" maxlength="8" name="" value="" readonly>
+                                                                <label class="btnico caleandar" for="eDate">시작날짜 선택</label>
+                                                            </span>
+
+                                                            <select class="tiny" name="">
+                                                                <option value="">12</option>
+                                                            </select>
+                                                            <span class="period">:</span>
+                                                            <select class="tiny" name="">
+                                                                <option value="">59</option>
+                                                            </select>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th><label for="subject">제목</label></th>
+                                                    <td colspan="3">
+
+                                                        <input id="subject" class="full" type="text" name="" value="">
+
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td colspan="4">
+                                                        <textarea class="large" name="name" rows="8" cols="80" placeholder="내용을 입력 해 주시기 바랍니다."></textarea>
+
+                                                        <div class="file-ipt">
+                                                            <div class="file-ipt-header">
+                                                                <ul class="file-controller">
+                                                                    <li>
+                                                                        <label class="btn-board file" for="file1">첨부파일</label>
+                                                                        <input class="board-file-ipt" id="file1" name="files" type="file" multiple />
+                                                                    </li>
+                                                                    <li>
+                                                                        <button class="btn-board delete">삭제</button>
+                                                                    </li>
+                                                                    <!-- <li>
+                                                                        <button class="btn-board up">up</button>
+                                                                    </li>
+                                                                    <li>
+                                                                        <button class="btn-board down">down</button>
+                                                                    </li> -->
+                                                                </ul>
+
+                                                                <p class="guideline size"><span>용량 : </span><span class="total-size">0</span> / 10MB</p>
+                                                            </div>
+                                                            <ul class="file-list"></ul>
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <th>응용범위</th>
+                                                    <td colspan="3">
+                                                        <span class="ipt-box">
+                                                            <input class="chk-base" id="chk2" type="checkbox" name="chk-group2" checked>
+                                                            <label for="chk2">자회사</label>
+
+                                                            <input class="chk-base" id="chk3" type="checkbox" name="chk-group2">
+                                                            <label for="chk3">해외법인</label>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                                <div class="boxmodel right">
+                                    <div class="boxmodel-align">
+                                        <button class="btn-crud" type="button" name="button">취소</button>
+                                        <button class="btn-crud point2" type="button" name="button">임시저장</button>
+                                        <button class="btn-crud point" type="button" name="button">저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!-- footer -->
+<footer class="footer">
+    <ul class="fnb">
+        <li><b>Copyright</b> 2018 LG CNS All Rights Reserved.</li>
+        <!-- <li><a href="#"><b>개인정보처리방침</b></a></li>
+        <li><a href="#">이용약관</a></li> -->
+    </ul>
+</footer>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 파일첨부 관련 UI
+        $(document).ready(function(){
+            fileUpload();
+        });
+
+        function fileUpload(){
+            // Variable to store your files
+            var files;
+
+            // Add events
+            $('.board-file-ipt').on('change', prepareUpload);
+
+            // Grab the files and set them to our variable
+            function prepareUpload(event)
+            {
+              var files = event.target.files;
+              var count = files.length;
+              var totalsize = 0;
+              for (var i = 0; i < count; i++) {
+                //Do something
+                totalsize += files[i].size;
+
+                var fileName = files[i].name;
+
+                $('.file-list').append('<li>' + files[i].name +'<span>'+ files[i].size + '</li>');
+
+                    // !+++++ 선택 스타일 여기!
+                        $('.file-list li').on('click', function(){
+                            $(this).addClass('on').siblings().removeClass('on');
+                        });
+                    // 선택 스타일 여기!
+              }
+
+             var sOutput = totalsize + " bytes";
+              // optional code for multiples approximation
+              for (var aMultiples = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], nMultiple = 0, nApprox = totalsize / 1024; nApprox > 1; nApprox /= 1024, nMultiple++) {
+                sOutput = nApprox.toFixed(3) + " " + aMultiples[nMultiple] ;
+              }
+
+              $('.total-size').text(sOutput);
+
+              $('.btn-board.delete').on('click', function(){
+                  $('.file-list li.on').remove(); // !+++++ 개별삭제
+                  // $('.file-list').empty();
+                  // $('.board-file-ipt').val('');
+                  // $('.total-size').text('0');
+              });
+
+               $('.btn-board.file').on('click', function(){
+                   // $('.file-list').empty();
+                   // $('.board-file-ipt').val('');
+                   // $('.total-size').text('0');
+               });
+
+              if((totalsize / 1024) / 1000 > 5) {
+                  // $('.file-list').empty();
+                  // $('.board-file-ipt').val('');
+                  // $('.total-size').text('0');
+                alert('10메가 이하 파일들만 업로드 가능합니다.');
+              }
+            }
+        }
+    </script>
+
+</body>
+</html>

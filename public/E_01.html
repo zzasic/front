@@ -1,0 +1,250 @@
+    <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Smart Contact Center</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"><!-- mobile -->
+
+        <link href="resource/newcss/lib/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="resource/newcss/lib/jquery-ui.css" rel="stylesheet">
+        <link href="style_local.css" rel="stylesheet"><!-- 1st css -->
+
+        <script src="resource/newjs/lib/jquery.min.js"></script>
+        <script src="resource/newjs/lib/jquery-ui.min.js"></script>
+        <script src="resource/newjs/lib/Chart.min.js"></script>
+        <script src="resource/newjs/lib/jquery.dataTables.js"></script>
+        <script src="resource/newjs/lib/dataTables.bootstrap4.js"></script>
+        <script src="resource/newjs/lib/jquery.placeholder.min.js"></script>
+        <script src="resource/newjs/scripts.js"></script>
+    </head>
+    <body>
+    <div class="top-bar shadow-ui">
+            <div class="gnb-toggle-wrap">
+                <button class="gnb-toggle" type="button" name="button">메뉴 간략하게 보기</button>
+            </div>
+            <h2 class="navigator">시스템 모니터링 <em class="on">/ 서비스 상태 모니터링</em></h2>
+
+            <div class="snb">
+                <ul>
+                    <li><span class="snb-name">관리자</span>님</li>
+                    <li><button class="btn-snb point" type="button" name="button">개인정보수정</button></li>
+                    <li><a href="login.html" class="btn-snb">로그아웃</a></li>
+                </ul>
+            </div>
+    </div>
+    <header class="header left-bar">
+        <div class="logo">
+            <a href="main_01.html">
+                AICC
+            </a>
+        </div>
+        <nav>
+            <ul class="gnb depth-1">
+            <li>
+                <a href="#">
+                    <span class="ico menu2">
+
+                    </span>
+                    <span class="tit">
+                        상담 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="B_05.html">상담원 모니터링</a></li>
+                    <li><a href="B_04.html">상담 이력</a></li>
+                    <li><a href="B_03.html">모의상담</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="ico menu1">
+                        visual-link depth1
+                    </span>
+                    <span class="tit">
+                        운영 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="A_01.html">초기인사멘트 관리</a></li>
+                    <li><a href="A_02.html">상황별 멘트관리</a></li>
+                    <li><a href="A_03.html">상황별 예외기준</a></li>
+                    <li><a href="A_05_addModal.html">휴일 관리</a></li>
+                    <li><a href="A_09.html">게시판 관리</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">
+                    <span class="ico menu4">
+
+                    </span>
+                    <span class="tit">
+                        마스터 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="D_02_addModal.html">사용자 관리</a></li>
+                    <li><a href="D_04_addModal.html">공통코드 관리</a></li>
+                    <li><a href="D_05_addModal.html">메뉴 관리</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu5">
+
+                    </span>
+                    <span class="tit">
+                        시스템 모니터링
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="E_01.html">서비스 상태 모니터링</a></li>
+                    <li><a href="E_02.html">배치 현황</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu7">
+
+                    </span>
+                    <span class="tit">
+                        현황 및 통계
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="G_01.html">일별 서비스 현황</a></li>
+                    <li><a href="G_02.html">시간별 서비스 현황</a></li>
+                </ul>
+            </li>
+ 
+        </ul>
+        </nav>
+    </header>
+
+
+    <div class="container">
+        <div class="contents">
+            <div class="content-page">
+                <div class="develop-component">
+
+                    <div class="connectbox">
+                        <div class="grid">
+                            <div class="column">
+                                <div class="column-body">
+                                    <span class="helper">
+                                        <i class="helper-ico"></i>
+                                        <span class="helper-desc">
+                                            평일,토요일,일요일, 휴일별 인사멘트를 시간별로 자유롭게 추가 및 수정 하실 수 있습니다.
+                                        </span>
+                                    </span>
+
+
+                                    <div class="ipt-row">
+
+                                        <span class="ipt-box">
+                                            <label for="slt1">모니터링 갱신시간</label>
+                                            <select id="slt1" class="tiny" name="">
+                                                <option value="">10</option>
+                                                <option value="">10</option>
+                                                <option value="">10</option>
+                                            </select>
+
+                                            <button class="btn-crud point" type="button" name="button">적용</button>
+
+                                        </span>
+                                        <span class="guideline">초단위로 세팅 가능</span>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+
+                                <div class="today-status management">
+                                    <div class="today-status-lst">
+                                        <div class="sub-box">
+                                            <span>Soft PBX</span>
+                                            <div class="status-item normal">
+                                                <div>정상</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="sub-box">
+                                            <span>Soft Phone</span>
+                                            <div class="status-item normal">
+                                                <div>정상</div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="sub-box">
+                                            <span>Voice G/W</span>
+                                            <div class="status-item normal">
+                                                <div>정상</div>
+                                            </div>
+                                        </div>                                        
+
+                                        <div class="sub-box">
+                                            <span>STT</span>
+                                            <div class="status-item normal">
+                                                <div>정상</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="sub-box">
+                                            <span>Chat Bot</span>
+                                            <div class="status-item normal">
+                                                <div>정상</div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="sub-box">
+                                            <span>TTS</span>
+                                            <div class="status-item unknown">
+                                                <div>확인불가</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="sub-box">
+                                            <span>BATCH</span>
+                                            <div class="status-item abnormal">
+                                                <div>비정상</div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!-- footer -->
+<footer class="footer">
+    <ul class="fnb">
+        <li><b>Copyright</b> 2018 LG CNS All Rights Reserved.</li>
+        <!-- <li><a href="#"><b>개인정보처리방침</b></a></li>
+        <li><a href="#">이용약관</a></li> -->
+    </ul>
+</footer>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

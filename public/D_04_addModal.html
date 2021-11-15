@@ -1,0 +1,416 @@
+    <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Smart Contact Center</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"><!-- mobile -->
+
+        <link href="resource/newcss/lib/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="resource/newcss/lib/jquery-ui.css" rel="stylesheet">
+        <link href="style_local.css" rel="stylesheet"><!-- 1st css -->
+
+        <script src="resource/newjs/lib/jquery.min.js"></script>
+        <script src="resource/newjs/lib/jquery-ui.min.js"></script>
+        <script src="resource/newjs/lib/Chart.min.js"></script>
+        <script src="resource/newjs/lib/jquery.dataTables.js"></script>
+        <script src="resource/newjs/lib/dataTables.bootstrap4.js"></script>
+        <script src="resource/newjs/lib/jquery.placeholder.min.js"></script>
+        <script src="resource/newjs/scripts.js"></script>
+    </head>
+    <body>
+    <div class="top-bar shadow-ui">
+            <div class="gnb-toggle-wrap">
+                <button class="gnb-toggle" type="button" name="button">메뉴 간략하게 보기</button>
+            </div>
+            <h2 class="navigator">마스터 관리 <em class="on">/ 공통코드 관리</em></h2>
+
+            <div class="snb">
+                <ul>
+                    <li><span class="snb-name">관리자</span>님</li>
+                    <li><button class="btn-snb point" type="button" name="button">개인정보수정</button></li>
+                    <li><a href="login.html" class="btn-snb">로그아웃</a></li>
+                </ul>
+            </div>
+    </div>
+    <header class="header left-bar">
+        <div class="logo">
+            <a href="main_01.html">
+                AICC
+            </a>
+        </div>
+        <nav>
+            <ul class="gnb depth-1">
+            <li>
+                <a href="#">
+                    <span class="ico menu2">
+
+                    </span>
+                    <span class="tit">
+                        상담 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="B_05.html">상담원 모니터링</a></li>
+                    <li><a href="B_04.html">상담 이력</a></li>
+                    <li><a href="B_03.html">모의상담</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="ico menu1">
+                        visual-link depth1
+                    </span>
+                    <span class="tit">
+                        운영 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="A_01.html">초기인사멘트 관리</a></li>
+                    <li><a href="A_02.html">상황별 멘트관리</a></li>
+                    <li><a href="A_03.html">상황별 예외기준</a></li>
+                    <li><a href="A_05_addModal.html">휴일 관리</a></li>
+                    <li><a href="A_09.html">게시판 관리</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">
+                    <span class="ico menu4">
+
+                    </span>
+                    <span class="tit">
+                        마스터 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="D_02_addModal.html">사용자 관리</a></li>
+                    <li><a href="D_04_addModal.html">공통코드 관리</a></li>
+                    <li><a href="D_05_addModal.html">메뉴 관리</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu5">
+
+                    </span>
+                    <span class="tit">
+                        시스템 모니터링
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="E_01.html">서비스 상태 모니터링</a></li>
+                    <li><a href="E_02.html">배치 현황</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu7">
+
+                    </span>
+                    <span class="tit">
+                        현황 및 통계
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="G_01.html">일별 서비스 현황</a></li>
+                    <li><a href="G_02.html">시간별 서비스 현황</a></li>
+                </ul>
+            </li>
+ 
+        </ul>
+        </nav>
+    </header>
+
+ 
+
+    <div class="container">
+        <div class="contents">
+            <div class="content-page">
+                <div class="develop-component">
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+                                <span class="helper">
+                                    <i class="helper-ico"></i>
+                                    <span class="helper-desc">
+                                        평일,토요일,일요일, 휴일별 인사멘트를 시간별로 자유롭게 추가 및 수정 하실 수 있습니다.
+                                    </span>
+                                </span>
+
+                                <div class="ipt-row">
+                                    <span class="ipt-box">
+                                        <label for="srh1">검색</label>
+                                        <input id="srh1" class="search" type="text" name="" value="">
+                                        <button class="btn-crud point2" type="button" name="button">조회</button>
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+
+                                <div class="lg-board list">
+                                    <div class="custom-table">
+
+                                        <table class="table table-bordered customTb" id="dataTb">
+
+                                            <colgroup>
+                                                <col width="50px">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                              </colgroup>
+
+                                            <thead>
+                                                <tr>
+                                                    <th class="no-filter" scope="col">
+                                                        <input id="testall" class="chk-base" type="checkbox">
+                                                        <label for="testall"></label>
+                                                    </th>
+                                                    <th scope="col">상위공통코드</th>
+                                                    <th scope="col">상위공통코명</th>
+                                                    <th scope="col">공통코드</th>
+                                                    <th scope="col">코드명</th>
+                                                    <th scope="col">조건1</th>
+                                                    <th scope="col">조건2</th>
+                                                    <th scope="col">조건3</th>
+                                                    <th scope="col">순번</th>
+                                                    <th scope="col">사용여부</th>
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <td>
+
+                                                    </td>
+                                                    <td colspan="9">
+                                                        <div class="boxmodel right">
+                                                            <div class="boxmodel-align">
+                                                                <button class="btn-crud" type="button" name="button">미사용</button>
+
+                                                                <button class="btn-crud point2" type="button" name="button">사용</button>
+
+                                                                <a href="#detailCodeSubmit" class="btn-crud point btn_modal" type="button" name="button">등록</a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                                <tr>
+
+                                                    <td class="center">
+                                                        <input id="test" class="chk-base" type="checkbox">
+                                                        <label for="test"></label>
+                                                    </td>
+                                                    <td class="center">
+                                                        <a href="#">A</a>
+                                                    </td>
+                                                    <td class="center">
+                                                        인바운드상담원연결
+                                                    </td>
+                                                    <td class="center">
+                                                        A01
+                                                    </td>
+                                                    <td class="center">
+                                                        초기멘트 고객 요청
+                                                    </td>
+                                                    <td class="center">
+
+                                                    </td>
+                                                    <td class="center">
+
+                                                    </td>
+                                                    <td class="center">
+
+                                                    </td>
+                                                    <td class="center">
+                                                        5
+                                                    </td>
+                                                    <td class="center">
+                                                        사용
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="detailCodeSubmit" class="newmodal">
+                                        <div class="newmodal_header">
+                                            <div class="modal-tit">상세코드 등록</div>
+                                        </div>
+
+                                        <div class="newmodal_body">
+                                            <div class="modal_subtit">그룹코드</div>
+                                            <div class="board-table">
+                                                <table class="table">
+                                                    <caption>그룹코드</caption>
+                                                    <colgroup>
+                                                        <col style="width:140px">
+                                                        <col style="">
+                                                    </colgroup>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th><label for="slt1">코드</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <select id="slt1" name="">
+                                                                            <option value="">option</option>
+                                                                            <option value="">option</option>
+                                                                        </select>
+
+
+                                                                        <button class="btn-crud point2" type="button" name="button">신규</button>
+
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th><label for="ipt1">명칭</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <input id="ipt1" class="normal" type="text" name="" value="">
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th><label for="txt1">설명</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <textarea id="txt1" class="small" name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div class="modal_subtit">코드상세</div>
+                                            <div class="board-table">
+                                                <table class="table">
+                                                    <caption>코드상세</caption>
+                                                    <colgroup>
+                                                        <col style="width:140px">
+                                                        <col style="">
+                                                        <col style="width:140px">
+                                                        <col style="">
+                                                    </colgroup>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th><label for="ipt2">공통코드</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <input id="ipt2" class="normal" type="text" name="" value="">
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <th><label for="ipt3">코드명</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <input id="ipt3" class="long" type="text" name="" value="">
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th><label for="ipt4">정렬순번</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <input id="ipt4" class="tiny" type="text" name="" value="">
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <th><label for="ipt5">조건식</label></th>
+                                                            <td>
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <input id="ipt5" class="small" type="text" name="" value="">
+                                                                        <input class="small" type="text" name="" value="">
+                                                                        <input class="small" type="text" name="" value="">
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <th><label for="txt2">비고</label></th>
+                                                            <td colspan="3">
+                                                                <div class="ipt-row">
+                                                                    <span class="ipt-box">
+                                                                        <textarea id="txt2" class="small" name="name" rows="8" cols="80" placeholder=""></textarea>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="newmodal_footer">
+                                            <div class="boxmodel center">
+                                                <div class="boxmodel-align">
+                                                    <button class="btn-base close" type="button" name="button">닫기</button>
+                                                    <button class="btn-base point" type="button" name="button">저장</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="newmodal_controller">
+
+                                            <a href="#" class="btnico close white"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script src="resource/newjs/test/createDataTable.js"></script>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!-- footer -->
+<footer class="footer">
+    <ul class="fnb">
+        <li><b>Copyright</b> 2018 LG CNS All Rights Reserved.</li>
+        <!-- <li><a href="#"><b>개인정보처리방침</b></a></li>
+        <li><a href="#">이용약관</a></li> -->
+    </ul>
+</footer>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

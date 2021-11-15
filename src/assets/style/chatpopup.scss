@@ -1,0 +1,162 @@
+@charset 'utf-8';
+.vue-window-modal {
+  position: fixed;
+  background-color: #f7f7f7;
+  box-shadow: 7px 7px 50px 5px rgba(0,0,0,0.13);
+  border-radius: 3px;
+  display: block;
+  max-height: 90vh;
+  max-width: 90vw;
+  border-width: 1px;
+  border-color: #FE7A7A;
+  background: #FFFFFF;
+  /* Elevation / Depth 2 */
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.17), 0px 4px 5px rgba(0, 0, 0, 0.11);
+  border-radius: 3px;
+  &.monitor {
+    .vue-window-modal-body {
+      height: calc(100% - 106px);
+    }
+    .vue-window-modal-btn {
+      display: block;
+    }
+  }
+  &.on {
+    .vue-window-modal-header {
+      background: linear-gradient(90deg, #ffe9a9 0%, #FE7A7A 100%), linear-gradient(90deg, #ffe9a9 0%, #FE7A7A 100%);
+    }
+    .vue-window-modal-body,
+    .vue-window-modal-btn {
+      border-color: #ffe9a9;
+    }
+  }
+  &.wating {
+    .vue-window-modal-header {
+      background: linear-gradient(90deg, #c6f3fb 0%, #4dc9dc 100%), linear-gradient(90deg, #c6f3fb 0%, #4dc9dc 100%);
+    }
+    .vue-window-modal-body,
+    .vue-window-modal-btn {
+      border-color: #c6f3fb;
+    }
+  }
+  &.connecting {
+    .vue-window-modal-header {
+      background: linear-gradient(90deg, #e9cbff 0%, #FFBF6B 100%), linear-gradient(90deg, #e9cbff 0%, #FFBF6B 100%);
+    }
+    .vue-window-modal-body,
+    .vue-window-modal-btn {
+      border-color: #e9cbff;
+    }
+  }
+  &.fail {
+    .vue-window-modal-header {
+      background: linear-gradient(90deg, #e5ffbb 0%, #58c1b8 100%), linear-gradient(90deg, #e5ffbb 0%, #58c1b8 100%);
+    }
+    .vue-window-modal-body,
+    .vue-window-modal-btn {
+      border-color: #e5ffbb;
+    }
+  }
+  .vue-window-modal-header {
+    padding: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    color: white;
+    height: 40px;
+    font-size: 16px;
+    cursor: -webkit-grab;
+    user-select: none;
+    font-weight: bold;
+    h2 {
+      display: inline-block;
+      position: relative;
+      top: 0;
+      padding: 3px 0;
+      font-size: 16px !important;
+      color: #333;
+      max-width: 90%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    button {
+      &.close {
+        margin: 0 7px;
+        float: right;
+        cursor: pointer;
+        position: relative;
+        top: 0px;
+        &::after {
+          content: '';
+          background-image: url('~@/assets/image/ic_close_white.png');
+          background-repeat: no-repeat;
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+  .vue-window-modal-body {
+    height: calc(100% - 35px);
+    overflow: hidden;
+    padding: 15px 20px 15px 15px;
+    border: 1px solid #808080;
+    .__vuescroll.hasVBar {
+      .__rail-is-vertical {
+        right: 0 !important;
+      }
+    }
+  }
+  .vue-window-modal-btn {
+    display: none;
+    padding: 15px;
+    text-align: right;
+    border: 1px solid #808080;
+    border-top: 0;
+    button {
+      padding: 0 16px;
+      font-size: 12px;
+      color: #2C3238;
+      margin-left: 6px;
+      height: 28px;
+      text-align: center;
+      border-radius: 3px;
+      box-sizing: border-box;
+      box-shadow: none;
+      border: 1px solid #DAE3ED;
+      background-color: #ffffff !important;
+      &.button-default {
+        color: #ffffff;
+        background-color: #424952 !important;
+      }
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+  .v-sheet.v-card:not(.v-sheet--outlined) {
+    box-shadow: none;
+  }
+  .data-grid-wrap.default {
+    margin-bottom: 0;
+  }
+}
+/* IE10+ hack */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  .vue-window-modal-header {
+    h2 {
+      font-weight: 300;
+    }
+  }
+  .vue-window-modal-body {
+    .__vuescroll.hasVBar {
+      .__panel > .__view > div,
+      .__panel > .__view > .row {
+        width: calc(100% - 30px) !important;
+      }
+    }
+  }
+}

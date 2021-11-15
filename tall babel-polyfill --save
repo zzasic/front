@@ -1,0 +1,203 @@
+[33mcommit 370967671758fb42f9da1cb8ff982e83f9c1408a[m[33m ([m[1;36mHEAD -> [m[1;32mpublishContract[m[33m, [m[1;31morigin/publishContract[m[33m)[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 24 08:45:59 2020 +0900
+
+    확인/취소 버튼 그룹 범용 스타일 적용
+
+[33mcommit f0a96ee61db6f76c3b0db82aa217d96d22c0b660[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 24 08:30:28 2020 +0900
+
+    확인/취소 버튼 그룹 범용 스타일 적용
+
+[33mcommit 6d590f1aafb857738f125197830adcfbc49d9ffd[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Thu Apr 23 18:24:05 2020 +0900
+
+    가이드 문서: 그리드 내용 수정
+
+[33mcommit 1c971c01796a8950a8ae739e72e99694baffda1a[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Thu Apr 23 16:21:23 2020 +0900
+
+    컴포넌트 가이드 문서 추가, LNB, 그리드
+
+[33mcommit 695a7b7223816ee713a4e595ef2515f3ab055a42[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Thu Apr 23 13:59:55 2020 +0900
+
+    사용자  등록 페이지 개별 등록 영역 퍼블리싱
+
+[33mcommit fc0c0270a31938fe10d77693ddec6b7eed5da8c9[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Wed Apr 22 19:17:08 2020 +0900
+
+    디자인 디테일 맞추는 작업
+
+[33mcommit e36f539a2722d6b1829bec9a8ed5ec1b75bd8879[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Wed Apr 22 14:38:00 2020 +0900
+
+    디자인 퀄리티 향상(틈틈이 진행 중)
+
+[33mcommit 37e9e350789fd98a3207e3844a97f70918ef8740[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Wed Apr 22 13:18:55 2020 +0900
+
+    페이지네이션 어트리뷰트 테스트
+
+[33mcommit 808778659b03216599a3269e4c7688739c57aa8e[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Wed Apr 22 11:05:56 2020 +0900
+
+    디자인 디테일 퀄리티 상향(틈틈이 적용 중)
+
+[33mcommit df2c0616a9699b14faf6f9ecc64816c1daff5ec4[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Wed Apr 22 09:39:51 2020 +0900
+
+    이용중인 서비스 컴포넌트 네임 수정
+
+[33mcommit 08f17924dbaa2dbe00ec8a298cca299cbf810c44[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Wed Apr 22 09:36:48 2020 +0900
+
+    이용중인 서비스 페이지 마크업 추가
+
+[33mcommit 314cf060b91b5a88ef318910d24f1b383667c256[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Tue Apr 21 20:01:03 2020 +0900
+
+    카탈로그 페이지 추가
+
+[33mcommit 2eec605ffb44800593f92d9e0a435e6a4878edfe[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Tue Apr 21 12:45:52 2020 +0900
+
+    디자인 작업물과 디테일 맞추는 작업 중"
+
+[33mcommit 771a7c3627754fe0a8decad74e5a3d83abf5f3a9[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Tue Apr 21 08:26:58 2020 +0900
+
+    서치 영역 디자인 디테일 끌어올림
+
+[33mcommit 05a736cb4932bea535810832b769d5151f3721cd[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 18:54:51 2020 +0900
+
+    폼 요소 커스터마이징, 디자인 디테일 적용 중
+
+[33mcommit 11d15b84d3ae72fe15712c3d725d229fd9fc7958[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 18:16:07 2020 +0900
+
+    dap 제거
+
+[33mcommit 6863fe911cb5cb56c0cce0ff8933ba8dea08b4eb[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 16:45:35 2020 +0900
+
+    공용 툴팁 마크업 오류 수정
+
+[33mcommit 4b919b03131f1b46a0d70a5e619eba1ff28a0e1d[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 16:18:30 2020 +0900
+
+    샘플 데이터 주입
+
+[33mcommit 297c5152fe45c31dc11522840ddcaab639ddd55b[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 16:09:43 2020 +0900
+
+    검색 영역 콤보박 들어가는 샘플 json 데이터 주입
+
+[33mcommit b55024cb1c1114026220a2820c38c4ad28362e73[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 15:55:49 2020 +0900
+
+    디자인과 스타일 맞추는 중 (틈틈이)
+
+[33mcommit 3b7b0c19279f865414d1cc3b0777be401442d871[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 12:55:43 2020 +0900
+
+    탭 디자인을 공상평에 맞춤
+
+[33mcommit b1aeb9c437a397acaa3077313dc47b9b1abbc7b0[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 10:35:18 2020 +0900
+
+    탭 디자인을 공상평 디자인 가이드에 맞게 수정, router-view 리렌더 설정 수정
+
+[33mcommit bcaf1b77018b4dbaadd5c7b1c0d664c3340df246[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 09:02:40 2020 +0900
+
+    레이아웃 깨지는 오류 수정
+
+[33mcommit a9538a0f1979fde8f8c686330865b2ceea4983bf[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Mon Apr 20 08:41:23 2020 +0900
+
+    사용자 정보, 운영자 권한 정보 팝업 페이지 마크업 추가, 운영자 권한 그룹 선택 마크업은 수정해야 함, 디자인 적용은 아직 안된 상태. 개발하실 수 있는 부분 먼저 하세요.
+
+[33mcommit 056937626d370551bb0264f587fd875a118150ce[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 22:04:37 2020 +0900
+
+    디자인 디테일 작업 (틈틈이)
+
+[33mcommit 99c34da79bcd6c1d1d7fbd27ef2d85f255d7deae[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 20:22:17 2020 +0900
+
+    계약 정보 상세페이지 테이블에 더미 데이터 주입
+
+[33mcommit 2a1dbe728137ce2d89f1c28f7cc4953b339bd5eb[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 19:00:47 2020 +0900
+
+    계약 정보 상세 페이지 마크업 뼈대만 구성
+
+[33mcommit 92fd2251f517648caef4c7d7db72a495a11e89b0[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 17:45:11 2020 +0900
+
+    페이지 서브 타이틀 컴포넌트 분리 제작
+
+[33mcommit 8f2dc220d1071931b0768b05670a0f457bdc9c9b[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 16:34:28 2020 +0900
+
+    페이지네이션의 마크업 구조를 정리
+
+[33mcommit 57a0373585835c71dbc65103bd351874b280bad1[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 15:35:41 2020 +0900
+
+    데이터그리드 테이블과 페이지네이션을 연결함
+
+[33mcommit 96ee759b359917baaa68257ec0a72c3e4c9746d5[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 15:35:17 2020 +0900
+
+    화면 전체적으로 팝업과 콤보박스 레이어 오작동 하는 부분을 해결
+
+[33mcommit 6673c81fcb6aa67e6a92483fd70ada492c39b90b[m
+Author: A56010 <jongsik@lgcns.com>
+Date:   Fri Apr 17 14:49:01 2020 +0900
+
+    현재까지 작업된 퍼블리싱 파일들
+
+[33mcommit abd4c0c5d83bfc69afbda7c76e6655f2053ee6ae[m[33m ([m[1;32mdevelop[m[33m)[m
+Author: 윤성종 책임연구원/AI서비스플랫폼팀 <sean@lgcns.com>
+Date:   Fri Apr 17 13:08:14 2020 +0900
+
+    publishing Contract
+
+[33mcommit 1292e75e01493152dfb03e72b2d647cd45274772[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/feature/contract[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: 윤성종 책임연구원/AI서비스플랫폼팀 <sean@lgcns.com>
+Date:   Fri Apr 17 13:01:25 2020 +0900
+
+    Initial Commit

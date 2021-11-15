@@ -1,0 +1,295 @@
+<template>
+  <v-card class="dialog-ta">
+    <v-card-title>
+    <span class="headline">TA 수정</span>
+    </v-card-title>
+    <v-card-text>
+      <v-form
+        ref="form"
+        v-model="valid"
+      >
+      <v-container>
+        <v-row>
+          <v-col cols="2">
+            <span class="label must">ID</span>
+          </v-col>
+          <v-col>
+            <v-text-field
+              class="default mt-0 pt-0"
+              v-model="inputForm.taId"
+              :rules="taIdRules"
+              hide-details="auto"
+              outlined
+              disabled
+              dense
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="2">
+            <span class="label must">TA명</span>
+          </v-col>
+          <v-col>
+            <v-text-field
+              class="default mt-0 pt-0"
+              v-model="inputForm.taNm"
+              :rules="taNmRules"
+              hide-details="auto"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="2">
+            <span class="label must">통신방식</span>
+          </v-col>
+          <v-col>
+            <v-select
+              class="default mt-0 pt-0"
+              :menu-props="{ offsetY: true }"
+              v-model="inputForm.apiType"
+              :items="apiTypes"
+              :rules="apiTypeRules"
+              :placeholder="inputForm.apiType ? undefined : '선택'"
+              hide-details="auto"
+              outlined
+              dense
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="2">
+            <span class="label must">URL</span>
+          </v-col>
+          <v-col>
+            <v-text-field
+              class="default mt-0 pt-0"
+              v-model="inputForm.taUrl"
+              :rules="taUrlRules"
+              hide-details="auto"
+              outlined
+              dense
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="2">
+            <span class="label must">TA엔진</span>
+          </v-col>
+          <v-col>
+            <v-select
+              class="default mt-0 pt-0"
+              :menu-props="{ offsetY: true }"
+              v-model="inputForm.taEngine"
+              :items="taEngines"
+              :rules="taEngineRules"
+              :placeholder="inputForm.taEngine ? undefined : '선택'"
+              hide-details="auto"
+              outlined
+              dense
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="2">
+            <span class="label must">사용 여부</span>
+          </v-col>
+          <v-col>
+            <v-radio-group
+              class="default mt-1 pt-0"
+              v-model="inputForm.useYn"
+              :mandatory="false"
+              row>
+              <v-radio
+                :ripple="false"
+                v-for="(use, idx) in useYns" :key="idx"
+                :label="use.text"
+                :value="use.value"
+              ></v-radio>
+            </v-radio-group>
+          </v-col>
+        </v-row>
+      </v-container>
+      </v-form>
+    </v-card-text>
+    <v-card-actions class="submit-btns-group">
+      <v-spacer></v-spacer>
+      <v-btn color="btn-secondary" text @click="$emit('close-dialog')">{{ $t('button.cancel')}}</v-btn>
+      <v-btn color="btn-secondary" text @click="deleteTa()">{{ $t('button.delete')}}</v-btn>
+      <v-btn color="btn-primary" text @click="setTa">{{ $t('button.save')}}</v-btn>
+    </v-card-actions>
+    <v-btn
+      class="default dialogclose"
+      text
+      @click.stop="$emit('close-dialog')"
+      :ripple="false"
+    >
+      <span class="hide">팝업 닫기</span>
+    </v-btn>
+  </v-card>
+</template>
+
+<script>
+
+import {
+  initTaView,
+  selectTaForUpdate,
+  updateTa,
+  deleteTa
+} from '../../api/ta'
+
+import lodash from 'lodash'
+
+export default {
+
+  name: 'PopupUpdateTaView',
+
+  components: {
+  },
+  props: {
+    editedItem: Object
+  },
+  data () {
+    return {
+      valid: true,
+      reqForm: {},
+
+      /* input start */
+      inputForm: {
+        taId: '',
+        taNm: '',
+        taUrl: '',
+        taEngine: '',
+        apiType: '',
+        useYn: 'Y'
+      },
+      /* input end */
+
+      useYns: [
+        {
+          text: '사용',
+          value: 'Y'
+        },
+        {
+          text: '미사용',
+          value: 'N'
+        }
+      ],
+      taEngines: [],
+      apiTypes: [],
+
+      /* validate start */
+      taIdRules: [
+        v => (!!v && v.length > 0 && v.replace(/\s/g, '').length > 0) || 'ID를 입력하세요',
+        v => (!!v && v.length <= 36) || 'ID는 36자리 이내로 입력해 주세요'
+      ],
+      taNmRules: [
+        v => (!!v && v.length > 0 && v.replace(/\s/g, '').length > 0) || 'TA명를 입력하세요',
+        v => (!!v && v.length <= 200) || 'TA명은 200자리 이내로 입력해 주세요'
+      ],
+      taUrlRules: [
+        v => (!!v && v.length > 0 && v.replace(/\s/g, '').length > 0) || 'URL을 입력하세요',
+        v => (!!v && v.length <= 300) || 'URL은 300자리 이내로 입력해 주세요'
+      ],
+      taEngineRules: [
+        v => !!v || 'TA엔진을 선택하세요'
+      ],
+      apiTypeRules: [
+        v => !!v || '통신방식을 선택하세요'
+      ]
+      /* validate end */
+    }
+  },
+
+  computed: {
+  },
+
+  methods: {
+    initTaView () {
+      initTaView().then(
+        response => {
+          this.taEngines = response.data.result.taEngineList
+          this.apiTypes = response.data.result.apiTypeList
+        }
+      )
+    },
+    getSelectTa: function () {
+      selectTaForUpdate(this.reqForm).then(
+        response => {
+          this.inputForm.taId = response.data.result.ta.taId
+          this.inputForm.taNm = response.data.result.ta.taNm
+          this.inputForm.taUrl = response.data.result.ta.taUrl
+          this.inputForm.taEngine = response.data.result.ta.taEngine
+          this.inputForm.apiType = response.data.result.ta.apiType
+          this.inputForm.useYn = response.data.result.ta.useYn
+        }
+      )
+    },
+    setTa: lodash.debounce(function () {
+      if (this.$refs.form.validate()) {
+        if (!confirm('저장하시겠습니까?')) {
+          return
+        }
+        const input = {
+          taId: this.inputForm.taId,
+          taNm: this.inputForm.taNm,
+          taUrl: this.inputForm.taUrl,
+          taEngine: this.inputForm.taEngine,
+          apiType: this.inputForm.apiType,
+          useYn: this.inputForm.useYn
+        }
+        updateTa(input).then(
+          response => {
+            if (response.data.status === 200) {
+              this.$emit('refresh-list')
+              this.$emit('close-dialog')
+            }
+          },
+          error => {
+            console.error(error)
+            delete sessionStorage.accessToken
+            this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
+          }
+        )
+      }
+    }, 300),
+    deleteTa: lodash.debounce(function () {
+      if (confirm('삭제하시겠습니까?')) {
+        deleteTa(this.reqForm).then(
+          response => {
+            if (response.data.status === 200) {
+              this.$emit('refresh-list')
+              this.$emit('close-dialog')
+            }
+          },
+          error => {
+            console.error(error)
+            delete sessionStorage.accessToken
+            this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
+          }
+        )
+      }
+    }, 300)
+  },
+
+  watch: {},
+
+  created () {
+    this.initTaView()
+  },
+  mounted () {
+    this.reqForm = this.editedItem
+    this.$nextTick(() => {
+      this.getSelectTa()
+    })
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="scss">
+  .transaction {
+    margin-top: -24px;
+  }
+</style>

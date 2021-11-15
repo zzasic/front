@@ -1,0 +1,406 @@
+    <!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Smart Contact Center</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"><!-- mobile -->
+
+        <link href="resource/newcss/lib/dataTables.bootstrap4.css" rel="stylesheet">
+        <link href="resource/newcss/lib/jquery-ui.css" rel="stylesheet">
+        <link href="style_local.css" rel="stylesheet"><!-- 1st css -->
+
+        <script src="resource/newjs/lib/jquery.min.js"></script>
+        <script src="resource/newjs/lib/jquery-ui.min.js"></script>
+        <script src="resource/newjs/lib/Chart.min.js"></script>
+        <script src="resource/newjs/lib/jquery.dataTables.js"></script>
+        <script src="resource/newjs/lib/dataTables.bootstrap4.js"></script>
+        <script src="resource/newjs/lib/jquery.placeholder.min.js"></script>
+        <script src="resource/newjs/scripts.js"></script>
+    </head>
+    <body>
+    <div class="top-bar shadow-ui">
+            <div class="gnb-toggle-wrap">
+                <button class="gnb-toggle" type="button" name="button">메뉴 간략하게 보기</button>
+            </div>
+            <h2 class="navigator">현황 및 통계 <em class="on">/ 시간별 서비스 현황</em></h2>
+
+            <div class="snb">
+                <ul>
+                    <li><span class="snb-name">관리자</span>님</li>
+                    <li><button class="btn-snb point" type="button" name="button">개인정보수정</button></li>
+                    <li><a href="login.html" class="btn-snb">로그아웃</a></li>
+                </ul>
+            </div>
+    </div>
+    <header class="header left-bar">
+        <div class="logo">
+            <a href="main_01.html">
+                AICC
+            </a>
+        </div>
+        <nav>
+            <ul class="gnb depth-1">
+            <li>
+                <a href="#">
+                    <span class="ico menu2">
+
+                    </span>
+                    <span class="tit">
+                        상담 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="B_05.html">상담원 모니터링</a></li>
+                    <li><a href="B_04.html">상담 이력</a></li>
+                    <li><a href="B_03.html">모의상담</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="ico menu1">
+                        visual-link depth1
+                    </span>
+                    <span class="tit">
+                        운영 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="A_01.html">초기인사멘트 관리</a></li>
+                    <li><a href="A_02.html">상황별 멘트관리</a></li>
+                    <li><a href="A_03.html">상황별 예외기준</a></li>
+                    <li><a href="A_05_addModal.html">휴일 관리</a></li>
+                    <li><a href="A_09.html">게시판 관리</a></li>
+                </ul>
+            </li>            
+            <li>
+                <a href="#">
+                    <span class="ico menu4">
+
+                    </span>
+                    <span class="tit">
+                        마스터 관리
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="D_02_addModal.html">사용자 관리</a></li>
+                    <li><a href="D_04_addModal.html">공통코드 관리</a></li>
+                    <li><a href="D_05_addModal.html">메뉴 관리</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu5">
+
+                    </span>
+                    <span class="tit">
+                        시스템 모니터링
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="E_01.html">서비스 상태 모니터링</a></li>
+                    <li><a href="E_02.html">배치 현황</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#">
+                    <span class="ico menu7">
+
+                    </span>
+                    <span class="tit">
+                        현황 및 통계
+                    </span>
+                </a>
+                <ul class="depth-2">
+                    <li><a href="G_01.html">일별 서비스 현황</a></li>
+                    <li><a href="G_02.html">시간별 서비스 현황</a></li>
+                </ul>
+            </li>
+ 
+        </ul>
+        </nav>
+    </header>
+ 
+
+
+    <div class="container">
+        <div class="contents">
+            <div class="content-page">
+                <div class="develop-component">
+
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+                                <div class="ipt-row">
+                                    <span class="ipt-box">
+                                        <label for="slt1">상담사 선택</label>
+                                        <select id="slt1" name="">
+                                            <option value="">홍길동</option>
+                                            <option value="">이철종</option>
+                                            <option value="">김완기</option>
+                                            <option value="">박기동</option>
+                                            <option value="">최정원</option>
+                                        </select>
+                                    </span>
+
+                                    <span class="ipt-box">
+                                        <label for="slt2">챗봇명</label>
+                                        <select id="slt2" name="">
+                                            <option value="">대출챗봇</option>
+                                            <option value="">외환챗봇</option>
+                                            <option value="">예금챗봇</option>
+                                            <option value="">적금챗봇</option>
+                                            <option value="">보험챗봇</option>
+                                        </select>
+                                    </span>
+
+                                    <span class="ipt-box">
+                                        <label for="sDate">상담일자</label>
+                                        <span class="ipt-ico">
+                                            <input id="sDate" class="datepicker" type="text" maxlength="8" name="" value="" readonly="">
+                                            <label class="btnico caleandar" for="sDate">시작날짜 선택</label>
+                                        </span>
+                                        <span class="period">~</span>
+                                        <span class="ipt-ico">
+                                            <input id="eDate" class="datepicker" type="text" maxlength="8" name="" value="" readonly="">
+                                            <label class="btnico caleandar" for="eDate">종료날짜 선택</label>
+                                        </span>
+                                        <span class="media-control">
+                                            <button class="btn-crud point" type="button" name="button">조회</button>
+                                        </span>
+                                    </span>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="grid">
+                        <div class="column">
+                            <div class="column-body">
+
+                                <div class="lg-board list">
+                                    <div class="custom-table table-responsive">
+
+                                        <table class="table table-bordered customTb" id="dataTb">
+
+                                            <colgroup>
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+                                                <col width="">
+
+                                              </colgroup>
+
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2" scope="col">상담시간</th>
+                                                    <th rowspan="2" scope="col">전체 Call수</th>
+                                                    <th colspan="6" scope="col">상담유형</th>
+                                                    <th colspan="8" scope="col">상담원연결</th>
+                                                    <th colspan="4" scope="col">전화 끊김</th>
+                                                </tr>
+                                                <tr class="sub-th">
+                                                    <th scope="col">단순상담</th>
+                                                    <th scope="col">지능형상담</th>
+                                                    <th scope="col">URL전송</th>
+                                                    <th scope="col">메시지전송</th>
+                                                    <th scope="col">외부전화 연결</th>
+                                                    <th scope="col">소계</th>
+
+                                                    <th scope="col">초기멘트고객요청</th>
+                                                    <th scope="col">고객거부</th>
+                                                    <th scope="col">Intent미정의</th>
+                                                    <th scope="col">사용미숙</th>
+                                                    <th scope="col">ARS라우팅</th>
+                                                    <th scope="col">장애라우팅</th>
+                                                    <th scope="col">재콜</th>
+                                                    <th scope="col">소계</th>
+                                                    <th scope="col">초기 고객 끊기</th>
+                                                    <th scope="col">상담중 고객 끊기</th>
+                                                    <th scope="col">VB끊기</th>
+                                                    <th scope="col">소계</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    <td>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="center">
+                                                        00시
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="center">
+                                                        01시
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        22
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                    <td class="center">
+                                                        1213
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <script src="resource/newjs/test/createDataTable.js"></script>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <!-- footer -->
+<footer class="footer">
+    <ul class="fnb">
+        <li><b>Copyright</b> 2018 LG CNS All Rights Reserved.</li>
+        <!-- <li><a href="#"><b>개인정보처리방침</b></a></li>
+        <li><a href="#">이용약관</a></li> -->
+    </ul>
+</footer>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
