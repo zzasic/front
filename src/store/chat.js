@@ -204,7 +204,7 @@ export default {
               if (status === 200) {
                 this.counselors = response.data.result.counselorList
                 this.systemCounselors = response.data.result.systemCounselorList
-                // console.log(' counselorList ' + JSON.stringify(this.counselors))
+                console.log(' counselorList ' + JSON.stringify(this.counselors))
                 console.log(' systemCounselorList ' + JSON.stringify(this.systemCounselors))
                 for (let i = 0; i < this.systemCounselors.length; i++) {
                   this.systemCounselors[i].deviceKind = this.systemCounselors[i].callId.substring(5, 7)
