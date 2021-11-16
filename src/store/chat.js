@@ -41,8 +41,6 @@ function setSysSubscribe (_this, client) {
 export default {
   data () {
     return {
-      counselors: [],
-      systemCounselors: []
     }
   },
   state: {
@@ -202,19 +200,13 @@ export default {
             (response) => {
               const status = response.data.status
               if (status === 200) {
-                this.counselors = response.data.result.counselorList
-                this.systemCounselors = response.data.result.systemCounselorList
-                console.log(' counselorList ' + JSON.stringify(this.counselors))
-                console.log(' systemCounselorList ' + JSON.stringify(this.systemCounselors))
-                for (let i = 0; i < this.systemCounselors.length; i++) {
-                  this.systemCounselors[i].deviceKind = this.systemCounselors[i].callId.substring(5, 7)
-                }
-                console.log(' systemCounselorList ' + JSON.stringify(this.systemCounselors))
+                // console.log(' response.data.result.counselorList ' + JSON.stringify(response.data.result.counselorList))
+                // console.log(' response.data.result.systemCounselorList ' + JSON.stringify(response.data.result.systemCounselorList))
                 // 조회결과
                 // 1. AICC 상담원 목록 조회 후, 초기값 등록
                 // 2. 인공인간, 불판 초기값 등록
-                commit('ADD_COUNSELORS', { counselors: (this.counselors || []), systemCounselors: (this.systemCounselors || []) })
-                // commit('ADD_COUNSELORS', { counselors: (response.data.result.counselorList || []), systemCounselors: (response.data.result.systemCounselorList || []) })
+                // commit('ADD_COUNSELORS', { counselors: (this.counselors || []), systemCounselors: (this.systemCounselors || []) })
+                commit('ADD_COUNSELORS', { counselors: (response.data.result.counselorList || []), systemCounselors: (response.data.result.systemCounselorList || []) })
                 // commit('ADD_SYSTEM_COUNSELORS', (response.data.result.systemCounselorList || []))
               }
             }

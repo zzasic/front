@@ -151,27 +151,14 @@ export default {
       return its
     },
     isSysCounselors: function () {
-      // alert(this.searchForm.codeIdArr + this.isEmpty(this.searchForm.branchNm) + ' isSysCounselors -' + this.searchForm.branchNm + '-')
-      if (this.isEmpty(this.searchForm.branchNm)) {
-        return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || this.searchForm.deviceKind === sc.deviceKind) && sc.callYn === 'Y')
-      } else {
-        return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || this.searchForm.deviceKind === sc.deviceKind) && (this.searchForm.codeIdArr.includes(sc.branchCd)) && sc.callYn === 'Y')
-      }
+      // console.log('==isSysCounselors==')
+      return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || sc.callId.indexOf('_' + this.searchForm.deviceKind + '_') > 0) && (!this.searchForm.branchNm || this.searchForm.codeIdArr.indexOf(sc.branchCd) > -1) && sc.callYn === 'Y')
     },
     sysCounselors: function () {
-      // alert(this.searchForm.codeIdArr + this.isEmpty(this.searchForm.branchNm) + ' sysCounselors ' + this.searchForm.branchNm)
-      console.log(' --sysCounselors-- ' + JSON.stringify(this.getsyscounselors))
-      if (this.isEmpty(this.searchForm.branchNm)) {
-        return (this.getsyscounselors || []).filter(sc => {
-          // return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && sc.callYn === 'Y'
-          return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId || this.searchForm.deviceKind === sc.deviceKind) && sc.callYn === 'Y'
-        })
-      } else {
-        return (this.getsyscounselors || []).filter(sc => {
-          // return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && sc.callYn === 'Y'
-          return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId || this.searchForm.deviceKind === sc.deviceKind || this.searchForm.codeIdArr.includes(sc.branchCd)) && sc.callYn === 'Y'
-        })
-      }
+      // console.log('==sysCounselors==' + this.searchForm.codeIdArr.indexOf('7000'))
+      return (this.getsyscounselors || []).filter(sc => {
+        return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || sc.callId.indexOf('_' + this.searchForm.deviceKind + '_') > 0) && (!this.searchForm.branchNm || this.searchForm.codeIdArr.indexOf(sc.branchCd) > -1) && sc.callYn === 'Y'
+      })
     },
     cptdDeviceKindList () {
       const deviceKindList = [
