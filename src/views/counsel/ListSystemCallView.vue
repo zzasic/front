@@ -159,6 +159,7 @@
       <v-card class="data-grid-wrap default clickable">
         <v-data-table
           :single-select="true"
+          show-select
           :headers="systemCallViewHeaders"
           :items="systemCallList"
           :server-items-length="pagination.totalRows"
@@ -170,6 +171,7 @@
         >
           <template v-slot:item="props">
             <tr @click="detailRow(props.item), selected = props.item.callId">
+              <td class="text-center"><input type="checkbox" name="view" :checked="totChkList.includes(props.item.callId) ? true : false" disabled></td>
               <td class="text-center">{{ props.item.systemNm }}</td>
               <td class="text-center">{{ props.item.tenantNm }}</td>
               <td class="text-center">{{ props.item.callId }}</td>
@@ -204,11 +206,11 @@
         persistent
         :max-width="600"
         hide-overlay
-        scrollable
+        scrollable v-if="popup.branchPopup === true"
         >
       <PopupSearchBanch
       @popupAction="popupAction"
-      v-if="popup.branchPopup === true"/>
+      />
     </v-dialog>
     </vuescroll>
     <div v-for="chat in chats" :key="chat.chatId">
@@ -239,6 +241,7 @@ export default {
   },
   mixins: [datepicker],
   created () {
+    this.totChkList = sessionStorage.getItem('counselread').split(',')
   },
   mounted () {
     this.getCmnCodeList()
@@ -305,7 +308,9 @@ export default {
       chats: [],
       popup: {
         branchPopup: false
-      }
+      },
+      chkList: [],
+      totChkList: []
     }
   },
 
@@ -487,6 +492,15 @@ export default {
     },
     // 상세버튼
     detailRow: function (systemCall) {
+      const stTmp = this.isEmpty(sessionStorage.getItem('counselread')) ? '' : sessionStorage.getItem('counselread')
+      if (stTmp.indexOf(systemCall.callId) < 1) {
+        this.chkList = this.isEmpty(stTmp) ? [] : stTmp.split(',')
+        this.chkList.push(systemCall.callId)
+        // console.log(' systemCall.callId ' + systemCall.callId)
+        sessionStorage.setItem('counselread', this.chkList)
+        // console.log(' sessionStorage ' + JSON.stringify(sessionStorage.getItem('counselread')))
+        this.totChkList = sessionStorage.getItem('counselread').split(',')
+      }
       const chat = {
         callId: systemCall.callId,
         deviceNo: systemCall.deviceNo,
@@ -522,7 +536,7 @@ export default {
       )
     },
     isEmpty: function (x) {
-      return (x === null || x === undefined)
+      return (x === null || x === undefined || x === '')
     },
     // 공통코드유형 정보 조회
     getCmnCodeList: function () {

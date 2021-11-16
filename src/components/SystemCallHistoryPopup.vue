@@ -40,6 +40,14 @@
             </v-row>
             <v-row>
               <v-col cols="3" class="col-th">
+                <span class="label">지점명</span>
+              </v-col>
+              <v-col class="col-td">
+                {{ call.branchNm }}
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="3" class="col-th">
                 <span class="label">단말번호</span>
               </v-col>
               <v-col class="col-td">
@@ -104,7 +112,7 @@
                 <div class="message">
                   <div class="message-content" v-html="replaceHtml(hist.contents)"></div>
                   <div class="message-date">
-                    {{ $moment(hist.timestamp, 'x').zone('+09:00').format('HH:mm:ss') }}
+                    {{ $moment(hist.timestamp, 'x').zone('+09:00').format('YYYY-MM-DD HH:mm:ss') }}
                   </div>
                 </div>
               </div>
@@ -155,7 +163,7 @@ export default {
   name: 'SystemCallHistoryPopup',
   data () {
     return {
-      onlyStt: 'N',
+      onlyStt: 'Y',
       custInfo: {},
       systemCallHistories: [],
       systemCallAllHistories: [],

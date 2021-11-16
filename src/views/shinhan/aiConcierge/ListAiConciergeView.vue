@@ -18,6 +18,7 @@
               clearable
             ></v-select>
           </v-col>
+          <!--
           <v-col cols="2">
             <v-text-field
               class="default search"
@@ -27,6 +28,19 @@
               hide-details
               clearable
               v-on:keyup.enter="searchBtn"
+            ></v-text-field>
+          </v-col>
+          -->
+          <v-col cols="2">
+            <v-text-field
+              class="default search"
+              v-model="searchForm.branchNm"
+              label="지점명"
+              placeholder=" "
+              hide-details
+              clearable
+              readonly
+              @click="searhPopup"
             ></v-text-field>
           </v-col>
           <v-col cols="2">
@@ -39,6 +53,20 @@
               clearable
               v-on:keyup.enter="searchBtn"
             ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-select
+              class="default"
+              :menu-props="{ offsetY: true }"
+              v-model="searchForm.deviceKind"
+              :items="cptdDeviceKindList"
+               item-key="codeId"
+              item-text="codeValue"
+              item-value="codeId"
+              :label="'단말종류'"
+              :placeholder="searchForm.deviceKind ? undefined : $t('label.all')"
+              clearable
+            ></v-select>
           </v-col>
           <v-col cols="1">
             <v-select
@@ -121,17 +149,20 @@
       </PageSectionTitle>
       <v-card class="data-grid-wrap default clickable">
         <v-data-table
+          :single-select="true"
           :headers="headers"
           :items="aiConciergeHistoryList"
           :server-items-length="pagination.totalRows"
           :options.sync="optionSync"
           :loading="pagination.loading"
+          show-select
           hide-default-footer
           :no-data-text="$t('message.noData')"
           :loading-text="$t('message.loading')"
         >
           <template v-slot:item="props">
             <tr @click="detailRow(props.item), selected = props.item.callId">
+              <td class="text-center"><input type="checkbox" name="view" :checked="totChkList.includes(props.item.callId) ? true : false" disabled></td>
               <td class="text-center">{{ props.item.tenantNm }}</td>
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
@@ -160,6 +191,17 @@
           :total-visible="10"
         ></v-pagination>
       </div>
+      <v-dialog
+        v-model="dialog"
+        persistent
+        :max-width="600"
+        hide-overlay
+        scrollable v-if="popup.branchPopup === true"
+        >
+      <PopupSearchBanch
+      @popupAction="popupAction"
+      />
+    </v-dialog>
       <div class="btn-group align-right">
         <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
       </div>
@@ -172,21 +214,27 @@
 
 <script>
 import AiConciergeDetailPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
+
 import {
   getAiConciergeSearchCondition,
   getAiConciergeHistoryList,
   reqAiConciergeHistoryExcelDown
 } from '../../../api/shinhan/aiConcierge'
-
+import {
+  getCmnCodeList
+} from '../../../api/cmnCode'
 import datepicker from '@/plugins/datepicker'
 
 export default {
   name: 'ListAiConciergeView',
   components: {
-    AiConciergeDetailPopup
+    AiConciergeDetailPopup,
+    PopupSearchBanch
   },
   mixins: [datepicker],
   created () {
+    this.totChkList = sessionStorage.getItem('airead').split(',')
   },
   mounted () {
     this.initAiConciergeView()
@@ -206,6 +254,7 @@ export default {
         { text: '대화이력', value: 'buttonhere', align: 'center', class: 'text-center', width: '80px', sortable: false }
       ],
       aiConciergeHistoryList: [],
+      deviceKindList: [],
       pagination: {
         page: 1, // 현재페이지
         length: 1, // 페이징숫자 갯수
@@ -231,10 +280,18 @@ export default {
         itemsTenantList: [],
         tenant: '',
         branchNm: '',
+        codeIdArr: [],
         commYn: '',
-        dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
+        dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
+        deviceNo: '',
+        deviceKind: ''
       },
-      chats: []
+      chats: [],
+      chkList: [],
+      totChkList: [],
+      popup: {
+        branchPopup: false
+      }
     }
   },
 
@@ -254,6 +311,16 @@ export default {
       ]
       tenantList.push(...this.searchForm.itemsTenantList)
       return tenantList
+    },
+    cptdDeviceKindList () {
+      const deviceKindList = [
+        {
+          codeValue: this.$t('label.all'),
+          codeId: ''
+        }
+      ]
+      deviceKindList.push(...this.deviceKindList)
+      return deviceKindList
     },
     cptdCommYnList () {
       const commYnList = [
@@ -296,6 +363,7 @@ export default {
 
   methods: {
     async initAiConciergeView () {
+      this.getCmnCodeList()
       await this.fnc_getAiConciergeSearchCondition()
       this.fnc_getAiConciergeHistoryList()
     },
@@ -309,10 +377,31 @@ export default {
         }
       )
     },
+    dialog: function () {
+      return (this.popup.branchPopup === true)
+    },
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
       this.fnc_getAiConciergeHistoryList()
+    },
+    searhPopup: function () {
+      this.popup.branchPopup = true
+    },
+    popupAction: function (popup, obj) {
+      if (obj != null && obj.length > 0) {
+        let txt = ''
+        for (let i = 0; i < obj.length; i++) {
+          if (i === (obj.length - 1)) {
+            txt = txt + obj[i].codeValue
+          } else {
+            txt = txt + obj[i].codeValue + ','
+          }
+          this.searchForm.codeIdArr.push(obj[i].codeId)
+        }
+        this.searchForm.branchNm = txt
+      }
+      this.popup = popup
     },
     fnc_getAiConciergeHistoryList: function () {
       /* datepicker open */
@@ -329,11 +418,13 @@ export default {
         itemsPerPage: this.pagination.itemsPerPage,
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         deviceNo: this.searchForm.deviceNo,
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log('=====searchCondition=====' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getAiConciergeHistoryList(searchCondition).then(
         response => {
@@ -358,6 +449,15 @@ export default {
     },
     // 상세버튼
     detailRow: function (aiConciergeList) {
+      const stTmp = this.isEmpty(sessionStorage.getItem('airead')) ? '' : sessionStorage.getItem('airead')
+      if (stTmp.indexOf(aiConciergeList.callId) < 1) {
+        this.chkList = this.isEmpty(stTmp) ? [] : stTmp.split(',')
+        this.chkList.push(aiConciergeList.callId)
+        // console.log(' systemCall.callId ' + systemCall.callId)
+        sessionStorage.setItem('airead', this.chkList)
+        // console.log(' sessionStorage ' + JSON.stringify(sessionStorage.getItem('airead')))
+        this.totChkList = sessionStorage.getItem('airead').split(',')
+      }
       const chat = {
         callId: aiConciergeList.callId,
         // extension: inboundCall.extension,
@@ -416,6 +516,47 @@ export default {
             query: { t: new Date().getTime() }
           })
         }
+      })
+    },
+    isEmpty: function (x) {
+      return (x === null || x === undefined || x === '')
+    },
+    // 공통코드유형 정보 조회
+    getCmnCodeList: function () {
+      // param setting
+      const searchCondition = {
+        codeType: 'DEVICE',
+        useYn: 'Y'
+      }
+      // retrieve
+      // this.pagination.loading = true
+      getCmnCodeList(searchCondition).then(
+        response => {
+          this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
+          console.log(' this.deviceKind ' + JSON.stringify(this.deviceKind))
+          // paging setting
+          // this.pagination.totalRows = response.data.result.cmnCodeListCount
+          // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
+          // this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({
+              name: '403',
+              query: { t: new Date().getTime() }
+            })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({
+              name: 'Login',
+              query: { t: new Date().getTime() }
+            })
+          }
+        }
+      ).finally(() => {
+        // this.pagination.loading = false
       })
     }
   }

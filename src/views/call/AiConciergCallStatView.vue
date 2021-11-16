@@ -74,11 +74,10 @@
         persistent
         :max-width="600"
         hide-overlay
-        scrollable
+        scrollable v-if="popup.branchPopup === true"
         >
       <PopupSearchBanch
-      @popupAction="popupAction"
-      v-if="popup.branchPopup === true"/>
+      @popupAction="popupAction"/>
     </v-dialog>
     </vuescroll>
   </div>

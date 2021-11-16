@@ -1,5 +1,4 @@
 <template>
-<div>
   <v-card>
     <v-card-title>
       <span class="headline">지점명 검색</span>
@@ -15,9 +14,8 @@
               placeholder=" "
               hide-details
               clearable
-              outlined
-              dense
-              v-on:keyup.enter="searchBtn"
+                outlined
+                dense
             ></v-text-field>
           </v-col>
           <v-col cols="2">
@@ -28,7 +26,6 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="searchBtn"
             ></v-text-field>
           </v-col>
           <v-col class="text-right">
@@ -53,7 +50,7 @@
           hide-default-footer
           :no-data-text="$t('message.noData')"
           :loading-text="$t('message.loading')"
-          class="elevation-1"
+           class="elevation-1"
         >
         </v-data-table>
       </v-card>
@@ -71,13 +68,12 @@
       <span class="hide">팝업 닫기</span>
     </v-btn>
   </v-card>
-</div>
 </template>
 
 <script>
 import {
-  getBranchInitList
-} from '../../api/shinhan/shbkCmnCode'
+  getCmnCodeList
+} from '../../api/cmnCode'
 
 export default {
   name: 'PopupSearchBranch',
@@ -139,10 +135,9 @@ export default {
 
       // retrieve
       // this.pagination.loading = true
-      getBranchInitList(searchCondition).then(
+      getCmnCodeList(searchCondition).then(
         response => {
           this.branchList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
-          console.log(' response.data.result.cmnCodeListCount ' + JSON.stringify(response.data.result.cmnCodeListCount))
           // paging setting
           // this.pagination.totalRows = response.data.result.cmnCodeListCount
           // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
