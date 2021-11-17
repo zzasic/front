@@ -1,5 +1,8 @@
 export default {
-  removeStorage: function (sVal) {
-    sessionStorage.removeItem(sVal)
+  removeStorage: function () {
+    delete sessionStorage.airead
+    delete sessionStorage.counselread
+    // sessionStorage.removeItem()
+    // sessionStorage.removeItem(sVal)
   }
 }

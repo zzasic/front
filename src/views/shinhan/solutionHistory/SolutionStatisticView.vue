@@ -589,7 +589,7 @@ export default {
         if (newVal) {
           setTimeout(() => {
             this.$refs.pickerYear.internalActivePicker = 'YEAR'
-          }, 1)
+          }, 100)
         }
       }
     }

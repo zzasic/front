@@ -97,7 +97,7 @@ import PopupListNoticeView from '@/views/notice/PopupListNoticeView'
 import PopupReadNoticeView from '@/views/notice/PopupReadNoticeView'
 import popupUpdateUserInfoView from '@/views/user/PopupUpdateUserInfoView'
 import popupUpdatePasswordView from '@/views/user/PopupUpdatePasswordView'
-
+import deleteStorage from '../scripts/shinhan/deleteStorage.js'
 import {
   reqUserLogOut
 } from '../api/user'
@@ -180,6 +180,9 @@ export default {
           // delete sessionStorage.userAuthCode
           // delete sessionStorage.userDeptName
           // delete sessionStorage.tenantId
+          /* 프로그램내 사용 세션 삭제 - start */
+          deleteStorage.removeStorage()
+          /* 프로그램내 사용 세션 삭제 - end */
           this.$store.commit('LOGOUT')
           this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
         }
