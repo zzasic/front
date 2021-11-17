@@ -44,7 +44,7 @@ const routes = [
         component: lazyLoading('shinhan/solutionHistory/ListSolutionView')
       },
       { // AI 솔루션별 사용량 집계
-        path: 'solutionHistory/',
+        path: 'solutionHistory/solutionStatistics',
         name: 'SolutionStatisticView',
         component: lazyLoading('shinhan/solutionHistory/SolutionStatisticView')
       },

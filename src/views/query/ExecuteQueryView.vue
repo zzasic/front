@@ -165,75 +165,81 @@ export default {
     },
     getQueryList: lodash.debounce(function () {
       if (this.$refs.form.validate()) {
-        /*
-        if (!confirm('조회')) {
-          return
-        }
-        */
-        const input = {
-          query: this.inputForm.inputData
-        }
-        getQueryList(input).then(
-          response => {
-            if (response.data.status === 200) {
-              const resApi = response.data.result
-              this.inputForm.testResult = JSON.stringify(resApi.query, null, '\t')
-              this.inputForm.testDeserts = resApi.query
-              /*
-                JSON.stringify(JSON.parse(resApi.query), null, 2)
-              */
-            }
-          },
-          error => {
-            console.error(error)
-            const status = error.data.status
-            if (status === 403) {
-              this.$router.push({ name: '403', query: { t: new Date().getTime() } })
-            } else {
-              delete sessionStorage.accessToken
-              this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
-            }
+        if (this.inputForm.inputData.trim().toUpperCase().startsWith('SELECT')) {
+          const input = {
+            query: this.inputForm.inputData
           }
-        )
+          getQueryList(input).then(
+            response => {
+              if (response.data.status === 200) {
+                const resApi = response.data.result
+                if (resApi === undefined) {
+                  alert('쿼리 수행 중 오류가 발생하였습니다.')
+                } else {
+                  this.inputForm.testResult = JSON.stringify(resApi.query, null, '\t')
+                  this.inputForm.testDeserts = resApi.query
+                  /*
+                    JSON.stringify(JSON.parse(resApi.query), null, 2)
+                  */
+                }
+              }
+            },
+            error => {
+              console.error(error)
+              const status = error.data.status
+              if (status === 403) {
+                this.$router.push({ name: '403', query: { t: new Date().getTime() } })
+              } else {
+                delete sessionStorage.accessToken
+                this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
+              }
+            }
+          )
+        } else {
+          alert('SELECT로 시작하는 구문만 사용 할 수 있습니다.\n다른 구문은 전문 쿼리 도구를 사용하세요')
+        }
       }
     }, 300),
     testBtn: function () {
       this.excelDown()
     },
     excelDown: function () {
-      const input = {
-        query: this.inputForm.inputData
-      }
-      reqExcelDownQuery(input).then(response => {
-        const filename = this.$moment().format('YYYY-MM-DD_HH:mm:ss') + '_queryResult.xlsx'
-
-        const url = window.URL.createObjectURL(
-          new Blob([response.data], {
-            type: response.headers['content-type']
-          })
-        )
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', filename)
-        document.body.appendChild(link)
-        link.click()
-      },
-      error => {
-        console.error(error)
-        const status = error.data.status
-        if (status === 403) {
-          this.$router.push({
-            name: '403',
-            query: { t: new Date().getTime() }
-          })
-        } else {
-          delete sessionStorage.accessToken
-          this.$router.push({
-            name: 'Login',
-            query: { t: new Date().getTime() }
-          })
+      if (this.inputForm.inputData.trim().toUpperCase().startsWith('SELECT')) {
+        const input = {
+          query: this.inputForm.inputData
         }
-      })
+        reqExcelDownQuery(input).then(response => {
+          const filename = this.$moment().format('YYYY-MM-DD_HH:mm:ss') + '_queryResult.xlsx'
+          const url = window.URL.createObjectURL(
+            new Blob([response.data], {
+              type: response.headers['content-type']
+            })
+          )
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', filename)
+          document.body.appendChild(link)
+          link.click()
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({
+              name: '403',
+              query: { t: new Date().getTime() }
+            })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({
+              name: 'Login',
+              query: { t: new Date().getTime() }
+            })
+          }
+        })
+      } else {
+        alert('SELECT로 시작하는 구문만 사용 할 수 있습니다.\n다른 구문은 전문 쿼리 도구를 사용하세요')
+      }
     }
   }
 }

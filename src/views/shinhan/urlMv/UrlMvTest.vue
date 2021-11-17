@@ -14,7 +14,7 @@ export default {
   methods: {
     gotoClickTest: function () {
       var anchor = document.createElement('a')
-      anchor.setAttribute('href', 'https://www.naver.com')
+      anchor.setAttribute('href', 'http://172.23.248.202:3501')
       anchor.setAttribute('target', 'blank')
       document.body.appendChild(anchor)
       anchor.click()

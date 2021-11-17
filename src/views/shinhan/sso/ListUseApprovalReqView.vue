@@ -152,10 +152,13 @@
           {{ item.approvalId }}
         </template>
         <template v-slot:item.reqStatus="{ item }">
-          {{ item.reqStatus === 'REQ' ? '승인 대기중' : item.reqStatus === 'APL' ? '승인 완료' : '반려' }}
+          {{ item.reqStatus === 'REQ' ? '승인 대기중' : item.reqStatus === 'APL' ? '승인 완료' : item.reqStatus === 'REJ' ? '반려' : '삭제' }}
+        </template>
+        <template v-slot:item.firstRegTime="{ item }">
+          {{ $moment(item.lastUpdTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-slot:item.lastUpdTime="{ item }">
-          {{ $moment(item.lastUpdTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('YYYY-MM-DD HH:mm') }}
+          {{ $moment(item.lastUpdTime, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         </v-data-table>
       </v-card>
@@ -228,16 +231,17 @@ export default {
   data () {
     return {
       headers: [
-        { text: '행번', value: 'ssoUserId', align: 'center', class: 'text-center', width: '120px' },
+        { text: '행번', value: 'ssoUserId', align: 'center', class: 'text-center', width: '100px' },
+        { text: '이름', value: 'userNm', align: 'center', class: 'text-center', width: '100px' },
         { text: '사용 시스템', value: 'systemIds', align: 'center', class: 'text-center', width: '120px' },
         { text: '이메일', value: 'userEmail', align: 'center', class: 'text-center', width: '120px' },
-        { text: '이름', value: 'userNm', align: 'center', class: 'text-center', width: '120px' },
         { text: '부서', value: 'userDeptNm', align: 'center', class: 'text-center', width: '120px' },
         { text: '권한', value: 'userAuthCdNm', align: 'center', class: 'text-center', width: '120px' },
         { text: '직급', value: 'userPosition', align: 'center', class: 'text-center', width: '120px' },
         { text: '연락처', value: 'userPhone', align: 'center', class: 'text-center', width: '120px' },
         { text: '처리자', value: 'approvalId', align: 'center', class: 'text-center', width: '120px' },
         { text: '처리상태', value: 'reqStatus', align: 'center', class: 'text-center', width: '120px' },
+        { text: '신청일시', value: 'firstRegTime', align: 'center', class: 'text-center', width: '120px' },
         { text: '처리일시', value: 'lastUpdTime', align: 'center', class: 'text-center', width: '150px' }
       ],
       ssoUseApprovalReqList: [],
@@ -267,11 +271,15 @@ export default {
         {
           text: '반려',
           value: 'REJ'
+        },
+        {
+          text: '삭제',
+          value: 'DEL'
         }
       ],
       searchForm: {
         userInfo: '',
-        reqStatus: '',
+        reqStatus: 'REQ',
         systemIds: '',
         dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
       },
@@ -359,7 +367,10 @@ export default {
         alert('이미 처리 완료된 사용자 입니다.\n 사용자 정보에서 확인해주세요.')
         return
       } else if (item.reqStatus === 'REJ') {
-        alert('승인 거부된 사용자는 상세정보를 확인할 수 없습니다.')
+        alert('승인요청이 반려된 사용자는 상세정보를 확인할 수 없습니다.')
+        return
+      } else if (item.reqStatus === 'DEL') {
+        alert('삭제된 사용자는 상세정보를 확인할 수 없습니다.')
         return
       }
       this.editedItem.reqNo = Object.assign(item.reqNo)
@@ -404,7 +415,7 @@ export default {
 
           // ############### systemIdList concat ###############
           for (let i = 0; i < this.ssoUseApprovalReqList.length; i++) {
-            if (this.ssoUseApprovalReqList[i].systemIdsNm == null) {
+            if (this.ssoUseApprovalReqList[i].systemIdsNm == null && this.ssoUseApprovalReqList[i].systemIds != null) {
               let systemNms = ''
               this.ssoUseApprovalReqList[i].systemIds.split(',').map(val => { systemNms += this.systemIdListDict[val] + ',' })
               systemNms = systemNms.slice(0, -1)

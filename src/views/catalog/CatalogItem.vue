@@ -42,7 +42,8 @@ export default {
         }
         // console.log(item)
         var anchor = document.createElement('a')
-        anchor.setAttribute('href', `${item.serviceUrl}${sessionStorage.accessToken}`)
+        // anchor.setAttribute('href', `${item.serviceUrl}${sessionStorage.accessToken}`)
+        anchor.setAttribute('href', `${item.serviceUrl}`)
         anchor.setAttribute('target', item.serviceId)
         document.body.appendChild(anchor)
         anchor.click()

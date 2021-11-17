@@ -262,10 +262,12 @@
             "reqStatus": "처리 상태",
             "userAuthCd": "권한",
             "login": {
+                "useApprovalReqReturnMsg_5401": "로그인 아이디 또는 비밀번호를 확인해주세요.",
+                "useApprovalReqReturnMsg_5403": "비밀번호 5회 입력 오류입니다. 관리자에게 문의하세요.",
+                "useApprovalReqReturnMsg_5410": "사용자 정보가 존재하지 않습니다. 관리자에게 문의하세요.",
+                "useApprovalReqReturnMsg_NEW": "승인 요청이 완료되었습니다.",
                 "useApprovalReqReturnMsg_APL": "승인 요청이 완료된 사용자 입니다. 로그인 해주세요.",
-                "useApprovalReqReturnMsg_REQ": "이미 신청한 사용자 입니다. 관리자에게 문의해주세요.",
-                "useApprovalReqReturnMsg_REJ": "승인 요청이 반려된 사용자 입니다. 관리자에게 문의해주세요.",
-                "useApprovalReqReturnMsg_NEW": "승인 요청이 완료되었습니다."
+                "useApprovalReqReturnMsg_REQ": "이미 신청한 사용자 입니다. 관리자에게 문의해주세요."
             },
             "approvalReq": "사용 승인"
         }

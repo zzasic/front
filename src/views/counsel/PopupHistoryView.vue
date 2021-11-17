@@ -2,6 +2,7 @@
   <div>
       <inbound-history-popup v-if="chat.callType === 'IN'" :chat="chat" :counselor="chat.counselor" @resizePopup="resizePopup" @clickClose="clickClose" />
       <outbound-history-popup v-else-if="chat.callType === 'OUT'" :chat="chat" :counselor="chat.counselor" @resizePopup="resizePopup" @clickClose="clickClose" />
+      <systemCall-history-popup v-else-if="chat.callType === 'SYS'" :chat="chat" :counselor="chat.counselor" @resizePopup="resizePopup" @clickClose="clickClose"  />
   </div>
 </template>
 
@@ -9,12 +10,14 @@
 import { getCallInfo } from '@/api/counsel'
 import InboundHistoryPopup from '@/components/InboundHistoryPopup'
 import OutboundHistoryPopup from '@/components/OutboundHistoryPopup'
+import SystemCallHistoryPopup from '@/components/SystemCallHistoryPopup'
 
 export default {
   name: 'PopupHistoryView',
   components: {
     InboundHistoryPopup,
-    OutboundHistoryPopup
+    OutboundHistoryPopup,
+    SystemCallHistoryPopup
   },
   data () {
     return {
@@ -38,6 +41,8 @@ export default {
       window.close()
     },
     getCallInfo () {
+      alert(this.callId)
+      alert(this.chatId)
       getCallInfo(this.callId).then(
         response => {
           const status = response.data.status

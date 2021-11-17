@@ -39,6 +39,12 @@
             {{ totCnt }}
           </v-card>
           <v-card class="sol_use__status-list" color="#C8FFFF">
+            CHATBOT
+          </v-card>
+          <v-card class="sol_use__status-value">
+            {{ chatBotCnt }}
+          </v-card>
+          <v-card class="sol_use__status-list" color="#C8FFFF">
             STT
           </v-card>
           <v-card class="sol_use__status-value">
@@ -50,12 +56,12 @@
           <v-card class="sol_use__status-value">
             {{ ttsCnt }}
           </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
+          <!-- <v-card class="sol_use__status-list" color="#C8FFFF">
             TA
           </v-card>
           <v-card class="sol_use__status-value">
             {{ taCnt }}
-          </v-card>
+          </v-card> -->
         </v-row>
       </v-container>
       <v-card class="data-grid-wrap default">
@@ -262,6 +268,11 @@ export default {
       let totCnt = 0
       if (this.aiConciergeUseCnt[0]) { totCnt = this.aiConciergeUseCnt[0].totCnt }
       return totCnt
+    },
+    chatBotCnt: function () {
+      let chatBotCnt = 0
+      if (this.aiConciergeUseCnt[0]) { chatBotCnt = this.aiConciergeUseCnt[0].chatBotCnt }
+      return chatBotCnt
     },
     sttCnt: function () {
       let sttCnt = 0

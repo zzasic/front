@@ -51,6 +51,7 @@
               :disabled="ssoInfoShow"
               @focus.prevent.stop="acFocus($event)"
               @blur.prevent.stop="acBlur($event)"
+              v-on:keyup.enter="fnc_ssoLoginConfirm"
             ></v-text-field>
           </v-col>
           <v-col cols="2">
@@ -375,12 +376,18 @@ export default {
       }
       getSsoLoginConfirm(inputForm).then(
         response => {
-          if (response.data.result.ssoLoginResult !== 'true' && response.data.result.ssoUseApprovalStatus !== 'NEW') { // TODO - 로그인 결과에 대해 분기처리
-            alert('사용자 정보가 없습니다.')
-          } else if (response.data.result.ssoLoginResult === 'true' && response.data.result.ssoUseApprovalStatus === 'APL') {
+          if (response.data.result.ssoLoginResult === '5401') { // ID, PW 에러
+            alert(this.$t('shinhan.sso.login.useApprovalReqReturnMsg_5401'))
+          } else if (response.data.result.ssoLoginResult === '5403') { // 비밀번호 5회 입력 오류
+            alert(this.$t('shinhan.sso.login.useApprovalReqReturnMsg_5403'))
+          } else if (response.data.result.ssoLoginResult === '5410' || response.data.result.ssoLoginResult === '8001' || response.data.result.ssoLoginResult === '8002') { // 사용자 정보x
+            alert(this.$t('shinhan.sso.login.useApprovalReqReturnMsg_5410'))
+          } else if (response.data.result.ssoLoginResult === 'true' && response.data.result.ssoUseApprovalStatus === 'APL') { // 승인 허가 완료 => 로그인
             alert(this.$t('shinhan.sso.login.useApprovalReqReturnMsg_APL'))
-          } else if (response.data.result.ssoLoginResult === 'true' && response.data.result.ssoUseApprovalStatus === 'REQ') {
+          } else if (response.data.result.ssoLoginResult === 'true' && response.data.result.ssoUseApprovalStatus === 'REQ') { // 승인 요청 완료 => 대기
             alert(this.$t('shinhan.sso.login.useApprovalReqReturnMsg_REQ'))
+          } else if (response.data.result.ssoLoginResult === 'false') {
+            alert(this.$t('시스템에 문제가 발생했습니다. 관리자에게 문의해주세요'))
           } else {
             this.ssoInfoShow = true
             this.inputForm.ssoInfoConfirm = true

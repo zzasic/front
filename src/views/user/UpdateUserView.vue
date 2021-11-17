@@ -12,14 +12,14 @@
       <v-container class="addUserDefaultData">
         <v-row>
           <v-col cols="1">
-            <span class="label">ID</span>
+            <span class="label">행번</span>
           </v-col>
           <v-col cols="4">
             <v-text-field
               class="default mt-0 pt-0"
               hide-details="auto"
               single-line
-              v-model="inputForm.userId"
+              v-model="inputForm.ssoUserId"
               disabled
             ></v-text-field>
           </v-col>
@@ -203,7 +203,7 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <v-row>
+        <!-- <v-row>
           <v-col cols="1">
             <span class="label">SSO 사용자ID</span>
           </v-col>
@@ -240,9 +240,9 @@
               v-model="inputForm.ssoDeptCd"
             ></v-text-field>
           </v-col>
-        </v-row>
+        </v-row> -->
       </v-container>
-      <v-container class="transaction pt-12">
+      <!-- <v-container class="transaction pt-12">
         <PageSectionTitle
           :title="sectionTitle2"
         >
@@ -298,11 +298,11 @@
             </v-data-table>
           </vuescroll>
         </v-card>
-      </v-container>
+      </v-container> -->
       </v-form>
       <v-card-actions class="submit-btns-group">
         <v-spacer></v-spacer>
-        <v-btn color="btn-secondary" text v-if="inputForm.delYn === 'N'" @click="resetPassword()">비밀번호 초기화</v-btn>
+        <!-- <v-btn color="btn-secondary" text v-if="inputForm.delYn === 'N'" @click="resetPassword()">비밀번호 초기화</v-btn> -->
         <!-- <v-btn color="btn-secondary" text v-if="inputForm.orgUseYn === 'N' && inputForm.delYn === 'N'" @click="userUnLock()">잠김햬제</v-btn> -->
         <v-btn color="btn-secondary" text @click="cancelUserInfo()">{{ $t('button.cancel')}}</v-btn>
         <v-btn color="btn-secondary" text v-if="inputForm.delYn === 'N'" @click="delReasonInfo()">{{ $t('button.delete')}}</v-btn>
@@ -571,7 +571,8 @@ export default {
     pageDescription: function () {
       return this.$store.getters.pageDescription
     },
-    serviceListForAdd: function () {
+    serviceListForAdd: function () { // 이용중인 서비스
+      console.log('this.authUserList : ', this.authUserList)
       return Object.values(this.authUserList.filter((au) => {
         return !this.inputForm.authUserList.some((iau) => {
           return iau.serviceId === au.serviceId && iau.serviceTenantId === au.serviceTenantId

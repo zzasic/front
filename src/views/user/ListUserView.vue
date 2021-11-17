@@ -94,7 +94,8 @@
           <template v-slot:item="props">
             <tr @click="gridRowClick(props.item), selected = props.item.userId">
               <td class="text-center">{{ props.item.userNm }}</td>
-              <td class="text-left">{{ props.item.userId }}</td>
+              <!-- <td class="text-left">{{ props.item.userId }}</td> -->
+              <td class="text-left">{{ props.item.ssoUserId }}</td>
               <td class="text-left">{{ props.item.userEmail != null ? props.item.userEmail.replace(/.(?=.{1,5}@)/gi, '*') : ''}}</td>
               <td class="text-center">{{ props.item.tenantNm }}</td>
               <td class="text-left">{{ props.item.userAuthNm }}</td>
@@ -178,7 +179,8 @@ export default {
       search: '',
       headers: [
         { text: '사용자명', value: 'userNm', align: 'center' },
-        { text: '사용자ID', value: 'userId', align: 'center', width: '100px' },
+        // { text: '사용자ID', value: 'userId', align: 'center', width: '100px' },
+        { text: '행번', value: 'ssoUserId', align: 'center', width: '100px' },
         { text: '이메일', value: 'userEmail', align: 'center' },
         { text: '테넌트', value: 'tenantNm', align: 'center' },
         { text: '사용자 유형', value: 'userAuthNm', align: 'center', width: '150px' },

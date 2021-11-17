@@ -410,7 +410,6 @@ export default {
         response => {
           this.searchForm.tenants = response.data.result.tenantList
           this.searchForm.systemInfos = response.data.result.systemInfoList
-          console.log(' systemInfos ' + JSON.stringify(this.searchForm.systemInfos))
           // this.searchForm.system = this.searchForm.systemInfos[0].value
         }
       )
@@ -550,7 +549,6 @@ export default {
       getCmnCodeList(searchCondition).then(
         response => {
           this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
-          console.log(' this.deviceKind ' + JSON.stringify(this.deviceKind))
           // paging setting
           // this.pagination.totalRows = response.data.result.cmnCodeListCount
           // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)

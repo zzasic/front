@@ -48,7 +48,7 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="fnc_getSolutionHistoryUsageChartList"
+              v-on:keyup.enter="searchBtn"
             ></v-text-field>
           </v-col>
           <v-col cols="2">
@@ -152,7 +152,7 @@
               color="btn-tertiary"
               class="btn-search"
               :ripple="false"
-              @click="fnc_getSolutionHistoryUsageChartList"
+              @click="searchBtn"
             >{{ $t('button.search')}}</v-btn>
           </v-col>
         </v-row>
@@ -199,14 +199,14 @@
           :menu-props="{ top: true, offsetY: true }"
           v-model="pagination.itemsPerPage"
           :items="pagination.itemsPerPages"
-          @change="fnc_getSolutionHistoryUsageChartList"
+          @change="fnc_getSolutionHistoryUsageList"
           solo
         ></v-select>
         <v-pagination
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="fnc_getSolutionHistoryUsageChartList"
+          @input="fnc_getSolutionHistoryUsageList"
           :total-visible="10"
         ></v-pagination>
       </div>
@@ -589,12 +589,17 @@ export default {
         if (newVal) {
           setTimeout(() => {
             this.$refs.pickerYear.internalActivePicker = 'YEAR'
-          }, 100)
+          }, 1)
         }
       }
     }
   },
   methods: {
+    // 검색버튼
+    searchBtn: function () {
+      this.pagination.page = 1
+      this.fnc_getSolutionHistoryUsageChartList()
+    },
     fnc_getSolutionHistorySearchCondition: function () {
       getSolutionHistorySearchCondition().then(
         response => {

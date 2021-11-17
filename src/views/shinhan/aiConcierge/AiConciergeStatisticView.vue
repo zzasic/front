@@ -26,7 +26,7 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="fnc_getAiConciergeCartList"
+              v-on:keyup.enter="searchBtn"
             ></v-text-field>
           </v-col>
           <v-col cols="2">
@@ -130,7 +130,7 @@
               color="btn-tertiary"
               class="btn-search"
               :ripple="false"
-              @click="fnc_getAiConciergeCartList"
+              @click="searchBtn"
             >{{ $t('button.search')}}</v-btn>
           </v-col>
         </v-row>
@@ -647,13 +647,20 @@ export default {
   watch: {
     pickerYearMenu: function (newVal, oldVal) {
       if (this.searchForm.timeType === 'B') {
-        newVal && this.$nextTick(() => {
-          this.$refs.pickerYear.internalActivePicker = 'YEAR'
-        })
+        if (newVal) {
+          setTimeout(() => {
+            this.$refs.pickerYear.internalActivePicker = 'YEAR'
+          }, 1)
+        }
       }
     }
   },
   methods: {
+    // 검색버튼
+    searchBtn: function () {
+      this.pagination.page = 1
+      this.fnc_getAiConciergeCartList()
+    },
     fnc_getAiConciergeSearchCondition: function () {
       getAiConciergeSearchCondition().then(
         response => {
