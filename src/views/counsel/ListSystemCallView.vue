@@ -178,6 +178,7 @@
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
               <td class="text-center">{{ props.item.deviceNo }}</td>
+              <td class="text-center">{{ getDeviceKind(props.item.callId) }}</td>
               <td class="text-center">{{ props.item.startDt ? $moment(props.item.startDt, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('MM-DD HH:mm:ss') : '' }}</td>
               <td class="text-center">{{ props.item.timeDiff }}</td>
               <td class="text-center"><v-btn @click="detailRow(props.item)" text class="default" color="btn-secondary" >{{ $t('button.detail')}}</v-btn></td>
@@ -256,6 +257,7 @@ export default {
         { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '100px' },
         { text: '지점명', value: 'branchNm', align: 'center', class: 'text-center', width: '100px' },
         { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '100px' },
+        { text: '단말종류', value: 'deviceKind', align: 'center', class: 'text-center', width: '100px' },
         { text: '통화시작일시', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
         { text: '통화시간', value: 'timeDiff', align: 'center', class: 'text-center', width: '90px' },
         { text: '대화이력', value: 'buttonhere', align: 'center', class: 'text-center', width: '80px', sortable: false }
@@ -401,6 +403,15 @@ export default {
   },
 
   methods: {
+    getDeviceKind (callId) {
+      let str
+      for (let i = 0; i < this.deviceKindList.length; i++) {
+        if (callId.substring(5, 7) === this.deviceKindList[i].codeId) {
+          str = this.deviceKindList[i].codeValue
+        }
+      }
+      return str // this.deviceKindList[this.deviceKindList.indexOf(callId.substring(5, 7))].codeValue
+    },
     async initSystemCallView () {
       await this.getSearchCondition()
       this.getSystemCallList()
@@ -471,6 +482,7 @@ export default {
       getSystemCallList(searchCondition).then(
         response => {
           this.systemCallList = response.data.result.systemCallList ? response.data.result.systemCallList : []
+          console.log(' this.systemCallList ' + JSON.stringify(this.systemCallList))
           // paging setting
           this.pagination.totalRows = response.data.result.systemCallListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)

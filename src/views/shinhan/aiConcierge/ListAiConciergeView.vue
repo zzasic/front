@@ -167,6 +167,7 @@
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
               <td class="text-center">{{ props.item.deviceNo }}</td>
+              <td class="text-center">{{ getDeviceKind(props.item.callId) }}</td>
               <td class="text-center">{{ props.item.ipAddress }}</td>
               <td class="text-center">{{ props.item.startDt ? $moment(props.item.startDt, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('MM-DD HH:mm:ss') : '' }}</td>
               <td class="text-center">{{ props.item.timeDiff }}</td>
@@ -248,6 +249,7 @@ export default {
         { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '120px' },
         { text: '지점명', value: 'branchNm', align: 'center', width: '250px' },
         { text: '단말번호', align: 'deviceNo', class: 'text-center', width: '120px' },
+        { text: '단말종류', align: 'deviceKind', class: 'text-center', width: '120px' },
         { text: 'IP', value: 'ipAddress', align: 'center', class: 'text-center', width: '150px' },
         { text: '통화시작일시', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
         { text: '통화시간', value: 'timeDiff', align: 'center', class: 'text-center', width: '90px' },
@@ -362,6 +364,15 @@ export default {
   },
 
   methods: {
+    getDeviceKind (callId) {
+      let str
+      for (let i = 0; i < this.deviceKindList.length; i++) {
+        if (callId.substring(5, 7) === this.deviceKindList[i].codeId) {
+          str = this.deviceKindList[i].codeValue
+        }
+      }
+      return str // this.deviceKindList[this.deviceKindList.indexOf(callId.substring(5, 7))].codeValue
+    },
     async initAiConciergeView () {
       this.getCmnCodeList()
       await this.fnc_getAiConciergeSearchCondition()

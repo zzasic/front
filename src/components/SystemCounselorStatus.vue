@@ -30,7 +30,7 @@ export default {
       return !this.counselor || (!this.counselor.systemId || !this.counselor.tenantId || !this.counselor.branchCd || !this.counselor.deviceNo) ? '' : !this.counselor.taskNm ? `${this.counselor.branchCd}` : `${this.counselor.taskNm}`
     },
     statusText: function () {
-      return !this.counselor || (!this.counselor.systemId || !this.counselor.tenantId || !this.counselor.branchCd || !this.counselor.deviceNo) ? '연결대기' : this.counselor.connectYn === 'N' ? '연결대기' : this.counselor.connectYn === 'C' ? '연결중' : this.counselor.callYn === 'Y' ? '통화중' : '통화대기'
+      return !this.counselor || (!this.counselor.systemId || !this.counselor.tenantId || !this.counselor.branchCd || !this.counselor.deviceNo) ? '연결대기' : this.counselor.connectYn === 'N' ? '연결대기' : this.counselor.connectYn === 'C' ? '연결중' : this.counselor.callYn === 'Y' ? '서비스중' : '통화대기'
     },
     statusClass: function () {
       // return !this.counselor || !this.counselor.counselorId ? 'fail' : this.counselor.connectYn === 'N' ? 'fail' : this.counselor.connectYn === 'C' ? 'connecting' : this.counselor.callYn === 'Y' ? 'on' : 'wating'

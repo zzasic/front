@@ -66,14 +66,14 @@
           :menu-props="{ top: true, offsetY: true }"
           v-model="pagination.itemsPerPage"
           :items="pagination.itemsPerPages"
-          @change="getCmnCodeList"
+          @change="getBranchInitList"
           solo
         ></v-select>
         <v-pagination
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="getCmnCodeList"
+          @input="getBranchInitList"
           :total-visible="10"
         ></v-pagination>
       </div>
@@ -112,7 +112,7 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.getCmnCodeList()
+          this.getBranchInitList()
         }
       }
     }
@@ -153,7 +153,7 @@ export default {
   },
   methods: {
     init: async function () {
-      this.getCmnCodeList()
+      this.getBranchInitList()
     },
     // 취소버튼
     closeBtn: function () {
@@ -169,22 +169,22 @@ export default {
     },
     searchBtn: function () {
       this.pagination.page = 1
-      this.getCmnCodeList()
+      this.getBranchInitList()
     },
     // 공통코드유형 정보 조회
-    getCmnCodeList: function () {
+    getBranchInitList: function () {
       // param setting
       const searchCondition = {
         page: this.pagination.page,
-        // sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
-        // sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
+        sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
+        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         itemsPerPage: this.pagination.itemsPerPage,
         codeType: 'BR',
         codeId: this.searchForm.codeId,
         codeValue: this.searchForm.codeValue,
         useYn: 'Y'
       }
-
+      console.log(' this.options ' + JSON.stringify(this.options))
       // retrieve
       // this.pagination.loading = true
       getBranchInitList(searchCondition).then(
