@@ -178,7 +178,7 @@
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
               <td class="text-center">{{ props.item.deviceNo }}</td>
-              <td class="text-center">{{ getDeviceKind(props.item.callId) }}</td>
+              <td class="text-center">{{ props.item.deviceKind }}</td>
               <td class="text-center">{{ props.item.startDt ? $moment(props.item.startDt, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('MM-DD HH:mm:ss') : '' }}</td>
               <td class="text-center">{{ props.item.timeDiff }}</td>
               <td class="text-center"><v-btn @click="detailRow(props.item)" text class="default" color="btn-secondary" >{{ $t('button.detail')}}</v-btn></td>
@@ -287,11 +287,11 @@ export default {
       custComuYns: [
         {
           text: '고객발화',
-          value: 'Y'
+          value: '1'
         },
         {
           text: '고객발화 외',
-          value: 'N'
+          value: '0'
         }
       ],
       searchForm: {
@@ -303,7 +303,7 @@ export default {
         deviceKind: '',
         commYn: '',
         dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
-        custCommu: 'Y',
+        custCommu: '1',
         codeIdArr: []
       },
       deviceKindList: [],
@@ -401,17 +401,7 @@ export default {
 
   watch: {
   },
-
   methods: {
-    getDeviceKind (callId) {
-      let str
-      for (let i = 0; i < this.deviceKindList.length; i++) {
-        if (callId.substring(5, 7) === this.deviceKindList[i].codeId) {
-          str = this.deviceKindList[i].codeValue
-        }
-      }
-      return str // this.deviceKindList[this.deviceKindList.indexOf(callId.substring(5, 7))].codeValue
-    },
     async initSystemCallView () {
       await this.getSearchCondition()
       this.getSystemCallList()
@@ -474,7 +464,7 @@ export default {
         deviceKind: this.searchForm.deviceKind, // 단말기 종류
         commYn: this.searchForm.commYn,
         codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
-        custCommu: this.searchForm.custCommu, // 고객발화여부
+        isSpeech: this.searchForm.custCommu, // 고객발화여부
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }

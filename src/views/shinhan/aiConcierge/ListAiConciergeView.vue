@@ -167,8 +167,7 @@
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
               <td class="text-center">{{ props.item.deviceNo }}</td>
-              <td class="text-center">{{ getDeviceKind(props.item.callId) }}</td>
-              <td class="text-center">{{ props.item.ipAddress }}</td>
+              <td class="text-center">{{ props.item.deviceKind }}</td>
               <td class="text-center">{{ props.item.startDt ? $moment(props.item.startDt, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('MM-DD HH:mm:ss') : '' }}</td>
               <td class="text-center">{{ props.item.timeDiff }}</td>
               <td class="text-center"><v-btn @click="detailRow(props.item)" text class="default" color="btn-secondary" >{{ $t('button.detail')}}</v-btn></td>
@@ -248,9 +247,8 @@ export default {
         { text: '테넌트', value: 'tenantNm', align: 'center', class: 'text-center', width: '120px' },
         { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '120px' },
         { text: '지점명', value: 'branchNm', align: 'center', width: '250px' },
-        { text: '단말번호', align: 'deviceNo', class: 'text-center', width: '120px' },
-        { text: '단말종류', align: 'deviceKind', class: 'text-center', width: '120px' },
-        { text: 'IP', value: 'ipAddress', align: 'center', class: 'text-center', width: '150px' },
+        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '120px' },
+        { text: '단말종류', value: 'deviceKind', align: 'center', class: 'text-center', width: '120px' },
         { text: '통화시작일시', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
         { text: '통화시간', value: 'timeDiff', align: 'center', class: 'text-center', width: '90px' },
         { text: '대화이력', value: 'buttonhere', align: 'center', class: 'text-center', width: '80px', sortable: false }
@@ -364,15 +362,6 @@ export default {
   },
 
   methods: {
-    getDeviceKind (callId) {
-      let str
-      for (let i = 0; i < this.deviceKindList.length; i++) {
-        if (callId.substring(5, 7) === this.deviceKindList[i].codeId) {
-          str = this.deviceKindList[i].codeValue
-        }
-      }
-      return str // this.deviceKindList[this.deviceKindList.indexOf(callId.substring(5, 7))].codeValue
-    },
     async initAiConciergeView () {
       this.getCmnCodeList()
       await this.fnc_getAiConciergeSearchCondition()
@@ -421,6 +410,9 @@ export default {
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         page: this.pagination.page,
@@ -431,6 +423,7 @@ export default {
         branchNm: this.searchForm.branchNm,
         codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         deviceNo: this.searchForm.deviceNo,
+        deviceKind: this.searchForm.deviceKind,
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
@@ -493,7 +486,9 @@ export default {
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         deviceNo: this.searchForm.deviceNo,
+        deviceKind: this.searchForm.deviceKind,
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
