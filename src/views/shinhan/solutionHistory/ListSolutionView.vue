@@ -188,6 +188,9 @@ export default {
   },
   mixins: [datepicker],
   created () {
+    if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU ') {
+      this.authOpt = false
+    }
   },
   mounted () {
     this.InitSolutionHistoryView()
@@ -239,7 +242,8 @@ export default {
         callType: '',
         dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
       },
-      chats: []
+      chats: [],
+      authOpt: true
     }
   },
 
@@ -258,7 +262,11 @@ export default {
         }
       ]
       systemInfoList.push(...this.searchForm.itemsSystemInfoList)
-      return systemInfoList
+      if (this.authOpt) {
+        return systemInfoList
+      } else {
+        return this.searchForm.itemsSystemInfoList
+      }
     },
     cptdItemsTenantList () { // 시스템에 따라 테넌트 정보 필터(default all)
       const tenantList = [
@@ -320,7 +328,9 @@ export default {
       getSolutionHistorySearchCondition().then(
         response => {
           this.searchForm.itemsSystemInfoList = response.data.result.systemInfoList ? response.data.result.systemInfoList : []
-          // this.searchForm.system = this.searchForm.itemsSystemInfoList[0].value
+          if (!this.authOpt) {
+            this.searchForm.system = this.searchForm.itemsSystemInfoList[0].value
+          }
           this.searchForm.itemsTenantList = response.data.result.tenantList
           // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList

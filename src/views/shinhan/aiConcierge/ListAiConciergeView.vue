@@ -389,6 +389,7 @@ export default {
       this.popup.branchPopup = true
     },
     popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
       if (obj != null && obj.length > 0) {
         let txt = ''
         for (let i = 0; i < obj.length; i++) {

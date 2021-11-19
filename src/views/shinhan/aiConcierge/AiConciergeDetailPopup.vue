@@ -68,7 +68,7 @@
               </v-col>
               <v-col class="col-td cust-result__record">
                 <span class="cust-result__record-time">{{ aiConciergeCall.timeDiff }}</span>
-                <v-btn @click="record" text class="default" color="btn-primary">{{ $t('button.record')}}</v-btn>
+                <v-btn v-if="aiConciergeCall.timeDiff" @click="recordPlay" text class="default" color="btn-primary">{{ $t('button.record')}}</v-btn>
               </v-col>
             </v-row>
           </vuescroll>
@@ -161,7 +161,7 @@ import {
   getAiConciergeHistoryDetailList,
   getAiConciergeAllHistoryDetailList
 } from '@/api/shinhan/aiConcierge'
-
+// import { getPlayer } from '@/api/player'
 export default {
   name: 'AiConciergeDetailPopup',
   data () {
@@ -377,8 +377,41 @@ export default {
       e.stopPropagation()
       this.$emit('clickClose', this.chat)
     },
-    record () {
-      alert('준비중')
+    /*
+    getPlayer () {
+      const searchCondition = {
+        trnsNo: ''
+      }
+      getPlayer(searchCondition).then(
+        response => {
+          const status = response.data.status
+          alert('dddd')
+          if (status === 200) {
+            // 조회결과
+            // this.call = response.data.result.systemCall
+            // this.systemCallHistories = response.data.result.systemCallHistoryList
+          }
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({ name: '403', query: { t: new Date().getTime() } })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
+          }
+        }
+      )
+    },
+    */
+    recordPlay () {
+      // window.open(process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO=')
+      window.open('http://172.23.248.202:8088' + '/recseePlayer?SEQNO=' + this.aiConciergeCall.callId)
+      // location.href = process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO='
+      // this.getPlayer()
+      // console.log(process.env.VUE_APP_PLAYER_URL + ' ==counselor=== ' + JSON.stringify(this.counselor))
+      // alert('준비중')
     }
   },
   created () {

@@ -98,7 +98,6 @@
 import {
   getBranchInitList
 } from '../../api/shinhan/shbkCmnCode'
-
 export default {
   name: 'PopupSearchBranch',
   props: {
@@ -129,7 +128,10 @@ export default {
         { text: '지점명', value: 'codeValue', align: 'center', class: 'text-center', width: '100px' }
       ],
       branchList: [],
-      options: {},
+      options: {
+        sortBy: [''], // 언어
+        sortDesc: ['']
+      },
       selected: [],
       // 언어
       langs: [],
@@ -184,7 +186,7 @@ export default {
         codeValue: this.searchForm.codeValue,
         useYn: 'Y'
       }
-      console.log(' this.options ' + JSON.stringify(this.options))
+      // console.log(this.options.sortBy[0] + ' this.options ' + JSON.stringify(this.options))
       // retrieve
       // this.pagination.loading = true
       getBranchInitList(searchCondition).then(

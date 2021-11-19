@@ -239,6 +239,9 @@ export default {
   },
   mixins: [datepicker],
   created () {
+    if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU ') {
+      this.authOpt = false
+    }
   },
   mounted () {
     this.fnc_getSolutionHistorySearchCondition()
@@ -304,7 +307,8 @@ export default {
         timeType: null,
         startMonth: null,
         endMonth: null
-      }
+      },
+      authOpt: true
     }
   },
   computed: {
@@ -516,7 +520,11 @@ export default {
         }
       ]
       systemInfoList.push(...this.searchForm.itemsSystemInfoList)
-      return systemInfoList
+      if (this.authOpt) {
+        return systemInfoList
+      } else {
+        return this.searchForm.itemsSystemInfoList
+      }
     },
     cptdItemsTimeTypeList () {
       const timeTypeList = []
@@ -605,6 +613,9 @@ export default {
         response => {
           this.searchForm.itemsSystemInfoList = response.data.result.systemInfoList ? response.data.result.systemInfoList : []
           // this.searchForm.systemId = this.searchForm.itemsSystemInfoList[0].value
+          if (!this.authOpt) {
+            this.searchForm.systemId = this.searchForm.itemsSystemInfoList[0].value
+          }
           this.searchForm.itemsTenantList = response.data.result.tenantList
           // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList

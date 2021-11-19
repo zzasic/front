@@ -68,7 +68,7 @@
               </v-col>
               <v-col class="col-td cust-result__record">
                 <span class="cust-result__record-time">{{ call.timeDiff }}</span>
-                <!-- <v-btn @click="record" text class="default" color="btn-primary">{{ $t('button.record')}}</v-btn> -->
+                <v-btn v-if="counselor.callYn === 'Y'" @click="recordPlay" text class="default" color="btn-primary">{{ $t('button.record')}}</v-btn>
               </v-col>
             </v-row>
           </vuescroll>
@@ -158,6 +158,7 @@
 
 <script>
 import { getSystemCallHistoryList, getSystemCallAllHistoryList } from '@/api/counsel'
+// import { getPlayer } from '@/api/player'
 
 export default {
   name: 'SystemCallHistoryPopup',
@@ -364,6 +365,30 @@ export default {
         }
       )
     },
+    /*
+    getPlayer () {
+      const searchCondition = {
+        trnsNo: ''
+      }
+      getPlayer(searchCondition).then(
+        response => {
+          const status = response.data.status
+          if (status === 200) {
+          }
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({ name: '403', query: { t: new Date().getTime() } })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
+          }
+        }
+      )
+    },
+    */
     sttClick (hist) {
       if (hist.moudule === 'STT') {
         if (hist.historyId === this.sttHist.historyId) {
@@ -380,8 +405,13 @@ export default {
       e.stopPropagation()
       this.$emit('clickClose', this.chat)
     },
-    record () {
-      alert('준비중')
+    recordPlay () {
+      // window.open(process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO=')
+      window.open('http://172.23.248.202:8088' + '/recseePlayer?SEQNO=' + this.aiConciergeCall.callId)
+      // location.href = process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO='
+      // this.getPlayer()
+      // console.log(process.env.VUE_APP_PLAYER_URL + ' ==counselor=== ' + JSON.stringify(this.counselor))
+      // alert('준비중')
     }
   },
   created () {

@@ -242,7 +242,10 @@ export default {
   },
   mixins: [datepicker],
   created () {
-    this.totChkList = sessionStorage.getItem('counselread').split(',')
+    if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU ') {
+      this.authOpt = false
+    }
+    this.totChkList = sessionStorage.getItem('counselread') ? sessionStorage.getItem('counselread').split(',') : []
   },
   mounted () {
     this.getCmnCodeList()
@@ -312,7 +315,8 @@ export default {
         branchPopup: false
       },
       chkList: [],
-      totChkList: []
+      totChkList: [],
+      authOpt: true
     }
   },
 
@@ -341,7 +345,11 @@ export default {
         }
       ]
       systemInfoList.push(...this.searchForm.systemInfos)
-      return systemInfoList
+      if (this.authOpt) {
+        return systemInfoList
+      } else {
+        return this.searchForm.systemInfos
+      }
     },
     cptdDeviceKindList () {
       const deviceKindList = [
@@ -411,11 +419,14 @@ export default {
         response => {
           this.searchForm.tenants = response.data.result.tenantList
           this.searchForm.systemInfos = response.data.result.systemInfoList
-          // this.searchForm.system = this.searchForm.systemInfos[0].value
+          if (!this.authOpt) {
+            this.searchForm.system = this.searchForm.systemInfos[0].value
+          }
         }
       )
     },
     popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
       if (obj != null && obj.length > 0) {
         let txt = ''
         for (let i = 0; i < obj.length; i++) {
