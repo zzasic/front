@@ -242,7 +242,7 @@ export default {
   },
   mixins: [datepicker],
   created () {
-    if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU ') {
+    if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU') {
       this.authOpt = false
     }
     this.totChkList = sessionStorage.getItem('counselread') ? sessionStorage.getItem('counselread').split(',') : []

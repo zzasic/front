@@ -407,7 +407,7 @@ export default {
     },
     recordPlay () {
       // window.open(process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO=')
-      window.open('http://172.23.248.202:8088' + '/recseePlayer?SEQNO=' + this.aiConciergeCall.callId)
+      window.open('http://172.23.248.203:8080' + '/recseePlayer?SEQNO=' + this.call.callId)
       // location.href = process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO='
       // this.getPlayer()
       // console.log(process.env.VUE_APP_PLAYER_URL + ' ==counselor=== ' + JSON.stringify(this.counselor))
