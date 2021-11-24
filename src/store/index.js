@@ -88,7 +88,9 @@ export default new Vuex.Store({
       sessionStorage.userName = session.userName
       sessionStorage.userAuthCode = session.userAuthCode
       sessionStorage.userDeptName = session.userDeptName
+      sessionStorage.relationId = session.ssoUserId
       sessionStorage.tenantId = session.tenantId
+      sessionStorage.systemIds = session.systemIds
       state.accessToken = session.token
     },
     LOGOUT (state) {

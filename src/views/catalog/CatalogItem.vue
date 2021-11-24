@@ -40,14 +40,28 @@ export default {
           alert('Chatbot서비스는 Chrome에 최적화되어 있습니다.\nChrome 브라우저를 사용해주시기 바랍니다.')
           return
         }
+        // form 태그 생성
+        var form = document.createElement('form')
+        form.setAttribute('target', 'blank')
+        form.setAttribute('method', 'POST')
+        form.setAttribute('action', `${item.serviceUrl}`)
+
+        var hiddenField = document.createElement('input')
+        hiddenField.setAttribute('type', 'hidden')
+        hiddenField.setAttribute('name', 'relationId')
+        hiddenField.setAttribute('value', `${sessionStorage.relationId}`)
+        form.appendChild(hiddenField)
+        document.body.appendChild(form)
+        form.submit()
+        document.body.removeChild(form)
         // console.log(item)
-        var anchor = document.createElement('a')
-        // anchor.setAttribute('href', `${item.serviceUrl}${sessionStorage.accessToken}`)
-        anchor.setAttribute('href', `${item.serviceUrl}`)
-        anchor.setAttribute('target', item.serviceId)
-        document.body.appendChild(anchor)
-        anchor.click()
-        document.body.removeChild(anchor)
+        // var anchor = document.createElement('a')
+        // // anchor.setAttribute('href', `${item.serviceUrl}${sessionStorage.accessToken}`)
+        // anchor.setAttribute('href', `${item.serviceUrl}`)
+        // anchor.setAttribute('target', item.serviceId)
+        // document.body.appendChild(anchor)
+        // anchor.click()
+        // document.body.removeChild(anchor)
       } else {
         alert(this.$t('message.soon'))
       }

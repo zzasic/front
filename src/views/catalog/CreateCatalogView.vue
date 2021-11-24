@@ -448,10 +448,10 @@ export default {
     },
     cptdAuthTypeList: function () {
       const its = [
-        {
-          text: '미사용',
-          value: ''
-        }
+        // {
+        //   text: '미사용',
+        //   value: ''
+        // }
       ]
       its.push(...this.authTypes)
       return its
@@ -465,10 +465,13 @@ export default {
       initCatalogView().then(
         response => {
           this.useYns = response.data.result.useYnList
-          this.authTypes = response.data.result.authTypeList
+          this.authTypes = [response.data.result.authTypeList[0]]
+          // this.authTypes = response.data.result.authTypeList
           this.catalogIcons = response.data.result.catalogIconList
           this.apiTypes = response.data.result.apiTypeList
           this.serviceTypes = response.data.result.serviceTypeList
+          // SHBK 사용자 권한 고정
+          this.inputForm.serviceAuthCd = this.authTypes[0].value
         }
       ).finally(() => {
         const defaultApiType = this.apiTypes.filter((c) => c.opt3 === 'Y')

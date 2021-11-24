@@ -116,6 +116,8 @@ export default {
   created () {},
   mounted () {
     // console.log('CallState')
+    // const influxUrl = document.referrer
+    // alert(influxUrl)
     this.init()
   },
   computed: {
@@ -152,12 +154,12 @@ export default {
     },
     isSysCounselors: function () {
       // console.log('==isSysCounselors==')
-      return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || sc.callId.indexOf('_' + this.searchForm.deviceKind + '_') > 0) && (!this.searchForm.branchNm || this.searchForm.codeIdArr.indexOf(sc.branchCd) > -1) && sc.callYn === 'Y')
+      return this.getsyscounselors && this.getsyscounselors.length > 0 && this.getsyscounselors.some(sc => (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || sc.callId.indexOf('-' + this.searchForm.deviceKind + '-') > 0) && (!this.searchForm.branchNm || this.searchForm.codeIdArr.indexOf(sc.branchCd) > -1) && sc.callYn === 'Y')
     },
     sysCounselors: function () {
       // console.log('==sysCounselors==' + this.searchForm.codeIdArr.indexOf('7000'))
       return (this.getsyscounselors || []).filter(sc => {
-        return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || sc.callId.indexOf('_' + this.searchForm.deviceKind + '_') > 0) && (!this.searchForm.branchNm || this.searchForm.codeIdArr.indexOf(sc.branchCd) > -1) && sc.callYn === 'Y'
+        return (!this.searchForm.systemId || this.searchForm.systemId === sc.systemId) && (!this.searchForm.tenantId || this.searchForm.tenantId === sc.tenantId) && (!this.searchForm.deviceKind || sc.callId.indexOf('-' + this.searchForm.deviceKind + '-') > 0) && (!this.searchForm.branchNm || this.searchForm.codeIdArr.indexOf(sc.branchCd) > -1) && sc.callYn === 'Y'
       })
     },
     cptdDeviceKindList () {

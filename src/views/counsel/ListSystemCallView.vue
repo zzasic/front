@@ -213,6 +213,9 @@
       @popupAction="popupAction"
       />
     </v-dialog>
+    <div class="btn-group align-right">
+      <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
+    </div>
     </vuescroll>
     <div v-for="chat in chats" :key="chat.chatId">
       <systemCall-history-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
@@ -227,7 +230,8 @@ import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 import {
   getSystemCallSearchCondition,
   getSystemCallList,
-  reqGetManualHistory
+  reqGetManualHistory,
+  reqExcelDownSystemCallList
 } from '../../api/counsel'
 import {
   getCmnCodeList
@@ -585,6 +589,63 @@ export default {
         }
       ).finally(() => {
         // this.pagination.loading = false
+      })
+    },
+    excelDown: function () {
+      /* datepicker open */
+      if (this.pickerMenu === true) {
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+      }
+      const dateRange = this.searchForm.dates
+      dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
+      // param setting
+      const searchCondition = {
+        page: this.pagination.page,
+        sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
+        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
+        itemsPerPage: this.pagination.itemsPerPage,
+        tenantId: this.searchForm.tenant,
+        systemId: this.searchForm.system,
+        deviceNo: this.searchForm.deviceNo,
+        deviceKind: this.searchForm.deviceKind, // 단말기 종류
+        commYn: this.searchForm.commYn,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
+        isSpeech: this.searchForm.custCommu, // 고객발화여부
+        startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
+        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+      }
+      reqExcelDownSystemCallList(searchCondition).then(response => {
+        const filename = this.$moment().format('YYYY-MM-DD') + '_시스템별 상담이력.xlsx'
+
+        const url = window.URL.createObjectURL(
+          new Blob([response.data], {
+            type: response.headers['content-type']
+          })
+        )
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', filename)
+        document.body.appendChild(link)
+        link.click()
+      },
+      error => {
+        console.error(error)
+        const status = error.data.status
+        if (status === 403) {
+          this.$router.push({
+            name: '403',
+            query: { t: new Date().getTime() }
+          })
+        } else {
+          delete sessionStorage.accessToken
+          this.$router.push({
+            name: 'Login',
+            query: { t: new Date().getTime() }
+          })
+        }
       })
     }
   }

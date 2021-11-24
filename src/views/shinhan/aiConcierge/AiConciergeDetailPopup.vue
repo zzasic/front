@@ -406,8 +406,8 @@ export default {
     },
     */
     recordPlay () {
-      // window.open(process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO=')
-      window.open('http://172.23.248.203:8080' + '/recseePlayer?SEQNO=' + this.aiConciergeCall.callId)
+      // window.open(process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO=') 172.23.248.203
+      window.open('http://172.23.248.203:8080' + '/recseePlayer?SEQNO=' + this.aiConciergeCall.callId, '_blank', 'width=850, height=400, left=250, top=300, location=no')
       // location.href = process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO='
       // this.getPlayer()
       // console.log(process.env.VUE_APP_PLAYER_URL + ' ==counselor=== ' + JSON.stringify(this.counselor))
