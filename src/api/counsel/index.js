@@ -72,6 +72,10 @@ function reqGetManualHistory () {
   return postRequest('/api/counsel/getManualHistory', JSON.stringify({}))
 }
 
+function reqExcelDownSystemCallList (input) {
+  return postRequestBlob('/api/counsel/excelDownSystemCallList', JSON.stringify(input))
+}
+
 function getIntentFailSearchCondition () { /* 의도추론 실패 상담이력 조회조건  */
   return postRequest('/api/counsel/listIntentFailInit', JSON.stringify({}))
 }
@@ -167,6 +171,7 @@ export {
   mockCall,
   custInfoView,
   reqGetManualHistory,
+  reqExcelDownSystemCallList,
   getIntentFailSearchCondition,
   getIntentFailList,
   getAfterIntentFailSearchCondition,
