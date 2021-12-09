@@ -7,7 +7,7 @@
       ></PageTitle>
       <v-container class="search-group" no-gutters fluid>
         <v-row no-gutters>
-          <v-col cols="1">
+          <v-col cols="2">
             <v-select
               class="default search"
               :menu-props="{ offsetY: true }"
@@ -77,6 +77,7 @@
               clearable
             ></v-select>
           </v-col>
+          <!--
           <v-col cols="1">
             <v-select
               class="default"
@@ -88,6 +89,7 @@
               clearable
             ></v-select>
           </v-col>
+          -->
           <v-col cols="2">
             <v-menu
               content-class="date-picker"
@@ -213,7 +215,7 @@
       @popupAction="popupAction"
       />
     </v-dialog>
-    <div class="btn-group align-right">
+    <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
       <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
     </div>
     </vuescroll>
@@ -248,6 +250,7 @@ export default {
   created () {
     if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU') {
       this.authOpt = false
+      this.searchForm.system = sessionStorage.systemIds
     }
     this.totChkList = sessionStorage.getItem('counselread') ? sessionStorage.getItem('counselread').split(',') : []
   },
@@ -310,7 +313,7 @@ export default {
         deviceKind: '',
         commYn: '',
         dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
-        custCommu: '1',
+        custCommu: '',
         codeIdArr: []
       },
       deviceKindList: [],
@@ -414,18 +417,16 @@ export default {
   watch: {
   },
   methods: {
-    async initSystemCallView () {
-      await this.getSearchCondition()
-      this.getSystemCallList()
+    initSystemCallView () {
+      this.getSearchCondition()
     },
     getSearchCondition: function () {
       getSystemCallSearchCondition().then(
         response => {
           this.searchForm.tenants = response.data.result.tenantList
           this.searchForm.systemInfos = response.data.result.systemInfoList
-          if (!this.authOpt) {
-            this.searchForm.system = this.searchForm.systemInfos[0].value
-          }
+          // this.searchForm.system = this.searchForm.systemInfos[0].value
+          this.getSystemCallList()
         }
       )
     },
@@ -483,11 +484,12 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSystemCallList(searchCondition).then(
         response => {
           this.systemCallList = response.data.result.systemCallList ? response.data.result.systemCallList : []
-          console.log(' this.systemCallList ' + JSON.stringify(this.systemCallList))
+          // console.log(' this.systemCallList ' + JSON.stringify(this.systemCallList))
           // paging setting
           this.pagination.totalRows = response.data.result.systemCallListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)

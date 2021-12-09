@@ -97,7 +97,58 @@
               </v-date-picker>
             </v-menu>
           </v-col>
-          <v-col cols="2" v-else>
+          <v-col cols="2" v-if="searchForm.timeType === 'A'">
+            <v-menu
+              content-class="date-picker"
+              ref="pickerMenu"
+              v-model="pickerMenu"
+              :return-value.sync="searchForm.dates"
+              :close-on-content-click="false"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  class="default text-field-date pr-0"
+                  v-model='dateRangeTextDT'
+                  label="검색기간"
+                  placeholder="YYYY.MM.DD - YYYY.MM.DD"
+                  v-on="on"
+                  readonly
+                  clearable
+                  @click="clickPicker"
+                >
+                </v-text-field>
+              </template>
+              <div @click="clickPicker">
+                <v-date-picker
+                  v-model="searchForm.dates"
+                  range
+                  no-title
+                  scrollable
+                  :event-color="
+                    date =>
+                      date == searchForm.dates[0]
+                        ? ['startDate']
+                        : date == searchForm.dates[1]
+                        ? ['endDate']
+                        : ''
+                  "
+                  :events="searchForm.dates"
+                  :date-format="date => new Date(date).toDateString()"
+                  :locale="$i18n.locale"
+                  :picker-date.sync="pickerDate"
+                  @click:date="dateClick"
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn text :ripple="false" color="pink" @click="pickerMenu = false">{{ $t('button.close')}}</v-btn>
+                  <v-btn text :ripple="false" color="pink" @click="betweenConfirm(searchForm)">{{ $t('button.confirm')}}</v-btn>
+                </v-date-picker>
+              </div>
+            </v-menu>
+          </v-col>
+          <v-col cols="2" v-if="searchForm.timeType !== 'A' && searchForm.timeType !== 'B'">
             <v-menu
               content-class="date-picker"
               ref="pickerMenu"
@@ -186,8 +237,8 @@
           :items="statisticsList"
           :page.sync="pagination.page"
           :server-items-length="pagination.totalRows"
-          :options.sync="optionSync"
           :loading="pagination.loading"
+          :options.sync="optionSync"
           hide-default-footer
           :no-data-text="$t('message.noData')"
           :loading-text="$t('message.loading')"
@@ -210,7 +261,7 @@
           :total-visible="10"
         ></v-pagination>
       </div>
-      <div class="btn-group align-right">
+      <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
         <!-- <v-btn color="btn-primary" text @click.stop="getManualStatistics" v-auth="['SAU']">{{ $t('button.Statistics')}}</v-btn> -->
         <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
       </div>
@@ -241,11 +292,11 @@ export default {
   created () {
     if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU') {
       this.authOpt = false
+      this.searchForm.systemId = sessionStorage.systemIds
     }
   },
   mounted () {
     this.fnc_getSolutionHistorySearchCondition()
-    this.fnc_getSolutionHistoryUsageChartList()
   },
   data () {
     return {
@@ -298,7 +349,10 @@ export default {
           this.$moment(new Date()).format('YYYY-MM')
         ],
         startMonth: this.$moment(new Date()).format('YYYY-MM'),
-        endMonth: this.$moment(new Date()).format('YYYY-MM')
+        endMonth: this.$moment(new Date()).format('YYYY-MM'),
+        startDay: this.$moment(new Date()).format('YYYY-MM') + '-01',
+        endDay: this.$moment(new Date()).format('YYYY-MM-DD'),
+        dates: [this.$moment(new Date()).format('YYYY-MM') + '-01', this.$moment(new Date()).format('YYYY-MM-DD')]
       },
       popup: {
         type: null,
@@ -349,16 +403,16 @@ export default {
       backgroundColors.push('#ffb0c1', '#9ad0f5', '#ffe6aa', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
       if (this.searchForm.rsltTimeType === 'D') {
         // 시간별
-        let m = 1
+        let m = 0
         let n = 0
-        while (m <= 24) {
+        while (m <= 23) {
           labels.push(`${m}시`)
           m++
         }
         for (const key of keys) {
           const data = []
-          m = 1
-          while (m <= 24) {
+          m = 0
+          while (m <= 23) {
             data.push((datas[key].find((ch) => ch.callDate === `${m}시`) || { totCnt: 0 }).totCnt)
             m++
           }
@@ -412,8 +466,8 @@ export default {
         }
       } else {
         // 일별
-        let dateStart = this.$moment(`${this.searchForm.startMonth}-01`)
-        const dateEnd = this.$moment(`${this.searchForm.endMonth}-01`).endOf('month')
+        let dateStart = this.$moment(`${this.searchForm.startDay}`) // this.$moment(`${this.searchForm.startMonth}-01`)
+        const dateEnd = this.$moment(`${this.searchForm.endDay}`) // this.$moment(`${this.searchForm.endMonth}-01`).endOf('month')
         while (dateEnd.format('YYYYMMDD') >= dateStart.format('YYYYMMDD')) {
           labels.push(dateStart.format('MM-DD'))
           dateStart.add(1, 'days')
@@ -421,7 +475,7 @@ export default {
         let n = 0
         for (const key of keys) {
           const data = []
-          dateStart = this.$moment(`${this.searchForm.startMonth}-01`)
+          dateStart = this.$moment(`${this.searchForm.startDay}`) // this.$moment(`${this.searchForm.startMonth}-01`)
           while (dateEnd.format('YYYYMMDD') >= dateStart.format('YYYYMMDD')) {
             data.push((datas[key].find((ch) => ch.callDate === dateStart.format('YYYYMMDD')) || { totCnt: 0 }).totCnt)
             dateStart.add(1, 'days')
@@ -563,6 +617,18 @@ export default {
         }
       }
     },
+    dateRangeTextDT: {
+      get: function () {
+        const dateRange = this.searchForm.dates
+        dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+        return dateRange.join(' ~ ')
+      },
+      set: function (value) {
+        if (!value) {
+          this.searchForm.dates = []
+        }
+      }
+    },
     optionSync: {
       get: function () {
         return this.options
@@ -571,7 +637,7 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getSolutionHistoryUsageChartList()
+          this.fnc_getSolutionHistoryUsageList()
         }
       }
     },
@@ -603,6 +669,15 @@ export default {
     }
   },
   methods: {
+    betweenConfirm: function (val) {
+      if (this.isEmpty(val.dates[1])) {
+        this.searchForm.dates[1] = val.dates[0]
+      }
+      this.$refs.pickerMenu.save(this.searchForm.dates)
+    },
+    isEmpty: function (x) {
+      return (x === null || x === undefined)
+    },
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
@@ -613,13 +688,11 @@ export default {
         response => {
           this.searchForm.itemsSystemInfoList = response.data.result.systemInfoList ? response.data.result.systemInfoList : []
           // this.searchForm.systemId = this.searchForm.itemsSystemInfoList[0].value
-          if (!this.authOpt) {
-            this.searchForm.systemId = this.searchForm.itemsSystemInfoList[0].value
-          }
           this.searchForm.itemsTenantList = response.data.result.tenantList
           // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
           this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
+          this.fnc_getSolutionHistoryUsageChartList()
         }
       )
       // this.searchForm.moudule = this.moudules[0].value
@@ -647,6 +720,9 @@ export default {
         }
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
+      } else if (this.searchForm.timeType === 'A') {
+        dateRange.push(this.searchForm.dates[0])
+        dateRange.push(this.searchForm.dates[1])
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)
@@ -664,6 +740,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log(' searchCondition 1 ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSolutionHistoryUsageChartList(searchCondition).then(
         response => {
@@ -676,11 +753,14 @@ export default {
           this.searchForm.rsltTimeType = this.searchForm.timeType
           this.searchForm.startMonth = this.searchForm.months[0]
           this.searchForm.endMonth = this.searchForm.months[1]
+          this.searchForm.startDay = this.searchForm.dates[0]
+          this.searchForm.endDay = this.searchForm.dates[1]
         })
       })
       this.fnc_getSolutionHistoryUsageList()
     },
     fnc_getSolutionHistoryUsageList: function () {
+      console.log('그리드 검색')
       const dateRange = []
       if (this.searchForm.timeType === 'B') {
         if (this.pickerYearMenu === true) {
@@ -692,6 +772,9 @@ export default {
         }
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
+      } else if (this.searchForm.timeType === 'A') {
+        dateRange.push(this.searchForm.dates[0])
+        dateRange.push(this.searchForm.dates[1])
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)
@@ -699,11 +782,12 @@ export default {
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
       }
+      console.log('sortBy : ', this.options.sortBy === undefined)
       // param setting
       const searchCondition = {
         page: this.pagination.page,
-        sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
-        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
+        sortBy: this.options.sortBy !== undefined ? (this.options.sortBy[0] ? this.options.sortBy[0] : '') : '',
+        sortDesc: this.options.sortDesc !== undefined ? this.options.sortDesc[0] === false ? 'DESC' : 'ASC' : 'DESC',
         itemsPerPage: this.pagination.itemsPerPage,
         systemId: this.searchForm.systemId,
         tenantId: this.searchForm.tenant,
@@ -713,6 +797,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log(' searchCondition 2 --' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSolutionHistoryUsageList(searchCondition).then(
         response => {
@@ -757,6 +842,14 @@ export default {
         }
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
+      } else if (this.searchForm.timeType === 'A') {
+        dateRange.push(this.searchForm.dates[0])
+        if (!this.isEmpty(this.searchForm.dates[1])) {
+          dateRange.push(this.searchForm.dates[1])
+        } else {
+          this.searchForm.dates[1] = this.searchForm.dates[0]
+          dateRange.push(this.searchForm.dates[0])
+        }
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)

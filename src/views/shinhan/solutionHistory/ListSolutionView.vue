@@ -141,6 +141,21 @@
           :no-data-text="$t('message.noData')"
           :loading-text="$t('message.loading')"
         >
+      <template v-slot:item="props">
+        <tr :title="convertContents(props.item.contents)">
+          <td class="text-center">{{ props.item.systemNm }}</td>
+          <td class="text-center">{{ props.item.tenantNm }}</td>
+          <td class="text-center">{{ props.item.callId }}</td>
+          <td class="text-center">{{ props.item.branchCd }}</td>
+          <td class="text-center">{{ props.item.branchNm }}</td>
+          <td class="text-center">{{ props.item.deviceNo }}</td>
+          <td class="text-center">{{ props.item.moudule }}</td>
+          <td class="text-center">{{ props.item.tranId }}</td>
+          <td class="text-center">{{ getContents(props.item.contents) }}</td>
+          <td class="text-center">{{ props.item.startDt }}</td>
+          <td class="text-center" >{{ props.item.endDt }}</td>
+        </tr>
+      </template>
         </v-data-table>
       </v-card>
       <div class="pagination-group">
@@ -159,7 +174,7 @@
           :total-visible="10"
         ></v-pagination>
       </div>
-      <div class="btn-group align-right">
+      <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
         <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
       </div>
     </vuescroll>
@@ -176,9 +191,7 @@ import {
   reqSolutionHistoryExcelDown
 } from '../../../api/shinhan/solutionHistory'
 import datepicker from '@/plugins/datepicker'
-
 // TODO
-// 나중에 이 팝업도 바꿔야함 (상세 팝업이 나올지 안나올지도 모르게씀)
 import InboundHistoryPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
 
 export default {
@@ -190,6 +203,7 @@ export default {
   created () {
     if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU') {
       this.authOpt = false
+      this.searchForm.system = sessionStorage.systemIds
     }
   },
   mounted () {
@@ -208,11 +222,13 @@ export default {
       headers: [
         { text: '시스템', value: 'systemNm', align: 'center', class: 'text-center', width: '120px' },
         { text: '테넌트', value: 'tenantNm', align: 'center', class: 'text-center', width: '120px' },
-        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '120px' },
-        { text: '지점명', value: 'branchNm', align: 'center', width: '250px' },
-        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '120px' },
+        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center', width: '240px' },
+        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '70px' },
+        { text: '지점명', value: 'branchNm', align: 'center', width: '100px' },
+        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '100px' },
         { text: '솔루션', value: 'moudule', align: 'center', class: 'text-center', width: '120px' },
         { text: '트랜잭션ID', value: 'tranId', align: 'center', class: 'text-center', width: '120px' },
+        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '120px' },
         { text: '사용시작', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
         { text: '사용종료', value: 'endDt', align: 'center', class: 'text-center', width: '120px' }
       ],
@@ -318,9 +334,27 @@ export default {
   },
 
   methods: {
-    async InitSolutionHistoryView () {
-      await this.fnc_getSolutionHistorySearchCondition()
-      this.fnc_getSolutionHistoryList()
+    getContents (str) {
+      let content
+      let setStr
+      if (str === null || str === undefined || str === '') {
+        content = ''
+      } else {
+        setStr = str // .replace('\\n', '')
+        // console.log(' setStr ' + setStr)
+        if (setStr.length > 10) {
+          content = setStr.substring(0, 9) + '...'
+        } else {
+          content = setStr
+        }
+      }
+      return content
+    },
+    convertContents (str) {
+      return str === null || str === '' ? '' : str // .replaceAll('\\n', '\n') //  setStr = str.replace('\\n', '&lt;br&gt;') .replace('\n', '<br>')
+    },
+    InitSolutionHistoryView () {
+      this.fnc_getSolutionHistorySearchCondition()
     },
     // 검색 조건 조회
     fnc_getSolutionHistorySearchCondition: function () {
@@ -328,13 +362,12 @@ export default {
       getSolutionHistorySearchCondition().then(
         response => {
           this.searchForm.itemsSystemInfoList = response.data.result.systemInfoList ? response.data.result.systemInfoList : []
-          if (!this.authOpt) {
-            this.searchForm.system = this.searchForm.itemsSystemInfoList[0].value
-          }
+          // this.searchForm.system = this.searchForm.itemsSystemInfoList[0].value
           this.searchForm.itemsTenantList = response.data.result.tenantList
           // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
           this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
+          this.fnc_getSolutionHistoryList()
         }
       )
     },
@@ -360,6 +393,7 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSolutionHistoryList(searchCondition).then(
         response => {

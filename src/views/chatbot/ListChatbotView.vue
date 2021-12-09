@@ -105,7 +105,7 @@
         ></v-pagination>
       </div>
       <div class="btn-group align-right">
-        <v-btn color="btn-primary" text @click="syncDapChatbotPopup" v-auth="['SAU']">{{ $t('button.dapChatbotSync')}}</v-btn>
+        <!-- <v-btn color="btn-primary" text @click="syncDapChatbotPopup" v-auth="['SAU']">{{ $t('button.dapChatbotSync')}}</v-btn> -->
         <v-btn color="btn-primary" text @click="createChatbot">{{ $t('button.new')}}</v-btn>
         <v-btn color="btn-secondary" text @click="deleteChatbots">{{ $t('button.delete')}}</v-btn>
       </div>

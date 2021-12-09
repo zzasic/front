@@ -26,8 +26,22 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="searchBtn"
+               @click="searhPopup"
             ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-select
+              class="default"
+              :menu-props="{ offsetY: true }"
+              v-model="searchForm.deviceKind"
+              :items="cptdDeviceKindList"
+               item-key="codeId"
+              item-text="codeValue"
+              item-value="codeId"
+              :label="'단말종류'"
+              :placeholder="searchForm.deviceKind ? undefined : $t('label.all')"
+              clearable
+            ></v-select>
           </v-col>
           <v-col cols="2">
             <v-select
@@ -75,7 +89,58 @@
               </v-date-picker>
             </v-menu>
           </v-col>
-          <v-col cols="2" v-else>
+          <v-col cols="2" v-if="searchForm.timeType === 'A'">
+            <v-menu
+              content-class="date-picker"
+              ref="pickerMenu"
+              v-model="pickerMenu"
+              :return-value.sync="searchForm.dates"
+              :close-on-content-click="false"
+              offset-y
+              max-width="290px"
+              min-width="290px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  class="default text-field-date pr-0"
+                  v-model='dateRangeTextDT'
+                  label="검색기간"
+                  placeholder="YYYY.MM.DD - YYYY.MM.DD"
+                  v-on="on"
+                  readonly
+                  clearable
+                  @click="clickPicker"
+                >
+                </v-text-field>
+              </template>
+              <div @click="clickPicker">
+                <v-date-picker
+                  v-model="searchForm.dates"
+                  range
+                  no-title
+                  scrollable
+                  :event-color="
+                    date =>
+                      date == searchForm.dates[0]
+                        ? ['startDate']
+                        : date == searchForm.dates[1]
+                        ? ['endDate']
+                        : ''
+                  "
+                  :events="searchForm.dates"
+                  :date-format="date => new Date(date).toDateString()"
+                  :locale="$i18n.locale"
+                  :picker-date.sync="pickerDate"
+                  @click:date="dateClick"
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn text :ripple="false" color="pink" @click="pickerMenu = false">{{ $t('button.close')}}</v-btn>
+                  <v-btn text :ripple="false" color="pink" @click="betweenConfirm(searchForm)">{{ $t('button.confirm')}}</v-btn>
+                </v-date-picker>
+              </div>
+            </v-menu>
+          </v-col>
+          <v-col cols="2" v-if="searchForm.timeType !== 'A' && searchForm.timeType !== 'B'">
             <v-menu
               content-class="date-picker"
               ref="pickerMenu"
@@ -172,14 +237,14 @@
         >
           <template v-slot:item="props">
             <tr>
-              <td class="text-center">{{ props.item.callDate }}</td>
+              <td class="text-center">{{ props.item.dayText }}</td>
               <td class="text-center">{{ props.item.tenantNm }}</td>
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
-              <td class="text-center">{{ props.item.chatBotCnt }}</td>
-              <td class="text-center">{{ props.item.sttCnt }}</td>
-              <td class="text-center">{{ props.item.ttsCnt }}</td>
-              <!-- <td class="text-center">{{ props.item.taCnt }}</td> -->
+              <td class="text-center">{{ props.item.voiceCnt }}</td>
+              <td class="text-center">{{ props.item.buttonCnt }}</td>
+              <td class="text-center">{{ props.item.silenceCnt }}</td>
+              <td class="text-center">{{ props.item.totalCnt }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -200,9 +265,20 @@
           :total-visible="10"
         ></v-pagination>
       </div>
+      <v-dialog
+        v-model="dialog"
+        persistent
+        :max-width="600"
+        hide-overlay
+        scrollable v-if="popup.branchPopup === true"
+        >
+      <PopupSearchBanch
+      @popupAction="popupAction"
+      />
+    </v-dialog>
       <div class="btn-group align-right">
         <v-btn color="btn-primary" text @click.stop="fnc_reqAiConciergeStatisticsBatch" v-auth="['SAU']">{{ $t('button.Statistics')}}</v-btn>
-        <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
+        <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown" v-auth="['SAU', 'CAU', 'AU']">엑셀 다운로드</v-btn>
       </div>
     </vuescroll>
   </div>
@@ -210,6 +286,7 @@
 
 <script>
 import BarCharts from '@/components/chart/BarCharts'
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 import {
   getAiConciergeSearchCondition, // 초기 조회 조건
   getAiConciergeStatisticsChartList, // 차트 목록 조회
@@ -218,19 +295,22 @@ import {
   reqAiConciergeStatisticsBatch
 } from '../../../api/shinhan/aiConcierge'
 import datepicker from '@/plugins/datepicker'
-
+import {
+  getCmnCodeList
+} from '../../../api/cmnCode'
 export default {
   name: 'AiConciergeStatisticView',
   components: {
     // GChart,
-    BarCharts
+    BarCharts,
+    PopupSearchBanch
   },
   mixins: [datepicker],
   created () {
   },
   mounted () {
+    this.getCmnCodeList()
     this.fnc_getAiConciergeSearchCondition()
-    this.fnc_getAiConciergeCartList()
   },
   data () {
     return {
@@ -242,10 +322,10 @@ export default {
         { text: '테넌트', value: 'tenantNm', align: 'center', width: '200px' },
         { text: '지점코드', value: 'branchCd', align: 'center', width: '200px' },
         { text: '지점명', value: 'branchNm', align: 'center', width: '250px' },
-        { text: 'CHATBOT(건)', value: 'chatbotCnt', align: 'center', width: '200px' },
-        { text: 'STT(건)', value: 'sttCnt', align: 'center', width: '200px' },
-        { text: 'TTS(건)', value: 'ttsCnt', align: 'center', width: '200px' }
-        // { text: 'TA(건)', value: 'taCnt', align: 'center', width: '200px' }
+        { text: '음성(건)', value: 'voiceCnt', align: 'center', width: '200px' },
+        { text: '버튼(건)', value: 'buttonCnt', align: 'center', width: '200px' },
+        { text: '침묵(건)', value: 'silenceCnt', align: 'center', width: '200px' },
+        { text: '전체(건)', value: 'totalCnt', align: 'center', width: '200px' }
       ],
       statisticsList: [],
       statisticsChartList: [], // stt, tts, ta 각각 리스트를 만들어서 일별로 보여줘야할듯
@@ -263,6 +343,7 @@ export default {
       strYear: this.$moment(new Date()).format('YYYY'),
       searchForm: {
         branchNm: '',
+        codeIdArr: [],
         itemsTenantList: [],
         tenant: '',
         itemsTimeTypeList: [],
@@ -274,7 +355,11 @@ export default {
           this.$moment(new Date()).format('YYYY-MM')
         ],
         startMonth: this.$moment(new Date()).format('YYYY-MM'),
-        endMonth: this.$moment(new Date()).format('YYYY-MM')
+        endMonth: this.$moment(new Date()).format('YYYY-MM'),
+        startDay: this.$moment(new Date()).format('YYYY-MM') + '-01',
+        endDay: this.$moment(new Date()).format('YYYY-MM-DD'),
+        deviceKind: '',
+        dates: [this.$moment(new Date()).format('YYYY-MM') + '-01', this.$moment(new Date()).format('YYYY-MM-DD')]
       },
       popup: {
         type: null,
@@ -282,8 +367,10 @@ export default {
         callDate: null,
         timeType: null,
         startMonth: null,
-        endMonth: null
-      }
+        endMonth: null,
+        branchPopup: false
+      },
+      deviceKindList: []
     }
   },
   computed: {
@@ -291,16 +378,16 @@ export default {
       const dynamicColumnHeader = this.headers.slice()
       if (this.searchForm.rsltTimeType === 'D') {
         // 시간별
-        dynamicColumnHeader.splice(0, 0, { text: '상담시간', value: 'callDate', align: 'center', width: '200px' })
+        dynamicColumnHeader.splice(0, 0, { text: '상담시간', value: 'dayText', align: 'center', width: '200px' })
       } else if (this.searchForm.rsltTimeType === 'C') {
         // 요일별
-        dynamicColumnHeader.splice(0, 0, { text: '상담요일', value: 'callDate', align: 'center', width: '200px' })
+        dynamicColumnHeader.splice(0, 0, { text: '상담요일', value: 'dayText', align: 'center', width: '200px' })
       } else if (this.searchForm.rsltTimeType === 'B') {
         // 월별
-        dynamicColumnHeader.splice(0, 0, { text: '상담월', value: 'callDate', align: 'center', width: '200px' })
+        dynamicColumnHeader.splice(0, 0, { text: '상담월', value: 'dayText', align: 'center', width: '200px' })
       } else {
         // 일별
-        dynamicColumnHeader.splice(0, 0, { text: '상담일', value: 'callDate', align: 'center', width: '200px' })
+        dynamicColumnHeader.splice(0, 0, { text: '상담일', value: 'dayText', align: 'center', width: '200px' })
       }
       return dynamicColumnHeader
     },
@@ -330,7 +417,7 @@ export default {
           const data = []
           m = 1
           while (m <= 24) {
-            data.push((datas[key].find((ch) => ch.callDate === `${m}시`) || { totCnt: 0 }).totCnt)
+            data.push((datas[key].find((ch) => ch.timeText === `${m}시`) || { totalCnt: 0 }).totalCnt)
             m++
           }
           datasets.push({
@@ -349,7 +436,7 @@ export default {
           const data = []
           m = 0
           while (m < 7) {
-            data.push((datas[key].find((ch) => ch.callDate === labels[m]) || { totCnt: 0 }).totCnt)
+            data.push((datas[key].find((ch) => ch.dayText === labels[m]) || { totalCnt: 0 }).totalCnt)
             m++
           }
           datasets.push({
@@ -371,7 +458,7 @@ export default {
           const data = []
           m = 1
           while (m <= 12) {
-            data.push((datas[key].find((ch) => ch.callDate === `${m}월`) || { totCnt: 0 }).totCnt)
+            data.push((datas[key].find((ch) => ch.dayText === `${m}월`) || { totalCnt: 0 }).totalCnt)
             m++
           }
           datasets.push({
@@ -383,8 +470,10 @@ export default {
         }
       } else {
         // 일별
-        let dateStart = this.$moment(`${this.searchForm.startMonth}-01`)
-        const dateEnd = this.$moment(`${this.searchForm.endMonth}-01`).endOf('month')
+        // this.searchForm.startMonth = this.searchForm.startDay
+        // this.searchForm.endMonth = this.searchForm.endDay
+        let dateStart = this.$moment(`${this.searchForm.startDay}`) // this.$moment(`${this.searchForm.startMonth}-01`)
+        const dateEnd = this.$moment(`${this.searchForm.endDay}`) // this.$moment(`${this.searchForm.endMonth}-01`).endOf('month')
         while (dateEnd.format('YYYYMMDD') >= dateStart.format('YYYYMMDD')) {
           labels.push(dateStart.format('MM-DD'))
           dateStart.add(1, 'days')
@@ -392,9 +481,9 @@ export default {
         let n = 0
         for (const key of keys) {
           const data = []
-          dateStart = this.$moment(`${this.searchForm.startMonth}-01`)
+          dateStart = this.$moment(`${this.searchForm.startDay}`) // this.$moment(`${this.searchForm.startMonth}-01`)
           while (dateEnd.format('YYYYMMDD') >= dateStart.format('YYYYMMDD')) {
-            data.push((datas[key].find((ch) => ch.callDate === dateStart.format('YYYYMMDD')) || { totCnt: 0 }).totCnt)
+            data.push((datas[key].find((ch) => ch.dayText === dateStart.format('YYYYMMDD')) || { totalCnt: 0 }).totalCnt)
             dateStart.add(1, 'days')
           }
           datasets.push({
@@ -608,6 +697,16 @@ export default {
       timeTypeList.push(...this.searchForm.itemsTimeTypeList)
       return timeTypeList
     },
+    cptdDeviceKindList () {
+      const deviceKindList = [
+        {
+          codeValue: this.$t('label.all'),
+          codeId: ''
+        }
+      ]
+      deviceKindList.push(...this.deviceKindList)
+      return deviceKindList
+    },
     cptdItemsTenantList () {
       const tenantList = []
       tenantList.push(...this.searchForm.itemsTenantList)
@@ -622,6 +721,18 @@ export default {
       set: function (value) {
         if (!value) {
           this.searchForm.months = []
+        }
+      }
+    },
+    dateRangeTextDT: {
+      get: function () {
+        const dateRange = this.searchForm.dates
+        dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+        return dateRange.join(' ~ ')
+      },
+      set: function (value) {
+        if (!value) {
+          this.searchForm.dates = []
         }
       }
     },
@@ -641,7 +752,7 @@ export default {
       return this.searchForm.year.substring(0, 4)
     },
     dialog: function () {
-      return this.popup.type !== null
+      return (this.popup.branchPopup === true) // this.popup.branchPopup !== null
     }
   },
   watch: {
@@ -650,12 +761,37 @@ export default {
         if (newVal) {
           setTimeout(() => {
             this.$refs.pickerYear.internalActivePicker = 'YEAR'
-          }, 1)
+          }, 100)
         }
       }
     }
   },
   methods: {
+    betweenConfirm: function (val) {
+      if (this.isEmpty(val.dates[1])) {
+        this.searchForm.dates[1] = val.dates[0]
+      }
+      this.$refs.pickerMenu.save(this.searchForm.dates)
+    },
+    searhPopup: function () {
+      this.popup.branchPopup = true
+    },
+    popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
+      if (obj != null && obj.length > 0) {
+        let txt = ''
+        for (let i = 0; i < obj.length; i++) {
+          if (i === (obj.length - 1)) {
+            txt = txt + obj[i].codeValue
+          } else {
+            txt = txt + obj[i].codeValue + ','
+          }
+          this.searchForm.codeIdArr.push(obj[i].codeId)
+        }
+        this.searchForm.branchNm = txt
+      }
+      this.popup = popup
+    },
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
@@ -668,6 +804,7 @@ export default {
           this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
           this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
+          this.fnc_getAiConciergeCartList()
         }
       )
     },
@@ -684,6 +821,9 @@ export default {
     fnc_getAiConciergeCartList: function () {
       this.drawChart = false
       const dateRange = []
+      // if (this.isEmpty(this.searchForm.timeType)) {
+      // return
+      // }
       if (this.searchForm.timeType === 'B') {
         if (this.pickerYearMenu === true) {
           this.strYear = String(this.$refs.pickerYear.inputYear)
@@ -694,6 +834,9 @@ export default {
         }
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
+      } else if (this.searchForm.timeType === 'A') {
+        dateRange.push(this.searchForm.dates[0])
+        dateRange.push(this.searchForm.dates[1])
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)
@@ -708,7 +851,10 @@ export default {
         timeType: this.searchForm.timeType,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        // startDay: this.searchForm.dates[0],
+        // endDay: this.searchForm.dates[1]
       }
+      console.log(' fnc_getAiConciergeCartList : ', JSON.stringify(searchCondition))
       this.pagination.loading = true
       getAiConciergeStatisticsChartList(searchCondition).then(
         response => {
@@ -721,12 +867,17 @@ export default {
           this.searchForm.rsltTimeType = this.searchForm.timeType
           this.searchForm.startMonth = this.searchForm.months[0]
           this.searchForm.endMonth = this.searchForm.months[1]
+          this.searchForm.startDay = this.searchForm.dates[0]
+          this.searchForm.endDay = this.searchForm.dates[1]
         })
         this.fnc_getAiConciergeStatisticsList()
       })
     },
     fnc_getAiConciergeStatisticsList: function () {
       const dateRange = []
+      // if (this.isEmpty(this.searchForm.timeType)) {
+      // return
+      // }
       if (this.searchForm.timeType === 'B') {
         if (this.pickerYearMenu === true) {
           this.strYear = String(this.$refs.pickerYear.inputYear)
@@ -737,12 +888,18 @@ export default {
         }
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
+      } else if (this.searchForm.timeType === 'A') {
+        dateRange.push(this.searchForm.dates[0])
+        dateRange.push(this.searchForm.dates[1])
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)
         }
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      }
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
       }
       // param setting
       const searchCondition = {
@@ -752,11 +909,16 @@ export default {
         itemsPerPage: this.pagination.itemsPerPage,
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
+        deviceKind: this.searchForm.deviceKind,
         timeType: this.searchForm.timeType,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        // startDay: this.searchForm.dates[0],
+        // endDay: this.searchForm.dates[1]
       }
       this.pagination.loading = true
+      console.log('fnc_getAiConciergeStatisticsList : ', JSON.stringify(searchCondition))
       getAiConciergeStatisticsList(searchCondition).then(
         response => {
           this.statisticsList = response.data.result.aiConciergeStatisticsList ? response.data.result.aiConciergeStatisticsList : []
@@ -784,6 +946,9 @@ export default {
         }
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
+      } else if (this.searchForm.timeType === 'A') {
+        dateRange.push(this.searchForm.dates[0])
+        dateRange.push(this.searchForm.dates[1])
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)
@@ -792,15 +957,19 @@ export default {
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
       }
       // param setting
+      // param setting
       const searchCondition = {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
+        deviceKind: this.searchForm.deviceKind,
         timeType: this.searchForm.timeType,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log('excelDown : ', JSON.stringify(searchCondition))
       reqAiConciergeStatisticsExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_AI컨시어지_기간별_집계.xlsx'
 
@@ -846,6 +1015,46 @@ export default {
           this.$router.push({ name: 'Login', query: { t: new Date().getTime() } })
         }
       )
+    },
+    isEmpty: function (x) {
+      return (x === null || x === undefined || x === '')
+    },
+    // 공통코드유형 정보 조회
+    getCmnCodeList: function () {
+      // param setting
+      const searchCondition = {
+        codeType: 'DEVICE',
+        useYn: 'Y'
+      }
+      // retrieve
+      // this.pagination.loading = true
+      getCmnCodeList(searchCondition).then(
+        response => {
+          this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
+          // paging setting
+          // this.pagination.totalRows = response.data.result.cmnCodeListCount
+          // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
+          // this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+        },
+        error => {
+          console.error(error)
+          const status = error.data.status
+          if (status === 403) {
+            this.$router.push({
+              name: '403',
+              query: { t: new Date().getTime() }
+            })
+          } else {
+            delete sessionStorage.accessToken
+            this.$router.push({
+              name: 'Login',
+              query: { t: new Date().getTime() }
+            })
+          }
+        }
+      ).finally(() => {
+        // this.pagination.loading = false
+      })
     }
   }
 }

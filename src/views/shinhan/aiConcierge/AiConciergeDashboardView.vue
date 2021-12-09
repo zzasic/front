@@ -32,36 +32,34 @@
       <!-- 사용량 -->
       <v-container class="sol_use" no-gutters fluid>
         <v-row class="sol_use__status-wrap" align="center" justify="center">
-          <v-card class="sol_use__status-total" color="#FFDCDC">
+        <v-chip-group>
+          <v-card class="sol_use__status-total" color="#e9eff5"><!-- #CEF279 -->
             전체
           </v-card>
           <v-card class="sol_use__status-value">
-            {{ totCnt }}
+            {{ totalCnt }}
           </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
-            CHATBOT
-          </v-card>
-          <v-card class="sol_use__status-value">
-            {{ chatBotCnt }}
-          </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
-            STT
+          <v-card class="sol_use__status-list" color="#ffb0c1">
+            음성
           </v-card>
           <v-card class="sol_use__status-value">
-            {{ sttCnt }}
+            {{ voiceCnt }}
           </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
-            TTS
-          </v-card>
-          <v-card class="sol_use__status-value">
-            {{ ttsCnt }}
-          </v-card>
-          <!-- <v-card class="sol_use__status-list" color="#C8FFFF">
-            TA
+        </v-chip-group>
+        <v-chip-group>
+          <v-card class="sol_use__status-list" color="#ffe6aa">
+            버튼
           </v-card>
           <v-card class="sol_use__status-value">
-            {{ taCnt }}
-          </v-card> -->
+            {{ buttonCnt }}
+          </v-card>
+          <v-card class="sol_use__status-list" color="#9ad0f5">
+            침묵
+          </v-card>
+          <v-card class="sol_use__status-value">
+            {{ silenceCnt }}
+          </v-card>
+          </v-chip-group>
         </v-row>
       </v-container>
       <v-card class="data-grid-wrap default">
@@ -123,8 +121,7 @@ export default {
   created () {
   },
   mounted () {
-    this.fnc_getAiConciergeSearchCondition()
-    this.fnc_getAiConciergeStatisticsChartList()
+    this.init()
   },
   data () {
     return {
@@ -134,11 +131,10 @@ export default {
       headers: [
         { text: '지점코드', value: 'branchCd', align: 'center', width: '200px' },
         { text: '지점명', value: 'branchNm', align: 'center', width: '250px' },
-        { text: '챗봇', value: 'chatBotCnt', align: 'center', width: '200px' },
-        { text: 'STT', value: 'sttCnt', align: 'center', width: '200px' },
-        { text: 'TTS', value: 'ttsCnt', align: 'center', width: '200px' },
-        // { text: 'TA', value: 'taCnt', align: 'center', width: '200px' },
-        { text: '전체', value: 'totCnt', align: 'center', width: '200px' }
+        { text: '음성(건)', value: 'voiceCnt', align: 'center', width: '200px' },
+        { text: '버튼(건)', value: 'buttonCnt', align: 'center', width: '200px' },
+        { text: '침묵(건)', value: 'silenceCnt', align: 'center', width: '200px' },
+        { text: '전체', value: 'totalCnt', align: 'center', width: '200px' }
       ],
       aiConciergeUseCnt: [],
       aiConciergeStatisticsChartList: [],
@@ -186,20 +182,20 @@ export default {
       const lineColors = []
       const backgroundColors = []
 
-      lineColors.push('#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff', '#ff9f40', '#04b4ae', '#df01a5', '#21610b', '#5f4c0b')
-      backgroundColors.push('#ffb0c1', '#9ad0f5', '#ffe6aa', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
+      lineColors.push('#ff6384', '#ffcd56', '#36a2eb', '#4bc0c0', '#9966ff', '#ff9f40', '#04b4ae', '#df01a5', '#21610b', '#5f4c0b')
+      backgroundColors.push('#ffb0c1', '#ffe6aa', '#9ad0f5', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
       // 시간별
-      let m = 1
+      let m = 0
       let n = 0
-      while (m <= 24) {
+      while (m <= 23) {
         labels.push(`${m}시`)
         m++
       }
       for (const key of keys) {
         const data = []
-        m = 1
-        while (m <= 24) {
-          data.push((datas[key].find((ch) => ch.callDate === `${m}시`) || { totCnt: 0 }).totCnt)
+        m = 0
+        while (m <= 23) {
+          data.push((datas[key].find((ch) => ch.dayText === `${m}시`) || { totalCnt: 0 }).totalCnt)
           m++
         }
         datasets.push({
@@ -264,30 +260,25 @@ export default {
       tenantList.push(...this.searchForm.itemsTenantList)
       return tenantList
     },
-    totCnt: function () {
-      let totCnt = 0
-      if (this.aiConciergeUseCnt[0]) { totCnt = this.aiConciergeUseCnt[0].totCnt }
-      return totCnt
+    totalCnt: function () {
+      let totalCnt = 0
+      if (this.aiConciergeUseCnt[0]) { totalCnt = this.aiConciergeUseCnt[0].totalCnt }
+      return totalCnt
     },
-    chatBotCnt: function () {
-      let chatBotCnt = 0
-      if (this.aiConciergeUseCnt[0]) { chatBotCnt = this.aiConciergeUseCnt[0].chatBotCnt }
-      return chatBotCnt
+    voiceCnt: function () {
+      let voiceCnt = 0
+      if (this.aiConciergeUseCnt[0]) { voiceCnt = this.aiConciergeUseCnt[0].voiceCnt }
+      return voiceCnt
     },
-    sttCnt: function () {
-      let sttCnt = 0
-      if (this.aiConciergeUseCnt[0]) { sttCnt = this.aiConciergeUseCnt[0].sttCnt }
-      return sttCnt
+    buttonCnt: function () {
+      let buttonCnt = 0
+      if (this.aiConciergeUseCnt[0]) { buttonCnt = this.aiConciergeUseCnt[0].buttonCnt }
+      return buttonCnt
     },
-    ttsCnt: function () {
-      let ttsCnt = 0
-      if (this.aiConciergeUseCnt[0]) { ttsCnt = this.aiConciergeUseCnt[0].ttsCnt }
-      return ttsCnt
-    },
-    taCnt: function () {
-      let taCnt = 0
-      if (this.aiConciergeUseCnt[0]) { taCnt = this.aiConciergeUseCnt[0].taCnt }
-      return taCnt
+    silenceCnt: function () {
+      let silenceCnt = 0
+      if (this.aiConciergeUseCnt[0]) { silenceCnt = this.aiConciergeUseCnt[0].silenceCnt }
+      return silenceCnt
     },
     // dateRangeText: {
     //   get: function () {
@@ -330,6 +321,10 @@ export default {
     }
   },
   methods: {
+    async init () {
+      await this.fnc_getAiConciergeSearchCondition()
+      this.fnc_getAiConciergeStatisticsChartList()
+    },
     fnc_getAiConciergeSearchCondition: function () {
       getAiConciergeSearchCondition().then(
         response => {
@@ -357,9 +352,13 @@ export default {
       // 대시보드 정보 조회
       getAiConciergeSearchList(searchCondition).then(
         response => {
-          this.aiConciergeStatisticsChartList = response.data.result.aiConciergeStatisticsChartList ? response.data.result.aiConciergeStatisticsChartList : []
           this.aiConciergeUseCnt = response.data.result.aiConciergeUseCount ? response.data.result.aiConciergeUseCount : []
+          this.aiConciergeStatisticsChartList = response.data.result.aiConciergeStatisticsChartList ? response.data.result.aiConciergeStatisticsChartList : []
           this.aiConciergeBotBranchTopFiveList = response.data.result.aiConciergeBotBranchTopFiveList ? response.data.result.aiConciergeBotBranchTopFiveList : []
+
+          console.log('상단 사용량 : ', this.aiConciergeUseCnt)
+          console.log('차트 : ', this.aiConciergeStatisticsChartList)
+          console.log('그리드 : ', this.aiConciergeBotBranchTopFiveList)
         }
       ).finally(() => {
         this.$nextTick(() => {

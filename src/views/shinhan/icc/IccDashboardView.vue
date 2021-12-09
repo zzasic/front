@@ -79,30 +79,34 @@
       <!-- 사용량 -->
       <v-container class="sol_use" no-gutters fluid>
         <v-row class="sol_use__status-wrap" align="center" justify="center">
-          <v-card class="sol_use__status-total" color="#FFDCDC">
+          <v-chip-group>
+          <v-card class="sol_use__status-total" color="#e9eff5">
             전체
           </v-card>
           <v-card class="sol_use__status-value">
             {{ totCnt }}
           </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
+          <v-card class="sol_use__status-list" color="#ffb0c1">
             STT
           </v-card>
           <v-card class="sol_use__status-value">
             {{ sttCnt }}
           </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
+          </v-chip-group>
+          <v-chip-group>
+          <v-card class="sol_use__status-list" color="#9ad0f5">
             TTS
           </v-card>
           <v-card class="sol_use__status-value">
             {{ ttsCnt }}
           </v-card>
-          <v-card class="sol_use__status-list" color="#C8FFFF">
+          <v-card class="sol_use__status-list" color="#ffe6aa">
             TA
           </v-card>
           <v-card class="sol_use__status-value">
             {{ taCnt }}
           </v-card>
+          </v-chip-group>
         </v-row>
       </v-container>
       <v-card class="data-grid-wrap default">
@@ -225,19 +229,19 @@ export default {
       const lineColors = []
       const backgroundColors = []
 
-      lineColors.push('#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff', '#ff9f40', '#04b4ae', '#df01a5', '#21610b', '#5f4c0b')
-      backgroundColors.push('#ffb0c1', '#9ad0f5', '#ffe6aa', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
+      lineColors.push('#ff6384', '#ffcd56', '#36a2eb', '#4bc0c0', '#9966ff', '#ff9f40', '#04b4ae', '#df01a5', '#21610b', '#5f4c0b')
+      backgroundColors.push('#ffb0c1', '#ffe6aa', '#9ad0f5', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
       // 시간별
-      let m = 1
+      let m = 0
       let n = 0
-      while (m <= 24) {
+      while (m <= 23) {
         labels.push(`${m}시`)
         m++
       }
       for (const key of keys) {
         const data = []
-        m = 1
-        while (m <= 24) {
+        m = 0
+        while (m <= 23) {
           data.push((datas[key].find((ch) => ch.callDate === `${m}시`) || { totCnt: 0 }).totCnt)
           m++
         }
