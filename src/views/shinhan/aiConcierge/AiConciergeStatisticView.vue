@@ -143,8 +143,8 @@
           <v-col cols="2" v-if="searchForm.timeType !== 'A' && searchForm.timeType !== 'B'">
             <v-menu
               content-class="date-picker"
-              ref="pickerMenu"
-              v-model="pickerMenu"
+              ref="pickerMonthMenu"
+              v-model="pickerMonthMenu"
               :return-value.sync="searchForm.months"
               :close-on-content-click="false"
               offset-y
@@ -317,6 +317,8 @@ export default {
       bgColors: ['blue', 'red', 'yellow', 'navy', 'maroon', 'lime', 'purple', 'orange', 'green', 'fuchsia', 'brown', 'teal', 'deeppink', 'olive', 'aqua'],
       chartType: 'ChartJS',
       pickerYearMenu: false,
+      pickerMenu: false,
+      pickerMonthMenu: false,
       drawChart: false,
       headers: [
         { text: '테넌트', value: 'tenantNm', align: 'center', width: '200px' },
@@ -407,16 +409,16 @@ export default {
       backgroundColors.push('#ffb0c1', '#9ad0f5', '#ffe6aa', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
       if (this.searchForm.rsltTimeType === 'D') {
         // 시간별
-        let m = 1
+        let m = 0
         let n = 0
-        while (m <= 24) {
+        while (m <= 23) {
           labels.push(`${m}시`)
           m++
         }
         for (const key of keys) {
           const data = []
-          m = 1
-          while (m <= 24) {
+          m = 0
+          while (m <= 23) {
             data.push((datas[key].find((ch) => ch.timeText === `${m}시`) || { totalCnt: 0 }).totalCnt)
             m++
           }
@@ -821,9 +823,6 @@ export default {
     fnc_getAiConciergeCartList: function () {
       this.drawChart = false
       const dateRange = []
-      // if (this.isEmpty(this.searchForm.timeType)) {
-      // return
-      // }
       if (this.searchForm.timeType === 'B') {
         if (this.pickerYearMenu === true) {
           this.strYear = String(this.$refs.pickerYear.inputYear)
@@ -835,11 +834,17 @@ export default {
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
       } else if (this.searchForm.timeType === 'A') {
+        if (this.isEmpty(this.searchForm.dates[1])) {
+          this.searchForm.dates[1] = this.searchForm.dates[0]
+        }
         dateRange.push(this.searchForm.dates[0])
         dateRange.push(this.searchForm.dates[1])
-      } else {
         if (this.pickerMenu === true) {
-          this.$refs.pickerMenu.save(this.searchForm.months)
+          this.$refs.pickerMenu.save(this.searchForm.dates)
+        }
+      } else {
+        if (this.pickerMonthMenu === true) {
+          this.$refs.pickerMonthMenu.save(this.searchForm.months)
         }
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
@@ -848,6 +853,8 @@ export default {
       const searchCondition = {
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
+        deviceKind: this.searchForm.deviceKind,
         timeType: this.searchForm.timeType,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
@@ -875,9 +882,6 @@ export default {
     },
     fnc_getAiConciergeStatisticsList: function () {
       const dateRange = []
-      // if (this.isEmpty(this.searchForm.timeType)) {
-      // return
-      // }
       if (this.searchForm.timeType === 'B') {
         if (this.pickerYearMenu === true) {
           this.strYear = String(this.$refs.pickerYear.inputYear)
@@ -889,8 +893,14 @@ export default {
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
       } else if (this.searchForm.timeType === 'A') {
+        if (this.isEmpty(this.searchForm.dates[1])) {
+          this.searchForm.dates[1] = this.searchForm.dates[0]
+        }
         dateRange.push(this.searchForm.dates[0])
         dateRange.push(this.searchForm.dates[1])
+        if (this.pickerMenu === true) {
+          this.$refs.pickerMenu.save(this.searchForm.dates)
+        }
       } else {
         if (this.pickerMenu === true) {
           this.$refs.pickerMenu.save(this.searchForm.months)
@@ -947,16 +957,21 @@ export default {
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
       } else if (this.searchForm.timeType === 'A') {
+        if (this.isEmpty(this.searchForm.dates[1])) {
+          this.searchForm.dates[1] = this.searchForm.dates[0]
+        }
         dateRange.push(this.searchForm.dates[0])
         dateRange.push(this.searchForm.dates[1])
-      } else {
         if (this.pickerMenu === true) {
-          this.$refs.pickerMenu.save(this.searchForm.months)
+          this.$refs.pickerMenu.save(this.searchForm.dates)
+        }
+      } else {
+        if (this.pickerMonthMenu === true) {
+          this.$refs.pickerMonthMenu.save(this.searchForm.months)
         }
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
       }
-      // param setting
       // param setting
       const searchCondition = {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
@@ -969,7 +984,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log('excelDown : ', JSON.stringify(searchCondition))
+      console.log(' excelDown ', JSON.stringify(searchCondition))
       reqAiConciergeStatisticsExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_AI컨시어지_기간별_집계.xlsx'
 

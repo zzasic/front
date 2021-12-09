@@ -51,7 +51,8 @@ export default {
           if (status === 200) {
             for (const appCatalog of response.data.result.catalogList) {
               // sessionStorage에 존재하는지 확인
-              if (sessionStorage.systemIds.indexOf(appCatalog.serviceId.substr(0, 3)) !== -1) {
+              console.log('세션스토리지', sessionStorage.systemIds)
+              if (sessionStorage.systemIds.indexOf('AICC') !== -1 || sessionStorage.systemIds.indexOf(appCatalog.serviceId.substr(0, 3)) !== -1) {
                 appCatalog.title = appCatalog.serviceNm
                 appCatalog.isNew = false
                 appCatalog.image = require('@/assets/image/' + String(appCatalog.iconUrl))

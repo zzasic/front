@@ -220,7 +220,7 @@
             </v-radio-group>
           </v-col>
         </v-row>
-        <v-row>
+        <!-- <v-row>
           <v-col>
             <PageSectionTitle
               :title="sectionTitle"
@@ -263,7 +263,7 @@
               </vuescroll>
             </v-card>
           </v-col>
-        </v-row>
+        </v-row> -->
       </v-container>
       </v-form>
       <v-card-actions class="submit-btns-group">

@@ -335,7 +335,12 @@ export default {
       return systemInfoList
     },
     cptdItemsTenantList () {
-      const tenantList = []
+      const tenantList = [
+        {
+          text: this.$t('label.all'), // text: this.$t('label.choice'),
+          value: ''
+        }
+      ]
       tenantList.push(...this.searchForm.itemsTenantList)
       return tenantList
     },
@@ -384,7 +389,7 @@ export default {
           this.searchForm.itemsSystemInfoList = response.data.result.systemInfoList
           // this.searchForm.system = this.searchForm.itemsSystemInfoList[0].value
           this.searchForm.itemsTenantList = response.data.result.tenantList
-          this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
+          // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
         }
       )
     },
@@ -418,6 +423,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
+      console.log('searchCondition : ', JSON.stringify(searchCondition))
       this.pagination.loading = true
       getUsageMeteringChartList(searchCondition).then(
         response => {

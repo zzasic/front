@@ -76,9 +76,10 @@
                     </label>
                   </v-col>
                   <v-col cols="8" class="pr-0 col-reset">
-                    <v-btn v-if="getppolicy.termsUse === 'true'" text class="btn-reset btn-privacy-policy" @click="terms" :ripple="false">
+                    <!-- 개인정보처리방침 -->
+                    <!-- <v-btn v-if="getppolicy.termsUse === 'true'" text class="btn-reset btn-privacy-policy" @click="terms" :ripple="false">
                       {{ $t('login.privacyPolicy')}}
-                    </v-btn>
+                    </v-btn> -->
                     <!-- 비밀번호 초기화 -->
                     <!-- <v-btn text class="btn-reset" @click="resetPassword" :ripple="false">
                       {{ $t('login.resetPassword')}}

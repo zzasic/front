@@ -208,13 +208,17 @@
       </div>
     </vuescroll>
     <div v-for="chat in chats" :key="chat.chatId">
-      <ai-concierge-detail-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
+      <systemCall-history-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
     </div>
+    <!-- <div v-for="chat in chats" :key="chat.chatId">
+      <ai-concierge-detail-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
+    </div> -->
   </div>
 </template>
 
 <script>
-import AiConciergeDetailPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
+import SystemCallHistoryPopup from '@/components/SystemCallHistoryPopup'
+// import AiConciergeDetailPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
 import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 
 import {
@@ -230,7 +234,8 @@ import datepicker from '@/plugins/datepicker'
 export default {
   name: 'ListAiConciergeView',
   components: {
-    AiConciergeDetailPopup,
+    SystemCallHistoryPopup,
+    // AiConciergeDetailPopup,
     PopupSearchBanch
   },
   mixins: [datepicker],
@@ -469,6 +474,7 @@ export default {
         callId: aiConciergeList.callId,
         // extension: inboundCall.extension,
         counselor: {
+          callYn: aiConciergeList.commYn,
           tenantNm: aiConciergeList.tenantNm
         },
         visible: true

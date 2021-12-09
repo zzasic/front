@@ -126,7 +126,7 @@
       </div>
       <div class="btn-group align-right">
         <!-- <v-btn color="btn-primary" text @click.stop="batchBtn">{{ $t('button.batch')}}</v-btn> -->
-        <v-btn color="btn-primary" text @click.stop="setUserList">{{ $t('button.new')}}</v-btn>
+        <!-- <v-btn color="btn-primary" text @click.stop="setUserList">{{ $t('button.new')}}</v-btn> -->
       </div>
       <v-dialog
         v-model="dialog"

@@ -28,13 +28,13 @@
       </ul>
     </vuescroll>
   </div>
-  <div v-if="getppolicy.termsUse === 'true'" class="copyright">
+  <!-- 개인정보처리방침 -->
+  <!-- <div v-if="getppolicy.termsUse === 'true'" class="copyright">
     <v-btn text class="btn-reset" @click="terms" :ripple="false">
       {{ $t('login.privacyPolicy') }}
 
     </v-btn>
-    <!-- <br />Copyright ©2020 LG CNS. All right reserved. -->
-  </div>
+  </div> -->
   <div v-if="locale==='en'">
     <v-dialog
       v-model="dialogLookupTerms.popupTermsViewEn"

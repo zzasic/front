@@ -116,8 +116,6 @@ export default {
   created () {},
   mounted () {
     // console.log('CallState')
-    // const influxUrl = document.referrer
-    // alert(influxUrl)
     this.init()
   },
   computed: {

@@ -151,8 +151,8 @@
           <v-col cols="2" v-if="searchForm.timeType !== 'A' && searchForm.timeType !== 'B'">
             <v-menu
               content-class="date-picker"
-              ref="pickerMenu"
-              v-model="pickerMenu"
+              ref="pickerMonthMenu"
+              v-model="pickerMonthMenu"
               :return-value.sync="searchForm.months"
               :close-on-content-click="false"
               offset-y
@@ -310,6 +310,8 @@ export default {
       ],
       chartType: 'ChartJS',
       pickerYearMenu: false,
+      pickerMenu: false,
+      pickerMonthMenu: false,
       drawChart: false,
       headers: [
         { text: '테넌트', value: 'tenantNm', align: 'center', width: '200px' },
@@ -721,11 +723,17 @@ export default {
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
       } else if (this.searchForm.timeType === 'A') {
+        if (this.isEmpty(this.searchForm.dates[1])) {
+          this.searchForm.dates[1] = this.searchForm.dates[0]
+        }
         dateRange.push(this.searchForm.dates[0])
         dateRange.push(this.searchForm.dates[1])
-      } else {
         if (this.pickerMenu === true) {
-          this.$refs.pickerMenu.save(this.searchForm.months)
+          this.$refs.pickerMenu.save(this.searchForm.dates)
+        }
+      } else {
+        if (this.pickerMonthMenu === true) {
+          this.$refs.pickerMonthMenu.save(this.searchForm.months)
         }
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
@@ -773,11 +781,17 @@ export default {
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
       } else if (this.searchForm.timeType === 'A') {
+        if (this.isEmpty(this.searchForm.dates[1])) {
+          this.searchForm.dates[1] = this.searchForm.dates[0]
+        }
         dateRange.push(this.searchForm.dates[0])
         dateRange.push(this.searchForm.dates[1])
-      } else {
         if (this.pickerMenu === true) {
-          this.$refs.pickerMenu.save(this.searchForm.months)
+          this.$refs.pickerMenu.save(this.searchForm.dates)
+        }
+      } else {
+        if (this.pickerMonthMenu === true) {
+          this.$refs.pickerMonthMenu.save(this.searchForm.months)
         }
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
@@ -843,16 +857,17 @@ export default {
         dateRange.push(this.strYear.substring(0, 4) + '-01')
         dateRange.push(this.strYear.substring(0, 4) + '-12')
       } else if (this.searchForm.timeType === 'A') {
-        dateRange.push(this.searchForm.dates[0])
-        if (!this.isEmpty(this.searchForm.dates[1])) {
-          dateRange.push(this.searchForm.dates[1])
-        } else {
+        if (this.isEmpty(this.searchForm.dates[1])) {
           this.searchForm.dates[1] = this.searchForm.dates[0]
-          dateRange.push(this.searchForm.dates[0])
+        }
+        dateRange.push(this.searchForm.dates[0])
+        dateRange.push(this.searchForm.dates[1])
+        if (this.pickerMenu === true) {
+          this.$refs.pickerMenu.save(this.searchForm.dates)
         }
       } else {
-        if (this.pickerMenu === true) {
-          this.$refs.pickerMenu.save(this.searchForm.months)
+        if (this.pickerMonthMenu === true) {
+          this.$refs.pickerMonthMenu.save(this.searchForm.months)
         }
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })

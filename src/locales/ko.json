@@ -263,7 +263,7 @@
             "userAuthCd": "권한",
             "login": {
                 "useApprovalReqReturnMsg_5401": "로그인 아이디 또는 비밀번호를 확인해주세요.",
-                "useApprovalReqReturnMsg_5403": "canvas 비밀번호 5회 입력 오류입니다. 신한은행 SSO 비밀번호 초기화를 진행해주세요.",
+                "useApprovalReqReturnMsg_5403": "캔버스 비밀번호 5회 이상 오류입니다. AI Connect 사용을 위해서 캔버스 비밀번호 초기화를 해주세요.",
                 "useApprovalReqReturnMsg_5410": "사용자 정보가 존재하지 않습니다. 관리자에게 문의하세요.",
                 "useApprovalReqReturnMsg_NEW": "승인 요청이 완료되었습니다.",
                 "useApprovalReqReturnMsg_APL": "승인 요청이 완료된 사용자 입니다. 로그인 해주세요.",

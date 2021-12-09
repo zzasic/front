@@ -109,7 +109,7 @@
                     고객
                   </span>
                 </div>
-                <div class="message">
+                <div v-if="hist.moudule !== 'STT'" class="message">
                   <div class="message-content" v-html="replaceHtml(hist.contents)"></div>
                   <div class="message-date">
                     {{ $moment(hist.timestamp, 'x').zone('+09:00').format('YYYY-MM-DD HH:mm:ss') }}
@@ -181,7 +181,8 @@ export default {
       scrollLeft1: '',
       scrollLeft2: '',
       sttHist: {},
-      isActive: false
+      isActive: false,
+      recUrl: ''
     }
   },
   computed: {
@@ -329,6 +330,7 @@ export default {
             // 조회결과
             this.call = response.data.result.systemCall
             this.systemCallHistories = response.data.result.systemCallHistoryList
+            this.recUrl = this.call.recUrl
           }
         },
         error => {
@@ -390,7 +392,7 @@ export default {
     },
     */
     sttClick (hist) {
-      if (hist.moudule === 'STT') {
+      if (hist.moudule === 'CHATBOT_IN') {
         if (hist.historyId === this.sttHist.historyId) {
           this.sttHist = {}
         } else {
@@ -407,7 +409,7 @@ export default {
     },
     recordPlay () {
       // window.open(process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO=')
-      window.open('http://172.23.248.203:8080' + '/recseePlayer?SEQNO=' + this.call.callId, '_blank', 'width=850, height=400, left=250, top=300, location=no')
+      window.open(this.recUrl + '/recseePlayer?SEQNO=' + this.call.callId, '_blank', 'width=850, height=400, left=250, top=300, location=no')
       // location.href = process.env.VUE_APP_PLAYER_URL + '/recseePlayer?SEQNO='
       // this.getPlayer()
       // console.log(process.env.VUE_APP_PLAYER_URL + ' ==counselor=== ' + JSON.stringify(this.counselor))

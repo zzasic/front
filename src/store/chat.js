@@ -200,8 +200,8 @@ export default {
             (response) => {
               const status = response.data.status
               if (status === 200) {
-                // console.log(' chat counselorList ' + JSON.stringify(response.data.result.counselorList))
-                // console.log(' chat systemCounselorList ' + JSON.stringify(response.data.result.systemCounselorList))
+                // console.log(' response.data.result.counselorList ' + JSON.stringify(response.data.result.counselorList))
+                // console.log(' response.data.result.systemCounselorList ' + JSON.stringify(response.data.result.systemCounselorList))
                 // 조회결과
                 // 1. AICC 상담원 목록 조회 후, 초기값 등록
                 // 2. 인공인간, 불판 초기값 등록

@@ -304,7 +304,9 @@ export default {
           value: ''
         }
       ]
-      systemIdList.push(...this.systemIdList)
+      if (this.searchForm.reqStatus !== 'REQ') {
+        systemIdList.push(...this.systemIdList)
+      }
       return systemIdList
     },
     cptdStatusList () {

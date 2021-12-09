@@ -35,14 +35,16 @@ export default {
       if (item && item.serviceUrl) {
         // 챗봇
         const agent = navigator.userAgent.toLowerCase()
-        if ((navigator.appName === 'Netscape' && agent.indexOf('trident') !== -1) || (agent.indexOf('msie') !== -1)) {
-          // ie일 경우
-          alert('Chatbot서비스는 Chrome에 최적화되어 있습니다.\nChrome 브라우저를 사용해주시기 바랍니다.')
-          return
+        if (item.serviceId !== 'AIH_NLU') {
+          if ((navigator.appName === 'Netscape' && agent.indexOf('trident') !== -1) || (agent.indexOf('msie') !== -1)) {
+            // ie일 경우
+            alert('Chatbot서비스는 Chrome에 최적화되어 있습니다.\nChrome 브라우저를 사용해주시기 바랍니다.')
+            return
+          }
         }
         // form 태그 생성
         var form = document.createElement('form')
-        form.setAttribute('target', 'blank')
+        form.setAttribute('target', '_blank')
         form.setAttribute('method', 'POST')
         form.setAttribute('action', `${item.serviceUrl}`)
 
