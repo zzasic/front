@@ -360,7 +360,6 @@ export default {
       for (let i = 0; i < this.xlsDatas.length; i++) {
         selected = [...selected, ...this.xlsDatas[i].selected]
       }
-      console.log(selected)
       if (selected.length > 0) {
         this.$emit('popupAction', {
           createView: false,

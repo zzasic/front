@@ -40,7 +40,7 @@
               clearable
             ></v-select>
           </v-col>
-          <v-col cols="1">
+          <v-col cols="2">
             <v-text-field
               class="default search"
               v-model="searchForm.branchNm"
@@ -48,7 +48,8 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="searchBtn"
+              readonly
+              @click="searhPopup"
             ></v-text-field>
           </v-col>
           <v-col cols="1">
@@ -174,6 +175,17 @@
           :total-visible="10"
         ></v-pagination>
       </div>
+      <v-dialog
+        v-model="dialog"
+        persistent
+        :max-width="600"
+        hide-overlay
+        scrollable v-if="popup.branchPopup === true"
+        >
+      <PopupSearchBanch
+      @popupAction="popupAction"
+      />
+    </v-dialog>
       <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
         <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
       </div>
@@ -193,11 +205,13 @@ import {
 import datepicker from '@/plugins/datepicker'
 // TODO
 import InboundHistoryPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 
 export default {
   name: 'ListSolutionView',
   components: {
-    InboundHistoryPopup
+    InboundHistoryPopup,
+    PopupSearchBanch
   },
   mixins: [datepicker],
   created () {
@@ -252,6 +266,7 @@ export default {
         itemsTenantList: [],
         tenant: '',
         branchNm: '',
+        codeIdArr: [],
         moudule: '',
         deviceNo: '',
         status: '',
@@ -259,7 +274,10 @@ export default {
         dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
       },
       chats: [],
-      authOpt: true
+      authOpt: true,
+      popup: {
+        branchPopup: false
+      }
     }
   },
 
@@ -334,6 +352,28 @@ export default {
   },
 
   methods: {
+    searhPopup: function () {
+      this.popup.branchPopup = true
+    },
+    popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
+      if (obj != null && obj.length > 0) {
+        let txt = ''
+        for (let i = 0; i < obj.length; i++) {
+          if (i === (obj.length - 1)) {
+            txt = txt + obj[i].codeValue
+          } else {
+            txt = txt + obj[i].codeValue + ','
+          }
+          this.searchForm.codeIdArr.push(obj[i].codeId)
+        }
+        this.searchForm.branchNm = txt
+      }
+      this.popup = popup
+    },
+    dialog: function () {
+      return (this.popup.branchPopup === true)
+    },
     getContents (str) {
       let content
       let setStr
@@ -378,6 +418,9 @@ export default {
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         page: this.pagination.page,
@@ -386,7 +429,8 @@ export default {
         itemsPerPage: this.pagination.itemsPerPage,
         systemId: this.searchForm.system,
         tenantId: this.searchForm.tenant,
-        branchNm: this.searchForm.branchNm,
+        // branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         moudule: this.searchForm.moudule,
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,
@@ -416,6 +460,9 @@ export default {
         this.pagination.loading = false
       })
     },
+    isEmpty: function (x) {
+      return (x === null || x === undefined || x === '')
+    },
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
@@ -428,13 +475,17 @@ export default {
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         systemId: this.searchForm.system,
         tenantId: this.searchForm.tenant,
-        branchNm: this.searchForm.branchNm,
+        // branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         moudule: this.searchForm.moudule,
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,

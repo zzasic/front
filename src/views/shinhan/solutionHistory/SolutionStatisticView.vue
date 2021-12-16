@@ -40,7 +40,7 @@
               clearable
             ></v-select>
           </v-col>
-          <v-col cols="1">
+          <v-col cols="2">
             <v-text-field
               class="default search"
               v-model="searchForm.branchNm"
@@ -48,7 +48,8 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="searchBtn"
+              readonly
+              @click="searhPopup"
             ></v-text-field>
           </v-col>
           <v-col cols="2">
@@ -192,8 +193,8 @@
                 @click:date="dateClick"
               >
                 <v-spacer></v-spacer>
-                <v-btn text :ripple="false" color="pink" @click="pickerMenu = false">{{ $t('button.close')}}</v-btn>
-                <v-btn text :ripple="false" color="pink" @click="$refs.pickerMenu.save(searchForm.months)">{{ $t('button.confirm')}}</v-btn>
+                <v-btn text :ripple="false" color="pink" @click="pickerMonthMenu = false">{{ $t('button.close')}}</v-btn>
+                <v-btn text :ripple="false" color="pink" @click="$refs.pickerMonthMenu.save(searchForm.months)">{{ $t('button.confirm')}}</v-btn>
               </v-date-picker>
             </v-menu>
           </v-col>
@@ -261,6 +262,17 @@
           :total-visible="10"
         ></v-pagination>
       </div>
+      <v-dialog
+        v-model="dialogBranch"
+        persistent
+        :max-width="600"
+        hide-overlay
+        scrollable v-if="popup.branchPopup === true"
+        >
+      <PopupSearchBanch
+      @popupAction="popupAction"
+      />
+    </v-dialog>
       <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
         <!-- <v-btn color="btn-primary" text @click.stop="getManualStatistics" v-auth="['SAU']">{{ $t('button.Statistics')}}</v-btn> -->
         <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
@@ -271,6 +283,7 @@
 
 <script>
 import BarCharts from '@/components/chart/BarCharts'
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 import {
   getSolutionHistorySearchCondition,
   getSolutionHistoryUsageList,
@@ -286,7 +299,8 @@ export default {
   name: 'SolutionStatisticsView',
   components: {
     // GChart,
-    BarCharts
+    BarCharts,
+    PopupSearchBanch
   },
   mixins: [datepicker],
   created () {
@@ -342,6 +356,7 @@ export default {
         tenant: '',
         moudule: '',
         brancdNm: '',
+        codeIdArr: [],
         itemsTimeTypeList: [],
         timeType: '',
         rsltTimeType: '',
@@ -362,7 +377,8 @@ export default {
         callDate: null,
         timeType: null,
         startMonth: null,
-        endMonth: null
+        endMonth: null,
+        branchPopup: false
       },
       authOpt: true
     }
@@ -665,12 +681,34 @@ export default {
         if (newVal) {
           setTimeout(() => {
             this.$refs.pickerYear.internalActivePicker = 'YEAR'
-          }, 1)
+          }, 100)
         }
       }
     }
   },
   methods: {
+    searhPopup: function () {
+      this.popup.branchPopup = true
+    },
+    popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
+      if (obj != null && obj.length > 0) {
+        let txt = ''
+        for (let i = 0; i < obj.length; i++) {
+          if (i === (obj.length - 1)) {
+            txt = txt + obj[i].codeValue
+          } else {
+            txt = txt + obj[i].codeValue + ','
+          }
+          this.searchForm.codeIdArr.push(obj[i].codeId)
+        }
+        this.searchForm.branchNm = txt
+      }
+      this.popup = popup
+    },
+    dialogBranch: function () {
+      return (this.popup.branchPopup === true)
+    },
     betweenConfirm: function (val) {
       if (this.isEmpty(val.dates[1])) {
         this.searchForm.dates[1] = val.dates[0]
@@ -738,12 +776,16 @@ export default {
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
       }
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         systemId: this.searchForm.systemId,
         tenantId: this.searchForm.tenant,
         moudule: this.searchForm.moudule,
-        branchNm: this.searchForm.branchNm,
+        // branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         timeType: this.searchForm.timeType,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
@@ -796,6 +838,9 @@ export default {
         dateRange.push(...this.searchForm.months)
         dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
       }
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       console.log('sortBy : ', this.options.sortBy === undefined)
       // param setting
       const searchCondition = {
@@ -806,7 +851,8 @@ export default {
         systemId: this.searchForm.systemId,
         tenantId: this.searchForm.tenant,
         moudule: this.searchForm.moudule,
-        branchNm: this.searchForm.branchNm,
+        // branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         timeType: this.searchForm.timeType,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''

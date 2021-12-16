@@ -436,7 +436,6 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log('=====searchCondition=====' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getAiConciergeHistoryList(searchCondition).then(
         response => {
@@ -548,7 +547,6 @@ export default {
       getCmnCodeList(searchCondition).then(
         response => {
           this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
-          console.log(' this.deviceKind ' + JSON.stringify(this.deviceKind))
           // paging setting
           // this.pagination.totalRows = response.data.result.cmnCodeListCount
           // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)

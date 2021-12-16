@@ -184,8 +184,8 @@
                 @click:date="dateClick"
               >
                 <v-spacer></v-spacer>
-                <v-btn text :ripple="false" color="pink" @click="pickerMenu = false">{{ $t('button.close')}}</v-btn>
-                <v-btn text :ripple="false" color="pink" @click="$refs.pickerMenu.save(searchForm.months)">{{ $t('button.confirm')}}</v-btn>
+                <v-btn text :ripple="false" color="pink" @click="pickerMonthMenu = false">{{ $t('button.close')}}</v-btn>
+                <v-btn text :ripple="false" color="pink" @click="$refs.pickerMonthMenu.save(searchForm.months)">{{ $t('button.confirm')}}</v-btn>
               </v-date-picker>
             </v-menu>
           </v-col>
@@ -236,7 +236,7 @@
           :loading-text="$t('message.loading')"
         >
           <template v-slot:item="props">
-            <tr>
+            <tr @click="detailStatiatics(props.item)">
               <td class="text-center">{{ props.item.dayText }}</td>
               <td class="text-center">{{ props.item.tenantNm }}</td>
               <td class="text-center">{{ props.item.branchCd }}</td>
@@ -270,10 +270,20 @@
         persistent
         :max-width="600"
         hide-overlay
-        scrollable v-if="popup.branchPopup === true"
+        scrollable
         >
       <PopupSearchBanch
       @popupAction="popupAction"
+      />
+    </v-dialog>
+      <v-dialog
+        v-model="dialogStatiaticsView"
+        persistent
+        hide-overlay
+        scrollable
+        >
+      <PopupBranchStatiaticsView
+      @popupAction="popupAction" :item="itemObj"
       />
     </v-dialog>
       <div class="btn-group align-right">
@@ -287,6 +297,7 @@
 <script>
 import BarCharts from '@/components/chart/BarCharts'
 import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
+import PopupBranchStatiaticsView from '@/views/shinhan/aiConcierge/PopupBranchStatiaticsView'
 import {
   getAiConciergeSearchCondition, // 초기 조회 조건
   getAiConciergeStatisticsChartList, // 차트 목록 조회
@@ -303,7 +314,8 @@ export default {
   components: {
     // GChart,
     BarCharts,
-    PopupSearchBanch
+    PopupSearchBanch,
+    PopupBranchStatiaticsView
   },
   mixins: [datepicker],
   created () {
@@ -370,9 +382,13 @@ export default {
         timeType: null,
         startMonth: null,
         endMonth: null,
-        branchPopup: false
+        branchPopup: false,
+        statisticPopup: false
       },
-      deviceKindList: []
+      popupBranchPopup: false,
+      popupStatisticPopup: false,
+      deviceKindList: [],
+      itemObj: []
     }
   },
   computed: {
@@ -392,6 +408,14 @@ export default {
         dynamicColumnHeader.splice(0, 0, { text: '상담일', value: 'dayText', align: 'center', width: '200px' })
       }
       return dynamicColumnHeader
+    },
+    dialog: function () {
+      console.log(' dialog ')
+      return (this.popupBranchPopup === true) // this.popup.branchPopup !== null
+    },
+    dialogStatiaticsView: function () {
+      console.log(' dialogStatiaticsView ')
+      return (this.popupStatisticPopup === true)
     },
     statisticsChartJSData: function () {
       const datas = this.statisticsChartList.reduce((acc, val) => {
@@ -419,7 +443,7 @@ export default {
           const data = []
           m = 0
           while (m <= 23) {
-            data.push((datas[key].find((ch) => ch.timeText === `${m}시`) || { totalCnt: 0 }).totalCnt)
+            data.push((datas[key].find((ch) => ch.dayText === `${m}시`) || { totalCnt: 0 }).totalCnt)
             m++
           }
           datasets.push({
@@ -752,9 +776,6 @@ export default {
     },
     yearText: function () {
       return this.searchForm.year.substring(0, 4)
-    },
-    dialog: function () {
-      return (this.popup.branchPopup === true) // this.popup.branchPopup !== null
     }
   },
   watch: {
@@ -769,6 +790,38 @@ export default {
     }
   },
   methods: {
+    detailStatiatics: function (obj) {
+      // console.log(this.searchForm.rsltTimeType + '20211201'.substring(4, 6) + '----' + String(new Date('2021', '02', 0).getDate()) + '=====' + JSON.stringify(this.searchForm.itemsTimeTypeList))
+      let startDt
+      let endDt
+      // 시작일 종료일 세팅
+      const year = this.searchForm.year
+      const lastDt = function (val) { return String(new Date(val.substring(0, 4), val.substring(5, 7), 0).getDate()) } // 월의 마지막일 가져오기
+      if (this.searchForm.rsltTimeType === 'A') { // 일
+        startDt = this.$moment(obj.dayValue).format('YYYY-MM-DD')
+        endDt = this.$moment(obj.dayValue).format('YYYY-MM-DD')
+      } else if (this.searchForm.rsltTimeType === 'B') { // 월
+        // 시간유형이 월일 경우 dayVlaue 값을 '202110' 형식으로 받음
+        startDt = this.$moment(year + obj.dayValue + '01').format('YYYY-MM-DD')
+        endDt = this.$moment(year + obj.dayValue + lastDt(obj.dayValue)).format('YYYY-MM-DD')
+      } else if (this.searchForm.rsltTimeType === 'C') { // 시간
+        startDt = this.searchForm.startMonth + '-01'
+        endDt = this.searchForm.endMonth + '-' + lastDt(this.searchForm.endMonth)
+      } else if (this.searchForm.rsltTimeType === 'D') { // 요일
+        startDt = this.searchForm.startMonth + '-01'
+        endDt = this.searchForm.endMonth + '-' + lastDt(this.searchForm.endMonth)
+      }
+      this.itemObj = {
+        tenantId: obj.tenantId, // 테넌트ID
+        branchCd: obj.branchCd, // 지점코드
+        startDate: startDt, // 시작일
+        endDate: endDt, // 종료일
+        timeType: this.searchForm.rsltTimeType, // 시간유형
+        timeValue: obj.dayValue
+      } // obj
+      console.log(' this.itemObj ' + JSON.stringify(this.itemObj))
+      this.popupStatisticPopup = true
+    },
     betweenConfirm: function (val) {
       if (this.isEmpty(val.dates[1])) {
         this.searchForm.dates[1] = val.dates[0]
@@ -776,23 +829,27 @@ export default {
       this.$refs.pickerMenu.save(this.searchForm.dates)
     },
     searhPopup: function () {
-      this.popup.branchPopup = true
+      this.popupBranchPopup = true
     },
     popupAction: function (popup, obj) {
-      this.searchForm.codeIdArr = []
-      if (obj != null && obj.length > 0) {
-        let txt = ''
-        for (let i = 0; i < obj.length; i++) {
-          if (i === (obj.length - 1)) {
-            txt = txt + obj[i].codeValue
-          } else {
-            txt = txt + obj[i].codeValue + ','
+      if (this.popupBranchPopup) {
+        this.searchForm.codeIdArr = []
+        if (obj != null && obj.length > 0) {
+          let txt = ''
+          for (let i = 0; i < obj.length; i++) {
+            if (i === (obj.length - 1)) {
+              txt = txt + obj[i].codeValue
+            } else {
+              txt = txt + obj[i].codeValue + ','
+            }
+            this.searchForm.codeIdArr.push(obj[i].codeId)
           }
-          this.searchForm.codeIdArr.push(obj[i].codeId)
-        }
-        this.searchForm.branchNm = txt
+          this.searchForm.branchNm = txt
+        } // branchPopup: false,        statisticPopup: falsethis.popup[`${type}`] = !this.popup[`${type}`];
+        this.popupBranchPopup = !this.popupBranchPopup
+      } else if (this.popupStatisticPopup) {
+        this.popupStatisticPopup = !this.popupStatisticPopup
       }
-      this.popup = popup
     },
     // 검색버튼
     searchBtn: function () {
@@ -931,6 +988,7 @@ export default {
       console.log('fnc_getAiConciergeStatisticsList : ', JSON.stringify(searchCondition))
       getAiConciergeStatisticsList(searchCondition).then(
         response => {
+          console.log('fnc_getAiConciergeStatisticsList : ', JSON.stringify(response.data.result.aiConciergeStatisticsList))
           this.statisticsList = response.data.result.aiConciergeStatisticsList ? response.data.result.aiConciergeStatisticsList : []
           // paging setting
           this.pagination.totalRows = response.data.result.aiConciergeStatisticsListCount

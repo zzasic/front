@@ -205,7 +205,6 @@ export default {
     getFilter () {
       // console.log('====' + JSON.stringify(this.callHistories))
       const ddd = this.callHistories.filter((cal) => cal.moudule !== 'CHATBOT_OUT')
-      console.log('====' + JSON.stringify(ddd))
       this.callHistories = ddd
     },
     replaceHtml (str) {

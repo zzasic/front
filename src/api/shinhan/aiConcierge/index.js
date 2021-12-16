@@ -43,6 +43,17 @@ function reqAiConciergeStatisticsBatch () { /* 콜봇 통게 데이터 수집 */
   return postRequest('/api/aiConcierge/getStatisticsCollection')
 }
 
+function getBranchStatisticsSearchCondition () { /* 공통 초기 조회 조건 */
+  return postRequest('/api/aiConcierge/listAiConciergeInit', JSON.stringify({}))
+}
+function getBranchStatisticsList (searchCondition) { /* 지점별 거래 현황 */
+  return postRequest('/api/aiConcierge/branchStatiaticsView', JSON.stringify(searchCondition))
+}
+
+function reqBranchStatisticsExcelDown (searchCondition) { /* 지점별 거래 현황 엑셀 다운 */
+  return postRequestBlob('/api/aiConcierge/branchStatisticsExcelDown', JSON.stringify(searchCondition))
+}
+
 export {
   getAiConciergeSearchCondition,
   getAiConciergeSearchList,
@@ -53,5 +64,8 @@ export {
   getAiConciergeHistoryDetailList,
   getAiConciergeAllHistoryDetailList,
   reqAiConciergeHistoryExcelDown,
-  reqAiConciergeStatisticsBatch
+  reqAiConciergeStatisticsBatch,
+  getBranchStatisticsSearchCondition,
+  getBranchStatisticsList,
+  reqBranchStatisticsExcelDown
 }

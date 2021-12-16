@@ -192,7 +192,6 @@ export default {
       getBranchInitList(searchCondition).then(
         response => {
           this.branchList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
-          console.log(' response.data.result.cmnCodeListCount ' + JSON.stringify(response.data.result.cmnCodeListCount))
           // paging setting
           this.pagination.totalRows = response.data.result.cmnCodeListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)

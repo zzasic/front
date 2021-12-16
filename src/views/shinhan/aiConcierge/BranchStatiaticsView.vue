@@ -11,17 +11,6 @@
             <v-select
               class="default search"
               :menu-props="{ offsetY: true }"
-              v-model="searchForm.system"
-              :items="cptdItemsSystemInfoList"
-              :label="$t('label.system')"
-              :placeholder="searchForm.system ? undefined : $t('label.choice')"
-              clearable
-            ></v-select>
-          </v-col>
-          <v-col cols="2">
-            <v-select
-              class="default search"
-              :menu-props="{ offsetY: true }"
               v-model="searchForm.tenant"
               :items="cptdItemsTenantList"
               :label="$t('label.tenant')"
@@ -40,7 +29,7 @@
               clearable
             ></v-select>
           </v-col>
-          <v-col cols="1">
+          <v-col cols="2">
             <v-text-field
               class="default search"
               v-model="searchForm.branchNm"
@@ -48,7 +37,8 @@
               placeholder=" "
               hide-details
               clearable
-              v-on:keyup.enter="searchBtn"
+              readonly
+              @click="searhPopup"
             ></v-text-field>
           </v-col>
           <v-col cols="1">
@@ -133,7 +123,7 @@
       <v-card class="data-grid-wrap default">
         <v-data-table
           :headers="headers"
-          :items="solutionHistoryList"
+          :items="branchStatisticsList"
           :server-items-length="pagination.totalRows"
           :options.sync="optionSync"
           :loading="pagination.loading"
@@ -170,10 +160,21 @@
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="fnc_getSolutionHistoryList"
+          @input="fnc_getBranchStatisticsList"
           :total-visible="10"
         ></v-pagination>
       </div>
+      <v-dialog
+        v-model="dialogBranch"
+        persistent
+        :max-width="600"
+        hide-overlay
+        scrollable v-if="popup.branchPopup === true"
+        >
+      <PopupSearchBanch
+      @popupAction="popupAction"
+      />
+    </v-dialog>
       <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
         <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
       </div>
@@ -186,18 +187,20 @@
 
 <script>
 import {
-  getSolutionHistorySearchCondition,
-  getSolutionHistoryList,
-  reqSolutionHistoryExcelDown
-} from '../../../api/shinhan/solutionHistory'
+  getBranchStatisticsSearchCondition,
+  getBranchStatisticsList,
+  reqBranchStatisticsExcelDown
+} from '../../../api/shinhan/aiConcierge' // solutionHistory'
 import datepicker from '@/plugins/datepicker'
 // TODO
 import InboundHistoryPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 
 export default {
   name: 'BranchStatiaticsView',
   components: {
-    InboundHistoryPopup
+    InboundHistoryPopup,
+    PopupSearchBanch
   },
   mixins: [datepicker],
   created () {
@@ -207,17 +210,14 @@ export default {
     }
   },
   mounted () {
-    this.InitSolutionHistoryView()
+    this.InitBranchStatisticsView()
   },
   data () {
     return {
       moudules: [
-        // { text: '전체', value: '' },
-        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: 'CHATBOT', value: 'CHATBOT' },
-        { opt1: 'AIH,ICC', opt2: null, opt3: null, opt4: null, text: 'STT', value: 'STT' },
-        { opt1: 'AIH,ICC', opt2: null, opt3: null, opt4: null, text: 'TTS', value: 'TTS' },
-        { opt1: 'ICC', opt2: null, opt3: null, opt4: null, text: 'TA_GW', value: 'TA_GW' },
-        { opt1: 'ICC', opt2: null, opt3: null, opt4: null, text: 'TA_TA', value: 'TA_TA' }
+        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '음성', value: 'VO' },
+        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '버튼', value: 'BT' },
+        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '침묵', value: 'SL' }
       ],
       headers: [
         { text: '시스템', value: 'systemNm', align: 'center', class: 'text-center', width: '120px' },
@@ -232,7 +232,7 @@ export default {
         { text: '사용시작', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
         { text: '사용종료', value: 'endDt', align: 'center', class: 'text-center', width: '120px' }
       ],
-      solutionHistoryList: [],
+      branchStatisticsList: [],
       pagination: {
         page: 1, // 현재페이지
         length: 1, // 페이징숫자 갯수
@@ -252,6 +252,7 @@ export default {
         itemsTenantList: [],
         tenant: '',
         branchNm: '',
+        codeIdArr: [],
         moudule: '',
         deviceNo: '',
         status: '',
@@ -259,7 +260,10 @@ export default {
         dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
       },
       chats: [],
-      authOpt: true
+      authOpt: true,
+      popup: {
+        branchPopup: false
+      }
     }
   },
 
@@ -284,14 +288,15 @@ export default {
         return this.searchForm.itemsSystemInfoList
       }
     },
-    cptdItemsTenantList () { // 시스템에 따라 테넌트 정보 필터(default all)
+    cptdItemsTenantList () { // 테넌트는 SHBK 하나라 필터 X
       const tenantList = [
         {
           text: this.$t('label.all'),
           value: ''
         }
       ]
-      tenantList.push(...this.searchForm.itemsTenantList.filter(s => s.value.indexOf(this.searchForm.system) === 0))
+      // tenantList.push(...this.searchForm.itemsTenantList.filter(s => s.value.indexOf(this.searchForm.system) === 0))
+      tenantList.push(...this.searchForm.itemsTenantList)
       return tenantList
     },
     cptdMouduleList () {
@@ -324,7 +329,7 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getSolutionHistoryList()
+          this.fnc_getBranchStatisticsList()
         }
       }
     }
@@ -334,6 +339,28 @@ export default {
   },
 
   methods: {
+    searhPopup: function () {
+      this.popup.branchPopup = true
+    },
+    popupAction: function (popup, obj) {
+      this.searchForm.codeIdArr = []
+      if (obj != null && obj.length > 0) {
+        let txt = ''
+        for (let i = 0; i < obj.length; i++) {
+          if (i === (obj.length - 1)) {
+            txt = txt + obj[i].codeValue
+          } else {
+            txt = txt + obj[i].codeValue + ','
+          }
+          this.searchForm.codeIdArr.push(obj[i].codeId)
+        }
+        this.searchForm.branchNm = txt
+      }
+      this.popup = popup
+    },
+    dialogBranch: function () {
+      return (this.popup.branchPopup === true)
+    },
     getContents (str) {
       let content
       let setStr
@@ -353,13 +380,13 @@ export default {
     convertContents (str) {
       return str === null || str === '' ? '' : str // .replaceAll('\\n', '\n') //  setStr = str.replace('\\n', '&lt;br&gt;') .replace('\n', '<br>')
     },
-    InitSolutionHistoryView () {
-      this.fnc_getSolutionHistorySearchCondition()
+    InitBranchStatisticsView () {
+      this.fnc_getBranchStatisticsSearchCondition()
     },
     // 검색 조건 조회
-    fnc_getSolutionHistorySearchCondition: function () {
+    fnc_getBranchStatisticsSearchCondition: function () {
       // system, solution 등을 조회
-      getSolutionHistorySearchCondition().then(
+      getBranchStatisticsSearchCondition().then(
         response => {
           this.searchForm.itemsSystemInfoList = response.data.result.systemInfoList ? response.data.result.systemInfoList : []
           // this.searchForm.system = this.searchForm.itemsSystemInfoList[0].value
@@ -367,17 +394,20 @@ export default {
           // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
           this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
-          this.fnc_getSolutionHistoryList()
+          this.fnc_getBranchStatisticsList()
         }
       )
     },
-    fnc_getSolutionHistoryList: function () {
+    fnc_getBranchStatisticsList: function () {
       /* datepicker open */
       if (this.pickerMenu === true) {
         this.$refs.pickerMenu.save(this.searchForm.dates)
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         page: this.pagination.page,
@@ -386,20 +416,22 @@ export default {
         itemsPerPage: this.pagination.itemsPerPage,
         systemId: this.searchForm.system,
         tenantId: this.searchForm.tenant,
-        branchNm: this.searchForm.branchNm,
-        moudule: this.searchForm.moudule,
+        // branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
+        recognition: this.searchForm.moudule,
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,
-        startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
+        endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
       console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
-      getSolutionHistoryList(searchCondition).then(
+      getBranchStatisticsList(searchCondition).then(
         response => {
-          this.solutionHistoryList = response.data.result.solutionHistoryList ? response.data.result.solutionHistoryList : []
+          this.branchStatisticsList = response.data.result.branchStatisticsList ? response.data.result.branchStatisticsList : []
+          console.log(this.branchStatisticsList)
           // paging setting
-          this.pagination.totalRows = response.data.result.solutionHistoryListCount
+          this.pagination.totalRows = response.data.result.branchStatisticsListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
           this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
         },
@@ -419,7 +451,10 @@ export default {
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
-      this.fnc_getSolutionHistoryList()
+      this.fnc_getBranchStatisticsList()
+    },
+    isEmpty: function (x) {
+      return (x === null || x === undefined)
     },
     excelDown: function () {
       /* datepicker open */
@@ -428,21 +463,25 @@ export default {
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         systemId: this.searchForm.system,
         tenantId: this.searchForm.tenant,
-        branchNm: this.searchForm.branchNm,
+        // branchNm: this.searchForm.branchNm,
+        codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
         moudule: this.searchForm.moudule,
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,
-        startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
+        endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      reqSolutionHistoryExcelDown(searchCondition).then(response => {
-        const filename = this.$moment().format('YYYY-MM-DD') + '_솔루션별_사용이력.xlsx'
+      reqBranchStatisticsExcelDown(searchCondition).then(response => {
+        const filename = this.$moment().format('YYYY-MM-DD') + '_지점별_거래현황.xlsx'
 
         const url = window.URL.createObjectURL(
           new Blob([response.data], {

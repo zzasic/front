@@ -451,7 +451,6 @@ export default {
     },
     // 검색버튼
     searchBtn: function () {
-      console.log('form' + JSON.stringify(this.searchForm))
       this.pagination.page = 1
       this.getSystemCallList()
     },
@@ -484,7 +483,6 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSystemCallList(searchCondition).then(
         response => {

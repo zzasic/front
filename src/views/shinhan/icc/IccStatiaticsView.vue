@@ -703,7 +703,7 @@ export default {
         if (newVal) {
           setTimeout(() => {
             this.$refs.pickerYear.internalActivePicker = 'YEAR'
-          }, 1)
+          }, 100)
         }
       }
     }
@@ -772,7 +772,6 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' fnc_getIccStatisticsChartList ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getIccStatisticsChartList(searchCondition).then(
         response => {
@@ -827,7 +826,6 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' fnc_getIccStatisticsList ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getIccStatisticsList(searchCondition).then(
         response => {
@@ -879,7 +877,6 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' excel ' + JSON.stringify(searchCondition))
       reqIccStatisticstExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_불완전판매방지_기간별_집계.xlsx'
 

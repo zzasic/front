@@ -551,7 +551,6 @@ export default {
           this.authUserList = response.data.result.authUserList
           this.itemsSystem = response.data.result.systemInfoList
           this.itemsAuthType = response.data.result
-          console.log('this.authUserList : ', this.authUserList)
         }
       )
     },

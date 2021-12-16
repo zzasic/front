@@ -423,7 +423,6 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log('searchCondition : ', JSON.stringify(searchCondition))
       this.pagination.loading = true
       getUsageMeteringChartList(searchCondition).then(
         response => {

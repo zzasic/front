@@ -355,10 +355,6 @@ export default {
           this.aiConciergeUseCnt = response.data.result.aiConciergeUseCount ? response.data.result.aiConciergeUseCount : []
           this.aiConciergeStatisticsChartList = response.data.result.aiConciergeStatisticsChartList ? response.data.result.aiConciergeStatisticsChartList : []
           this.aiConciergeBotBranchTopFiveList = response.data.result.aiConciergeBotBranchTopFiveList ? response.data.result.aiConciergeBotBranchTopFiveList : []
-
-          console.log('상단 사용량 : ', this.aiConciergeUseCnt)
-          console.log('차트 : ', this.aiConciergeStatisticsChartList)
-          console.log('그리드 : ', this.aiConciergeBotBranchTopFiveList)
         }
       ).finally(() => {
         this.$nextTick(() => {

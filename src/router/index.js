@@ -93,6 +93,16 @@ const routes = [
         name: 'ListUseApprovalReqView',
         component: lazyLoading('shinhan/sso/ListUseApprovalReqView')
       },
+      { // 배치 수동 실행
+        path: 'cmnPage/batch',
+        name: 'BatchManualView',
+        component: lazyLoading('shinhan/cmnPage/BatchManualView')
+      },
+      { // Kafka 데이터 끌어오기
+        path: 'cmnPage/kafkaDataManual',
+        name: 'KafkaDataManualView',
+        component: lazyLoading('shinhan/cmnPage/KafkaDataManualView')
+      },
       {
         path: 'dashboard',
         name: 'DashboardView',
@@ -418,6 +428,11 @@ const routes = [
         path: 'query/getQueryList',
         name: 'ExecuteQueryView',
         component: lazyLoading('query/ExecuteQueryView')
+      },
+      { // Query
+        path: 'aiConcierge/branchStatiatics',
+        name: 'BranchStatiaticsView',
+        component: lazyLoading('shinhan/aiConcierge/BranchStatiaticsView')
       }
     ]
   },

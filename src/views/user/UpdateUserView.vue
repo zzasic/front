@@ -572,7 +572,6 @@ export default {
       return this.$store.getters.pageDescription
     },
     serviceListForAdd: function () { // 이용중인 서비스
-      console.log('this.authUserList : ', this.authUserList)
       return Object.values(this.authUserList.filter((au) => {
         return !this.inputForm.authUserList.some((iau) => {
           return iau.serviceId === au.serviceId && iau.serviceTenantId === au.serviceTenantId
