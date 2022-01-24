@@ -163,7 +163,8 @@ export default {
         timeType: null,
         startMonth: null,
         endMonth: null
-      }
+      },
+      initSuccess: false
     }
   },
   computed: {
@@ -300,7 +301,8 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getAiConciergeStatisticsChartList()
+          // this.fnc_getAiConciergeStatisticsChartList()
+          this.fnc_getAiConciergeConditionSync(this.initSuccess)
         }
       }
     },
@@ -321,16 +323,30 @@ export default {
     }
   },
   methods: {
-    async init () {
-      await this.fnc_getAiConciergeSearchCondition()
-      this.fnc_getAiConciergeStatisticsChartList()
+    init () {
+      this.fnc_getAiConciergeSearchCondition(this.initSuccess)
     },
-    fnc_getAiConciergeSearchCondition: function () {
-      getAiConciergeSearchCondition().then(
-        response => {
-          this.searchForm.itemsTenantList = response.data.result.tenantList
-        }
-      )
+    fnc_getAiConciergeConditionSync: function (isSuccess) {
+      if (!isSuccess) {
+        getAiConciergeSearchCondition().then(
+          response => {
+            this.searchForm.itemsTenantList = response.data.result.tenantList
+            this.fnc_getAiConciergeStatisticsChartList()
+          }
+        )
+      } else {
+        this.fnc_getAiConciergeStatisticsChartList()
+      }
+    },
+    fnc_getAiConciergeSearchCondition: function (isSuccess) {
+      if (isSuccess) {
+        getAiConciergeSearchCondition().then(
+          response => {
+            this.searchForm.itemsTenantList = response.data.result.tenantList
+            this.fnc_getAiConciergeStatisticsChartList()
+          }
+        )
+      }
     },
     setYear: function (year) {
       this.$refs.pickerYear.internalActivePicker = 'YEAR'
@@ -350,6 +366,7 @@ export default {
         tenantId: this.searchForm.tenant
       }
       // 대시보드 정보 조회
+      // console.log(this.initSuccess + '===fnc_getAiConciergeStatisticsChartList===' + JSON.stringify(searchCondition))
       getAiConciergeSearchList(searchCondition).then(
         response => {
           this.aiConciergeUseCnt = response.data.result.aiConciergeUseCount ? response.data.result.aiConciergeUseCount : []
@@ -359,6 +376,7 @@ export default {
       ).finally(() => {
         this.$nextTick(() => {
           this.drawChart = true
+          this.initSuccess = true
         })
       })
     },

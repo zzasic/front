@@ -238,15 +238,10 @@ export default {
     },
     // 취소버튼
     closeBtn: function () {
-      this.$emit('popupAction', {
-        statisticPopup: false
-      })
+      this.$emit('popupAction', 'statisticPopup')
     },
     confirmBtn: function () {
-      this.$emit('popupAction', {
-        statisticPopup: false
-      },
-      this.selected)
+      this.$emit('popupAction', 'statisticPopup', this.selected)
     },
     isEmpty: function (x) {
       return (x === null || x === undefined)

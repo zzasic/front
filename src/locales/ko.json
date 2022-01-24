@@ -244,7 +244,8 @@
         "deviceNo": "단말번호",
         "system": "시스템",
         "solutionList": "AI 솔루션",
-        "recognition": "인식구분"
+        "recognition": "인식구분",
+        "testType": "테스트"
     },
     "shinhan": {
         "sso": {

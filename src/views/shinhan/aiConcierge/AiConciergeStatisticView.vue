@@ -273,7 +273,7 @@
         scrollable
         >
       <PopupSearchBanch
-      @popupAction="popupAction"
+      @popupAction="popupAction"  v-if="popup.branchPopup === true"
       />
     </v-dialog>
       <v-dialog
@@ -283,7 +283,7 @@
         scrollable
         >
       <PopupBranchStatiaticsView
-      @popupAction="popupAction" :item="itemObj"
+      @popupAction="popupAction" :item="itemObj" v-if="popup.statisticPopup === true"
       />
     </v-dialog>
       <div class="btn-group align-right">
@@ -322,7 +322,7 @@ export default {
   },
   mounted () {
     this.getCmnCodeList()
-    this.fnc_getAiConciergeSearchCondition()
+    this.fnc_getAiConciergeSearchCondition(this.initSuccess)
   },
   data () {
     return {
@@ -343,9 +343,10 @@ export default {
       ],
       statisticsList: [],
       statisticsChartList: [], // stt, tts, ta 각각 리스트를 만들어서 일별로 보여줘야할듯
+      statTmp: [],
       pagination: {
         page: 1, // 현재페이지
-        length: 1, // 페이징숫자 갯수
+        length: 1, // 페이징숫자 갯수x
         itemsPerPage: 10, // table row view 갯수
         itemsPerPages: [10, 20, 30], // 왼쪽하단 selectbox
         totalRows: 0,
@@ -361,7 +362,7 @@ export default {
         itemsTenantList: [],
         tenant: '',
         itemsTimeTypeList: [],
-        timeType: '',
+        timeType: 'A',
         rsltTimeType: '',
         year: this.$moment(new Date()).format('YYYY'),
         months: [
@@ -370,10 +371,11 @@ export default {
         ],
         startMonth: this.$moment(new Date()).format('YYYY-MM'),
         endMonth: this.$moment(new Date()).format('YYYY-MM'),
-        startDay: this.$moment(new Date()).format('YYYY-MM') + '-01',
-        endDay: this.$moment(new Date()).format('YYYY-MM-DD'),
+        startDay: this.$moment().add(-7, 'days').format('YYYY-MM-DD'), // this.$moment(new Date()).format('YYYY-MM') + '-01',
+        endDay: this.$moment().format('YYYY-MM-DD'), // this.$moment(new Date()).format('YYYY-MM-DD'),
         deviceKind: '',
-        dates: [this.$moment(new Date()).format('YYYY-MM') + '-01', this.$moment(new Date()).format('YYYY-MM-DD')]
+        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
+        // dates: [this.$moment(new Date()).format('YYYY-MM') + '-01', this.$moment(new Date()).format('YYYY-MM-DD')]
       },
       popup: {
         type: null,
@@ -385,10 +387,12 @@ export default {
         branchPopup: false,
         statisticPopup: false
       },
-      popupBranchPopup: false,
-      popupStatisticPopup: false,
+      // popupBranchPopup: false,
+      // popupStatisticPopup: false,
       deviceKindList: [],
-      itemObj: []
+      itemObj: [],
+      initSuccess: false,
+      currentDviceKind: ''
     }
   },
   computed: {
@@ -410,12 +414,12 @@ export default {
       return dynamicColumnHeader
     },
     dialog: function () {
-      console.log(' dialog ')
-      return (this.popupBranchPopup === true) // this.popup.branchPopup !== null
+      // console.log(' dialog ')
+      return (this.popup.branchPopup === true) // this.popup.branchPopup !== null
     },
     dialogStatiaticsView: function () {
-      console.log(' dialogStatiaticsView ')
-      return (this.popupStatisticPopup === true)
+      // console.log(' dialogStatiaticsView ')
+      return (this.popup.statisticPopup === true)
     },
     statisticsChartJSData: function () {
       const datas = this.statisticsChartList.reduce((acc, val) => {
@@ -430,7 +434,7 @@ export default {
       const labels = []
       const datasets = []
       const backgroundColors = []
-      backgroundColors.push('#ffb0c1', '#9ad0f5', '#ffe6aa', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
+      backgroundColors.push('#ffb0c1', '#ffe6aa', '#9ad0f5', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9')
       if (this.searchForm.rsltTimeType === 'D') {
         // 시간별
         let m = 0
@@ -770,7 +774,8 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getAiConciergeStatisticsList()
+          // this.fnc_getAiConciergeStatisticsList(this.initSuccess)
+          this.fnc_getAiConciergeConditionSync(this.initSuccess)
         }
       }
     },
@@ -817,22 +822,36 @@ export default {
         startDate: startDt, // 시작일
         endDate: endDt, // 종료일
         timeType: this.searchForm.rsltTimeType, // 시간유형
-        timeValue: obj.dayValue
+        timeValue: obj.dayValue,
+        deviceKind: this.currentDviceKind
       } // obj
-      console.log(' this.itemObj ' + JSON.stringify(this.itemObj))
-      this.popupStatisticPopup = true
+      // console.log(' this.itemObj ' + JSON.stringify(this.itemObj))
+      this.popup.statisticPopup = true
     },
     betweenConfirm: function (val) {
       if (this.isEmpty(val.dates[1])) {
         this.searchForm.dates[1] = val.dates[0]
       }
+      const startDate = val.dates[0].split('-')
+      const endDate = val.dates[1].split('-')
+      const sTime = new Date(startDate[0], startDate[1] - 1, startDate[2])
+      const eTime = new Date(endDate[0], endDate[1] - 1, endDate[2])
+      const days = (eTime - sTime) / 60 / 60 / 24 / 1000
+      if (days > 30) {
+        alert('검색기간은 30일을 초과하여 조회할 수 없습니다.')
+        const tmpDate = new Date(val.dates[1])
+        tmpDate.setDate(tmpDate.getDate() - 30)
+        const stDt = tmpDate.getFullYear() + '-' + ((tmpDate.getMonth() + 1) > 9 ? (tmpDate.getMonth() + 1).toString() : '0' + (tmpDate.getMonth() + 1)) + '-' + (tmpDate.getDate() > 9 ? tmpDate.getDate().toString() : '0' + tmpDate.getDate().toString())
+        this.searchForm.dates = [stDt, val.dates[1]]
+        return
+      }
       this.$refs.pickerMenu.save(this.searchForm.dates)
     },
     searhPopup: function () {
-      this.popupBranchPopup = true
+      this.popup.branchPopup = true
     },
-    popupAction: function (popup, obj) {
-      if (this.popupBranchPopup) {
+    popupAction: function (type, obj) {
+      if (type === 'branchPopup') {
         this.searchForm.codeIdArr = []
         if (obj != null && obj.length > 0) {
           let txt = ''
@@ -845,25 +864,23 @@ export default {
             this.searchForm.codeIdArr.push(obj[i].codeId)
           }
           this.searchForm.branchNm = txt
-        } // branchPopup: false,        statisticPopup: falsethis.popup[`${type}`] = !this.popup[`${type}`];
-        this.popupBranchPopup = !this.popupBranchPopup
-      } else if (this.popupStatisticPopup) {
-        this.popupStatisticPopup = !this.popupStatisticPopup
+        }
       }
+      this.popup[`${type}`] = !this.popup[`${type}`]
     },
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
-      this.fnc_getAiConciergeCartList()
+      this.fnc_getAiConciergeCartList(this.initSuccess)
     },
-    fnc_getAiConciergeSearchCondition: function () {
+    fnc_getAiConciergeSearchCondition: function (isSuccess) {
       getAiConciergeSearchCondition().then(
         response => {
           this.searchForm.itemsTenantList = response.data.result.tenantList
           this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
           this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
           this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
-          this.fnc_getAiConciergeCartList()
+          this.fnc_getAiConciergeCartList(isSuccess)
         }
       )
     },
@@ -877,7 +894,7 @@ export default {
         this.searchForm.year = this.strYear
       })
     },
-    fnc_getAiConciergeCartList: function () {
+    fnc_getAiConciergeCartList: function (isSuccess) {
       this.drawChart = false
       const dateRange = []
       if (this.searchForm.timeType === 'B') {
@@ -918,11 +935,49 @@ export default {
         // startDay: this.searchForm.dates[0],
         // endDay: this.searchForm.dates[1]
       }
-      console.log(' fnc_getAiConciergeCartList : ', JSON.stringify(searchCondition))
+      // console.log(isSuccess + ' fnc_getAiConciergeCartList : ', JSON.stringify(searchCondition))
       this.pagination.loading = true
       getAiConciergeStatisticsChartList(searchCondition).then(
         response => {
-          this.statisticsChartList = response.data.result.aiConciergeStatisticsChartList ? response.data.result.aiConciergeStatisticsChartList : []
+          // this.statisticsChartList = response.data.result.aiConciergeStatisticsChartList ? (response.data.result.aiConciergeStatisticsChartList) : []
+          this.statTmp = response.data.result.aiConciergeStatisticsChartList ? response.data.result.aiConciergeStatisticsChartList : []
+          if (this.statTmp.length > 0) {
+          // this.statTmp.shift()
+            // this.statTmp.unshift({ moudule: '버튼', totalCnt: 0, dayText: '20211130', dayValue: '20211130' })
+            // this.statTmp.unshift({ moudule: '음성', totalCnt: 0, dayText: '20211130', dayValue: '20211130' })
+            const dtText = this.statTmp[0].dayText
+            const dtValue = this.statTmp[0].dayValue
+            let cnt = 0
+            cnt = dtText === this.statTmp[1].dayText ? cnt + 1 : cnt + 0
+            cnt = dtText === this.statTmp[2].dayText ? cnt + 1 : cnt + 0
+            // 음성, 버튼, 침묵
+            if (cnt === 0) {
+              if (this.statTmp[0].moudule === '음성') {
+                this.statTmp.splice(1, 0, { moudule: '버튼', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+                this.statTmp.splice(2, 0, { moudule: '침묵', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+              } else if (this.statTmp[0].moudule === '버튼') {
+                this.statTmp.unshift({ moudule: '음성', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+                this.statTmp.splice(2, 0, { moudule: '침묵', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+              } else if (this.statTmp[0].moudule === '침묵') {
+                this.statTmp.unshift({ moudule: '버튼', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+                this.statTmp.unshift({ moudule: '음성', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+              }
+            } else if (cnt === 1) {
+              if (this.statTmp[0].moudule === '음성') {
+                if (this.statTmp[1].moudule === '버튼') {
+                  this.statTmp.splice(2, 0, { moudule: '침묵', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+                } else if (this.statTmp[1].moudule === '침묵') {
+                  this.statTmp.splice(1, 0, { moudule: '버튼', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+                }
+              } else if (this.statTmp[0].moudule === '버튼') {
+                if (this.statTmp[1].moudule === '침묵') {
+                  this.statTmp.unshift({ moudule: '음성', totalCnt: 0, dayText: dtText, dayValue: dtValue })
+                }
+              }
+            }
+            this.statisticsChartList = this.statTmp
+          }
+          console.log(' ===== ' + JSON.stringify(this.statisticsChartList))
         }
       ).finally(() => {
         this.pagination.loading = false
@@ -933,9 +988,26 @@ export default {
           this.searchForm.endMonth = this.searchForm.months[1]
           this.searchForm.startDay = this.searchForm.dates[0]
           this.searchForm.endDay = this.searchForm.dates[1]
+          if (isSuccess) {
+            this.fnc_getAiConciergeStatisticsList()
+          }
         })
-        this.fnc_getAiConciergeStatisticsList()
       })
+    },
+    fnc_getAiConciergeConditionSync: function (isSuccess) {
+      if (!isSuccess) {
+        getAiConciergeSearchCondition().then(
+          response => {
+            this.searchForm.itemsTenantList = response.data.result.tenantList
+            this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
+            this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
+            this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
+            this.fnc_getAiConciergeStatisticsList()
+          }
+        )
+      } else {
+        this.fnc_getAiConciergeStatisticsList()
+      }
     },
     fnc_getAiConciergeStatisticsList: function () {
       const dateRange = []
@@ -971,8 +1043,8 @@ export default {
       // param setting
       const searchCondition = {
         page: this.pagination.page,
-        sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
-        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
+        sortBy: this.options.sortBy && this.options.sortBy.length ? this.options.sortBy[0] : '',
+        sortDesc: this.options.sortDesc && this.options.sortDesc.length ? 'DESC' : 'ASC',
         itemsPerPage: this.pagination.itemsPerPage,
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
@@ -985,18 +1057,20 @@ export default {
         // endDay: this.searchForm.dates[1]
       }
       this.pagination.loading = true
-      console.log('fnc_getAiConciergeStatisticsList : ', JSON.stringify(searchCondition))
+      // console.log(this.initSuccess + 'fnc_getAiConciergeStatisticsList : ', JSON.stringify(searchCondition))
       getAiConciergeStatisticsList(searchCondition).then(
         response => {
-          console.log('fnc_getAiConciergeStatisticsList : ', JSON.stringify(response.data.result.aiConciergeStatisticsList))
+          // console.log('fnc_getAiConciergeStatisticsList : ', JSON.stringify(response.data.result.aiConciergeStatisticsList))
           this.statisticsList = response.data.result.aiConciergeStatisticsList ? response.data.result.aiConciergeStatisticsList : []
           // paging setting
           this.pagination.totalRows = response.data.result.aiConciergeStatisticsListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
           this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+          this.currentDviceKind = this.searchForm.deviceKind
         }
       ).finally(() => {
         this.pagination.loading = false
+        this.initSuccess = true
       })
     },
     comma: function (n) {
@@ -1032,8 +1106,8 @@ export default {
       }
       // param setting
       const searchCondition = {
-        sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
-        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
+        sortBy: this.options.sortBy && this.options.sortBy.length ? this.options.sortBy[0] : '',
+        sortDesc: this.options.sortDesc && this.options.sortDesc.length ? 'DESC' : 'ASC',
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,
         codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
@@ -1042,7 +1116,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' excelDown ', JSON.stringify(searchCondition))
+      // console.log(' excelDown ', JSON.stringify(searchCondition))
       reqAiConciergeStatisticsExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_AI컨시어지_기간별_집계.xlsx'
 

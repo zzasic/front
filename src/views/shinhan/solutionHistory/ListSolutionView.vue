@@ -355,7 +355,7 @@ export default {
     searhPopup: function () {
       this.popup.branchPopup = true
     },
-    popupAction: function (popup, obj) {
+    popupAction: function (type, obj) {
       this.searchForm.codeIdArr = []
       if (obj != null && obj.length > 0) {
         let txt = ''
@@ -369,7 +369,7 @@ export default {
         }
         this.searchForm.branchNm = txt
       }
-      this.popup = popup
+      this.popup[`${type}`] = !this.popup[`${type}`]
     },
     dialog: function () {
       return (this.popup.branchPopup === true)

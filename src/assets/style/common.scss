@@ -1559,7 +1559,7 @@ select {
       &.primary {
         background-color: #fff !important;
         border: 1px solid $gray200 !important;
-        color: $black;
+        color: #ff6384; /* $black */
       }
     }
   }

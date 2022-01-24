@@ -43,7 +43,7 @@
               @click="searhPopup"
             ></v-text-field>
           </v-col>
-          <v-col cols="2">
+          <v-col cols="1">
             <v-text-field
               class="default search"
               v-model="searchForm.deviceNo"
@@ -54,7 +54,7 @@
               v-on:keyup.enter="searchBtn"
             ></v-text-field>
           </v-col>
-          <v-col cols="2">
+          <v-col cols="1">
             <v-select
               class="default"
               :menu-props="{ offsetY: true }"
@@ -92,7 +92,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  class="default text-field-date pr-0"
+                  class="default text-field-date pr-4"
                   v-model='dateRangeText'
                   label="검색기간"
                   placeholder="YYYY.MM.DD - YYYY.MM.DD"
@@ -125,10 +125,24 @@
                 >
                   <v-spacer></v-spacer>
                   <v-btn text :ripple="false" color="pink" @click="pickerMenu = false">{{ $t('button.close')}}</v-btn>
-                  <v-btn text :ripple="false" color="pink" @click="$refs.pickerMenu.save(searchForm.dates)">{{ $t('button.confirm')}}</v-btn>
+                  <v-btn text :ripple="false" color="pink" @click="betweenConfirm(searchForm)">{{ $t('button.confirm')}}</v-btn>
                 </v-date-picker>
               </div>
             </v-menu>
+          </v-col>
+          <v-col v-auth="['CAU', 'AU', 'SAU']">
+            <v-select
+            class="default search"
+            :menu-props="{ offsetY: true }"
+            v-model="searchForm.testType"
+            :items="cptdTestTypeList"
+            item-key="codeId"
+            item-text="codeValue"
+            item-value="codeId"
+            :label="$t('label.testType')"
+            :placeholder="searchForm.testType ? undefined : $t('label.all')"
+            clearable
+            ></v-select>
           </v-col>
           <v-col class="text-right">
             <v-btn
@@ -208,7 +222,7 @@
       </div>
     </vuescroll>
     <div v-for="chat in chats" :key="chat.chatId">
-      <systemCall-history-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
+      <systemCall-history-img-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
     </div>
     <!-- <div v-for="chat in chats" :key="chat.chatId">
       <ai-concierge-detail-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
@@ -217,7 +231,7 @@
 </template>
 
 <script>
-import SystemCallHistoryPopup from '@/components/SystemCallHistoryPopup'
+import SystemCallHistoryImgPopup from '@/components/SystemCallHistoryImgPopup'
 // import AiConciergeDetailPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
 import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 
@@ -234,7 +248,7 @@ import datepicker from '@/plugins/datepicker'
 export default {
   name: 'ListAiConciergeView',
   components: {
-    SystemCallHistoryPopup,
+    SystemCallHistoryImgPopup,
     // AiConciergeDetailPopup,
     PopupSearchBanch
   },
@@ -289,16 +303,18 @@ export default {
         branchNm: '',
         codeIdArr: [],
         commYn: '',
-        dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
+        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
         deviceNo: '',
-        deviceKind: ''
+        deviceKind: '',
+        testType: ''
       },
       chats: [],
       chkList: [],
       totChkList: [],
       popup: {
         branchPopup: false
-      }
+      },
+      testTypeList: []
     }
   },
 
@@ -328,6 +344,17 @@ export default {
       ]
       deviceKindList.push(...this.deviceKindList)
       return deviceKindList
+    },
+    cptdTestTypeList () {
+      const testList = [
+        {
+          codeValue: this.$t('label.all'),
+          codeId: ''
+        }
+      ]
+      testList.push(...this.testTypeList)
+      // console.log(' computed testList ' + JSON.stringify(testList))
+      return testList
     },
     cptdCommYnList () {
       const commYnList = [
@@ -369,6 +396,25 @@ export default {
   },
 
   methods: {
+    betweenConfirm: function (val) {
+      if (this.isEmpty(val.dates[1])) {
+        this.searchForm.dates[1] = val.dates[0]
+      }
+      const startDate = val.dates[0].split('-')
+      const endDate = val.dates[1].split('-')
+      const sTime = new Date(startDate[0], startDate[1] - 1, startDate[2])
+      const eTime = new Date(endDate[0], endDate[1] - 1, endDate[2])
+      const days = (eTime - sTime) / 60 / 60 / 24 / 1000
+      if (days > 30) {
+        alert('검색기간은 30일을 초과하여 조회할 수 없습니다.')
+        const tmpDate = new Date(val.dates[1])
+        tmpDate.setDate(tmpDate.getDate() - 30)
+        const stDt = tmpDate.getFullYear() + '-' + ((tmpDate.getMonth() + 1) > 9 ? (tmpDate.getMonth() + 1).toString() : '0' + (tmpDate.getMonth() + 1)) + '-' + (tmpDate.getDate() > 9 ? tmpDate.getDate().toString() : '0' + tmpDate.getDate().toString())
+        this.searchForm.dates = [stDt, val.dates[1]]
+        return
+      }
+      this.$refs.pickerMenu.save(this.searchForm.dates)
+    },
     async initAiConciergeView () {
       this.getCmnCodeList()
       await this.fnc_getAiConciergeSearchCondition()
@@ -395,7 +441,7 @@ export default {
     searhPopup: function () {
       this.popup.branchPopup = true
     },
-    popupAction: function (popup, obj) {
+    popupAction: function (type, obj) {
       this.searchForm.codeIdArr = []
       if (obj != null && obj.length > 0) {
         let txt = ''
@@ -409,7 +455,7 @@ export default {
         }
         this.searchForm.branchNm = txt
       }
-      this.popup = popup
+      this.popup[`${type}`] = !this.popup[`${type}`]
     },
     fnc_getAiConciergeHistoryList: function () {
       /* datepicker open */
@@ -434,8 +480,10 @@ export default {
         deviceKind: this.searchForm.deviceKind,
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
+        noBranchYn: this.searchForm.testType
       }
+      console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getAiConciergeHistoryList(searchCondition).then(
         response => {
@@ -499,7 +547,8 @@ export default {
         deviceKind: this.searchForm.deviceKind,
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
+        noBranchYn: this.searchForm.testType
       }
       reqAiConciergeHistoryExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_AIconcierge_처리이력.xlsx'
@@ -532,45 +581,27 @@ export default {
         }
       })
     },
-    isEmpty: function (x) {
-      return (x === null || x === undefined || x === '')
-    },
     // 공통코드유형 정보 조회
-    getCmnCodeList: function () {
+    async getCmnCodeList () {
       // param setting
-      const searchCondition = {
+      let searchCondition = {
         codeType: 'DEVICE',
         useYn: 'Y'
       }
-      // retrieve
-      // this.pagination.loading = true
-      getCmnCodeList(searchCondition).then(
-        response => {
-          this.deviceKindList = response.data.result.cmnCodeList ? response.data.result.cmnCodeList : []
-          // paging setting
-          // this.pagination.totalRows = response.data.result.cmnCodeListCount
-          // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
-          // this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
-        },
-        error => {
-          console.error(error)
-          const status = error.data.status
-          if (status === 403) {
-            this.$router.push({
-              name: '403',
-              query: { t: new Date().getTime() }
-            })
-          } else {
-            delete sessionStorage.accessToken
-            this.$router.push({
-              name: 'Login',
-              query: { t: new Date().getTime() }
-            })
-          }
-        }
-      ).finally(() => {
-        // this.pagination.loading = false
-      })
+      const resultDevice = await getCmnCodeList(searchCondition)
+      this.deviceKindList = resultDevice.data.result.cmnCodeList ? resultDevice.data.result.cmnCodeList : []
+      console.log(' this.deviceKindList ' + JSON.stringify(this.deviceKindList))
+      // param setting
+      searchCondition = {
+        codeType: 'TEST_TYPE',
+        useYn: 'Y'
+      }
+      const resultTestType = await getCmnCodeList(searchCondition)
+      this.testTypeList = resultTestType.data.result.cmnCodeList ? resultTestType.data.result.cmnCodeList : []
+      console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
+    },
+    isEmpty: function (x) {
+      return (x === null || x === undefined || x === '')
     }
   }
 }

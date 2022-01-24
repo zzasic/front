@@ -159,15 +159,10 @@ export default {
     },
     // 취소버튼
     closeBtn: function () {
-      this.$emit('popupAction', {
-        branchPopup: false
-      })
+      this.$emit('popupAction', 'branchPopup')
     },
     confirmBtn: function () {
-      this.$emit('popupAction', {
-        branchPopup: false
-      },
-      this.selected)
+      this.$emit('popupAction', 'branchPopup', this.selected)
     },
     searchBtn: function () {
       this.pagination.page = 1

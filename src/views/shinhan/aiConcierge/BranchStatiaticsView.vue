@@ -65,7 +65,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
-                  class="default text-field-date pr-0"
+                  class="default text-field-date pr-4"
                   v-model='dateRangeText'
                   label="검색기간"
                   placeholder="YYYY.MM.DD - YYYY.MM.DD"
@@ -98,10 +98,24 @@
                 >
                   <v-spacer></v-spacer>
                   <v-btn text :ripple="false" color="pink" @click="pickerMenu = false">{{ $t('button.close')}}</v-btn>
-                  <v-btn text :ripple="false" color="pink" @click="$refs.pickerMenu.save(searchForm.dates)">{{ $t('button.confirm')}}</v-btn>
+                  <v-btn text :ripple="false" color="pink" @click="betweenConfirm(searchForm)">{{ $t('button.confirm')}}</v-btn>
                 </v-date-picker>
               </div>
             </v-menu>
+          </v-col>
+          <v-col v-auth="['CAU', 'AU', 'SAU']">
+            <v-select
+            class="default search"
+            :menu-props="{ offsetY: true }"
+            v-model="searchForm.testType"
+            :items="cptdTestTypeList"
+            item-key="codeId"
+            item-text="codeValue"
+            item-value="codeId"
+            :label="$t('label.testType')"
+            :placeholder="searchForm.testType ? undefined : $t('label.all')"
+            clearable
+            ></v-select>
           </v-col>
           <v-col class="text-right">
             <v-btn
@@ -142,8 +156,7 @@
           <td class="text-center">{{ props.item.moudule }}</td>
           <td class="text-center">{{ props.item.tranId }}</td>
           <td class="text-center">{{ getContents(props.item.contents) }}</td>
-          <td class="text-center">{{ props.item.startDt }}</td>
-          <td class="text-center" >{{ props.item.endDt }}</td>
+          <td class="text-center">{{ props.item.convoDt }}</td>
         </tr>
       </template>
         </v-data-table>
@@ -192,7 +205,9 @@ import {
   reqBranchStatisticsExcelDown
 } from '../../../api/shinhan/aiConcierge' // solutionHistory'
 import datepicker from '@/plugins/datepicker'
-// TODO
+import {
+  getCmnCodeList
+} from '../../../api/cmnCode'
 import InboundHistoryPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
 import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 
@@ -210,6 +225,7 @@ export default {
     }
   },
   mounted () {
+    this.getCmnCodeList()
     this.InitBranchStatisticsView()
   },
   data () {
@@ -229,8 +245,7 @@ export default {
         { text: '인식구분', value: 'moudule', align: 'center', class: 'text-center', width: '120px' },
         { text: '트랜잭션ID', value: 'tranId', align: 'center', class: 'text-center', width: '120px' },
         { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '120px' },
-        { text: '사용시작', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
-        { text: '사용종료', value: 'endDt', align: 'center', class: 'text-center', width: '120px' }
+        { text: '시작일시', value: 'convoDt', align: 'center', class: 'text-center', width: '120px' }
       ],
       branchStatisticsList: [],
       pagination: {
@@ -257,13 +272,15 @@ export default {
         deviceNo: '',
         status: '',
         callType: '',
-        dates: [this.$moment().add(-1, 'months').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
+        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
+        testType: ''
       },
       chats: [],
       authOpt: true,
       popup: {
         branchPopup: false
-      }
+      },
+      testTypeList: []
     }
   },
 
@@ -273,6 +290,17 @@ export default {
     },
     pageDescription: function () {
       return this.$store.getters.pageDescription
+    },
+    cptdTestTypeList () {
+      const testList = [
+        {
+          codeValue: this.$t('label.all'),
+          codeId: ''
+        }
+      ]
+      testList.push(...this.testTypeList)
+      console.log(' computed testList ' + JSON.stringify(testList))
+      return testList
     },
     cptdItemsSystemInfoList () {
       const systemInfoList = [
@@ -339,10 +367,39 @@ export default {
   },
 
   methods: {
+    betweenConfirm: function (val) {
+      if (this.isEmpty(val.dates[1])) {
+        this.searchForm.dates[1] = val.dates[0]
+      }
+      const startDate = val.dates[0].split('-')
+      const endDate = val.dates[1].split('-')
+      const sTime = new Date(startDate[0], startDate[1] - 1, startDate[2])
+      const eTime = new Date(endDate[0], endDate[1] - 1, endDate[2])
+      const days = (eTime - sTime) / 60 / 60 / 24 / 1000
+      if (days > 30) {
+        alert('검색기간은 30일을 초과하여 조회할 수 없습니다.')
+        const tmpDate = new Date(val.dates[1])
+        tmpDate.setDate(tmpDate.getDate() - 30)
+        const stDt = tmpDate.getFullYear() + '-' + ((tmpDate.getMonth() + 1) > 9 ? (tmpDate.getMonth() + 1).toString() : '0' + (tmpDate.getMonth() + 1)) + '-' + (tmpDate.getDate() > 9 ? tmpDate.getDate().toString() : '0' + tmpDate.getDate().toString())
+        this.searchForm.dates = [stDt, val.dates[1]]
+        return
+      }
+      this.$refs.pickerMenu.save(this.searchForm.dates)
+    },
+    async getCmnCodeList () {
+      // param setting
+      const searchCondition = {
+        codeType: 'TEST_TYPE',
+        useYn: 'Y'
+      }
+      const resultURL = await getCmnCodeList(searchCondition)
+      this.testTypeList = resultURL.data.result.cmnCodeList ? resultURL.data.result.cmnCodeList : ''
+      console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
+    },
     searhPopup: function () {
       this.popup.branchPopup = true
     },
-    popupAction: function (popup, obj) {
+    popupAction: function (type, obj) {
       this.searchForm.codeIdArr = []
       if (obj != null && obj.length > 0) {
         let txt = ''
@@ -356,7 +413,7 @@ export default {
         }
         this.searchForm.branchNm = txt
       }
-      this.popup = popup
+      this.popup[`${type}`] = !this.popup[`${type}`]
     },
     dialogBranch: function () {
       return (this.popup.branchPopup === true)
@@ -422,14 +479,15 @@ export default {
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
+        noBranchYn: this.searchForm.testType
       }
-      console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getBranchStatisticsList(searchCondition).then(
         response => {
           this.branchStatisticsList = response.data.result.branchStatisticsList ? response.data.result.branchStatisticsList : []
-          console.log(this.branchStatisticsList)
+          // console.log(this.branchStatisticsList)
           // paging setting
           this.pagination.totalRows = response.data.result.branchStatisticsListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
@@ -478,7 +536,8 @@ export default {
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
+        noBranchYn: this.searchForm.testType
       }
       reqBranchStatisticsExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_지점별_거래현황.xlsx'
