@@ -433,6 +433,21 @@ const routes = [
         path: 'aiConcierge/branchStatiatics',
         name: 'BranchStatiaticsView',
         component: lazyLoading('shinhan/aiConcierge/BranchStatiaticsView')
+      },
+      { // 혁신점포 업무분류별 처리이력 현황
+        path: 'aiConcierge/taskCategoryHistory',
+        name: 'TaskCategoryHistoryView',
+        component: lazyLoading('shinhan/aiConcierge/TaskCategoryHistoryView')
+      },
+      { // 혁신점포 업무분류별 사용현황
+        path: 'aiConcierge/taskCategoryStatiatics',
+        name: 'TaskCategoryStatiaticsView',
+        component: lazyLoading('shinhan/aiConcierge/TaskCategoryStatiaticsView')
+      },
+      { // 혁신점포 단말종류별 사용현황
+        path: 'aiConcierge/screenCategoryStatiatics',
+        name: 'ScreenCategoryStatiaticsView',
+        component: lazyLoading('shinhan/aiConcierge/ScreenCategoryStatiaticsView')
       }
     ]
   },

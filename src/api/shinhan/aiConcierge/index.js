@@ -54,6 +54,46 @@ function reqBranchStatisticsExcelDown (searchCondition) { /* 지점별 거래 �
   return postRequestBlob('/api/aiConcierge/branchStatisticsExcelDown', JSON.stringify(searchCondition))
 }
 
+function getCategoryHistoryList (searchCondition) { /* 업무분류별 처리이력 */
+  return postRequest('/api/aiConcierge/digitalWorkTypeProcessView', JSON.stringify(searchCondition))
+}
+
+function reqCategoryHistoryExcelDown (searchCondition) { /* 업무분류별 처리이력 엑셀 다운 */
+  return postRequestBlob('/api/aiConcierge/digitalWorkTypeProcessExcelDown', JSON.stringify(searchCondition))
+}
+
+function getTaskCategoryStatiaticsList (searchCondition) { /* 업무분류별 사용현황 */
+  return postRequest('/api/aiConcierge/digitalWorkTypeUsageView', JSON.stringify(searchCondition))
+}
+
+function getTaskCategoryStatiaticsChart (searchCondition) { /* 업무분류별 파이 차트 */
+  return postRequest('/api/aiConcierge/digitalWorkTypeUsageChart', JSON.stringify(searchCondition))
+}
+
+function getTaskCategoryStatiaticsDetailList (searchCondition) { /* 업무분류별 사용현황 */
+  return postRequest('/api/aiConcierge/digitalWorkTypeUsageDetailView', JSON.stringify(searchCondition))
+}
+
+function reqTaskCategoryStatiaticsExcelDown (searchCondition) { /* 업무분류별 사용현황 엑셀 다운 */
+  return postRequestBlob('/api/aiConcierge/digitalWorkTypeUsageExcelDown', JSON.stringify(searchCondition))
+}
+
+function getScreenCategoryStatiaticsList (searchCondition) { /* 화면분류별 상세 사용현황 */
+  return postRequest('/api/aiConcierge/digitalScreenTypeUsageView', JSON.stringify(searchCondition))
+}
+
+function getScreenCategoryStatiaticsChart (searchCondition) { /* 화면분류별 파이 차트 */
+  return postRequest('/api/aiConcierge/digitalScreenTypeUsageChart', JSON.stringify(searchCondition))
+}
+
+function reqScreenCategoryStatiaticsExcelDown (searchCondition) { /* 화면분류별 사용현황 엑셀 다운 */
+  return postRequestBlob('/api/aiConcierge/digitalScreenTypeUsageExcelDown', JSON.stringify(searchCondition))
+}
+
+function getScreenCategoryStatiaticsDetailList (searchCondition) { /* 화면분류별 상세 사용현황 */
+  return postRequest('/api/aiConcierge/digitalScreenMiddleUsageView', JSON.stringify(searchCondition))
+}
+
 export {
   getAiConciergeSearchCondition,
   getAiConciergeSearchList,
@@ -67,5 +107,15 @@ export {
   reqAiConciergeStatisticsBatch,
   getBranchStatisticsSearchCondition,
   getBranchStatisticsList,
-  reqBranchStatisticsExcelDown
+  reqBranchStatisticsExcelDown,
+  getCategoryHistoryList,
+  reqCategoryHistoryExcelDown,
+  getTaskCategoryStatiaticsList,
+  getTaskCategoryStatiaticsChart,
+  getTaskCategoryStatiaticsDetailList,
+  reqTaskCategoryStatiaticsExcelDown,
+  getScreenCategoryStatiaticsList,
+  getScreenCategoryStatiaticsChart,
+  getScreenCategoryStatiaticsDetailList,
+  reqScreenCategoryStatiaticsExcelDown
 }

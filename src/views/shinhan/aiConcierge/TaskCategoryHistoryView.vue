@@ -8,30 +8,6 @@
       <v-container class="search-group" no-gutters fluid>
         <v-row no-gutters>
           <v-col cols="2">
-            <v-select
-              class="default search"
-              :menu-props="{ offsetY: true }"
-              v-model="searchForm.tenant"
-              :items="cptdItemsTenantList"
-              :label="$t('label.tenant')"
-              :placeholder="searchForm.tenant ? undefined : $t('label.all')"
-              clearable
-            ></v-select>
-          </v-col>
-          <!--
-          <v-col cols="2">
-            <v-text-field
-              class="default search"
-              v-model="searchForm.branchNm"
-              label="지점명"
-              placeholder=" "
-              hide-details
-              clearable
-              v-on:keyup.enter="searchBtn"
-            ></v-text-field>
-          </v-col>
-          -->
-          <v-col cols="2">
             <v-text-field
               class="default search"
               v-model="searchForm.branchNm"
@@ -54,17 +30,18 @@
               v-on:keyup.enter="searchBtn"
             ></v-text-field>
           </v-col>
-          <v-col cols="1">
+
+          <v-col cols="2">
             <v-select
-              class="default"
+              class="default search"
               :menu-props="{ offsetY: true }"
-              v-model="searchForm.deviceKind"
-              :items="cptdDeviceKindList"
-               item-key="codeId"
+              v-model="searchForm.jobCode"
+              :items="cptdItemsTaskList"
+              :label="'업무분류'"
+              item-key="codeId"
               item-text="codeValue"
               item-value="codeId"
-              :label="'단말종류'"
-              :placeholder="searchForm.deviceKind ? undefined : $t('label.all')"
+              :placeholder="searchForm.jobCode ? undefined : $t('label.all')"
               clearable
             ></v-select>
           </v-col>
@@ -72,10 +49,10 @@
             <v-select
               class="default search"
               :menu-props="{ offsetY: true }"
-              v-model="searchForm.commYn"
-              :items="cptdCommYnList"
-              label="상담완료여부"
-              :placeholder="searchForm.commYn ? undefined : $t('label.all')"
+              v-model="searchForm.recognition"
+              :items="cptdMouduleList"
+              :label="$t('label.recognition')"
+              :placeholder="searchForm.recognition ? undefined : $t('label.all')"
               clearable
             ></v-select>
           </v-col>
@@ -144,20 +121,6 @@
             clearable
             ></v-select>
           </v-col>
-          <v-col>
-            <v-select
-              class="default search"
-              :menu-props="{ offsetY: true }"
-              v-model="searchForm.dialogYn"
-              :items="cptdDialogHisList"
-              item-key="codeId"
-              item-text="codeValue"
-              item-value="codeId"
-              :label="'고객이력 여부'"
-              :placeholder="searchForm.dialogYn ? undefined : $t('label.all')"
-              clearable
-            ></v-select>
-          </v-col>
           <v-col class="text-right">
             <v-btn
               text
@@ -175,33 +138,35 @@
         :subtitle="pagination.sectionSubTitle"
       >
       </PageSectionTitle>
-      <v-card class="data-grid-wrap default clickable">
+      <v-card class="data-grid-wrap default">
         <v-data-table
-          :single-select="true"
           :headers="headers"
-          :items="aiConciergeHistoryList"
+          :items="taskCategoryHistoryList"
           :server-items-length="pagination.totalRows"
           :options.sync="optionSync"
           :loading="pagination.loading"
-          show-select
           hide-default-footer
           :no-data-text="$t('message.noData')"
           :loading-text="$t('message.loading')"
         >
-          <template v-slot:item="props">
-            <tr @click="detailRow(props.item), selected = props.item.callId">
-              <td class="text-center"><input type="checkbox" name="view" :checked="totChkList.includes(props.item.callId) ? true : false" disabled></td>
-              <td class="text-center">{{ props.item.tenantNm }}</td>
-              <td class="text-center">{{ props.item.branchCd }}</td>
-              <td class="text-center">{{ props.item.branchNm }}</td>
-              <td class="text-center">{{ props.item.deviceNo }}</td>
-              <td class="text-center">{{ props.item.deviceKind }}</td>
-              <td class="text-center">{{ props.item.callId }}</td>
-              <td class="text-center">{{ props.item.startDt ? $moment(props.item.startDt, 'YYYY-MM-DDTHH:mm:ss.SSSZ').zone('+09:00').format('MM-DD HH:mm:ss') : '' }}</td>
-              <td class="text-center">{{ props.item.timeDiff }}</td>
-              <td class="text-center"><v-btn @click="detailRow(props.item)" text class="default" color="btn-secondary" >{{ $t('button.detail')}}</v-btn></td>
-            </tr>
-          </template>
+      <template v-slot:item="props">
+        <tr :title="convertContents(props.item.contents)">
+          <td class="text-center">{{ props.item.jobCode }}</td>
+          <td class="text-center">{{ props.item.jobName }}</td>
+          <td class="text-center">{{ props.item.callId }}</td>
+          <td class="text-center">{{ props.item.branchCd }}</td>
+          <td class="text-center">{{ props.item.branchNm }}</td>
+          <td class="text-center">{{ props.item.deviceNo }}</td>
+          <td class="text-center">{{ props.item.topScreenCode }}</td>
+          <td class="text-center">{{ props.item.topScreenName }}</td>
+          <td class="text-center">{{ props.item.bottomScreenCode }}</td>
+          <td class="text-center">{{ props.item.bottomScreenName }}</td>
+          <td class="text-center">{{ props.item.customerNo }}</td>
+          <td class="text-center">{{ props.item.recognition }}</td>
+          <td class="text-center">{{ getContents(props.item.contents) }}</td>
+          <td class="text-center">{{ props.item.convoDt }}</td>
+        </tr>
+      </template>
         </v-data-table>
       </v-card>
       <div class="pagination-group">
@@ -216,12 +181,12 @@
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="fnc_getAiConciergeHistoryList"
+          @input="fnc_getCategoryHistoryList"
           :total-visible="10"
         ></v-pagination>
       </div>
       <v-dialog
-        v-model="dialog"
+        v-model="dialogBranch"
         persistent
         :max-width="600"
         hide-overlay
@@ -236,60 +201,62 @@
       </div>
     </vuescroll>
     <div v-for="chat in chats" :key="chat.chatId">
-      <systemCall-history-img-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
+      <inbound-history-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
     </div>
-    <!-- <div v-for="chat in chats" :key="chat.chatId">
-      <ai-concierge-detail-popup v-if="chat.visible === true" :chat="chat" :counselor="chat.counselor" @clickClose="chat.visible = false" />
-    </div> -->
   </div>
 </template>
 
 <script>
-import SystemCallHistoryImgPopup from '@/components/SystemCallHistoryImgPopup'
-// import AiConciergeDetailPopup from '@/views/shinhan/aiConcierge/AiConciergeDetailPopup'
-import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
-
 import {
-  getAiConciergeSearchCondition,
-  getAiConciergeHistoryList,
-  reqAiConciergeHistoryExcelDown
+  getCategoryHistoryList,
+  reqCategoryHistoryExcelDown
 } from '../../../api/shinhan/aiConcierge'
+import datepicker from '@/plugins/datepicker'
 import {
   getCmnCodeList
 } from '../../../api/cmnCode'
-import datepicker from '@/plugins/datepicker'
+import PopupSearchBanch from '@/views/counsel/PopupSearchBanch'
 
 export default {
-  name: 'ListAiConciergeView',
+  name: 'TaskCategoryHistoryView',
   components: {
-    SystemCallHistoryImgPopup,
-    // AiConciergeDetailPopup,
     PopupSearchBanch
   },
   mixins: [datepicker],
   created () {
-    this.totChkList = sessionStorage.getItem('airead').split(',')
+    if (sessionStorage.userAuthCode === 'CU' || sessionStorage.userAuthCode === 'CAU') {
+      this.authOpt = false
+      this.searchForm.system = sessionStorage.systemIds
+    }
   },
   mounted () {
-    this.initAiConciergeView()
-    this.fnc_getAiConciergeHistoryList()
+    this.getCmnCodeList()
+    this.InitCategoryHistorysView()
   },
   data () {
     return {
-      testValue: '',
-      headers: [
-        { text: '테넌트', value: 'tenantNm', align: 'center', class: 'text-center', width: '120px' },
-        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '100px' },
-        { text: '지점명', value: 'branchNm', align: 'center', width: '130px' },
-        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '100px' },
-        { text: '단말종류', value: 'deviceKind', align: 'center', class: 'text-center', width: '120px' },
-        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center', width: '200px' },
-        { text: '통화시작일시', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
-        { text: '통화시간', value: 'timeDiff', align: 'center', class: 'text-center', width: '100px' },
-        { text: '대화이력', value: 'buttonhere', align: 'center', class: 'text-center', width: '80px', sortable: false }
+      moudules: [
+        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '음성', value: 'VO' },
+        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '버튼', value: 'BT' },
+        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '침묵', value: 'SL' }
       ],
-      aiConciergeHistoryList: [],
-      deviceKindList: [],
+      headers: [
+        { text: '업무코드', value: 'jobCode', align: 'center', class: 'text-center', width: '100px' },
+        { text: '업무명', value: 'jobName', align: 'center', class: 'text-center', width: '120px' },
+        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center' },
+        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '80px' },
+        { text: '지점명', value: 'branchNm', align: 'center', width: '150px' },
+        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '80px' },
+        { text: '상단화면ID', value: 'topScreenCode', align: 'center', class: 'text-center', width: '100px' },
+        { text: '상단화면명', value: 'topScreenName', align: 'center', class: 'text-center', width: '150px' },
+        { text: '하단화면ID', value: 'bottomScreenCode', align: 'center', class: 'text-center', width: '100px' },
+        { text: '하단화면명', value: 'bottomScreenName', align: 'center', class: 'text-center', width: '150px' },
+        { text: '고객번호', value: 'customerNo', align: 'center', class: 'text-center', width: '80px' },
+        { text: '인식구분', value: 'recognition', align: 'center', class: 'text-center', width: '80px' },
+        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '120px' },
+        { text: '발생일시', value: 'convoDt', align: 'center', class: 'text-center', width: '200px' }
+      ],
+      taskCategoryHistoryList: [],
       pagination: {
         page: 1, // 현재페이지
         length: 1, // 페이징숫자 갯수
@@ -301,31 +268,21 @@ export default {
         loading: false
       },
       options: null,
-      commYns: [
-        {
-          text: '상담완료',
-          value: 'Y'
-        },
-        {
-          text: '상담중',
-          value: 'N'
-        }
-      ],
+      callTypes: [],
       searchForm: {
-        itemsTenantList: [],
-        tenant: '',
         branchNm: '',
         codeIdArr: [],
-        commYn: '',
-        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
+        recognition: '',
         deviceNo: '',
-        deviceKind: '',
+        jobCode: '',
+        callType: '',
+        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
         testType: '',
-        dialogYn: ''
+        tasktList: [],
+        system: ''
       },
       chats: [],
-      chkList: [],
-      totChkList: [],
+      authOpt: true,
       popup: {
         branchPopup: false
       },
@@ -340,26 +297,6 @@ export default {
     pageDescription: function () {
       return this.$store.getters.pageDescription
     },
-    cptdItemsTenantList () {
-      const tenantList = [
-        {
-          text: this.$t('label.all'),
-          value: ''
-        }
-      ]
-      tenantList.push(...this.searchForm.itemsTenantList)
-      return tenantList
-    },
-    cptdDeviceKindList () {
-      const deviceKindList = [
-        {
-          codeValue: this.$t('label.all'),
-          codeId: ''
-        }
-      ]
-      deviceKindList.push(...this.deviceKindList)
-      return deviceKindList
-    },
     cptdTestTypeList () {
       const testList = [
         {
@@ -371,34 +308,26 @@ export default {
       // console.log(' computed testList ' + JSON.stringify(testList))
       return testList
     },
-    cptdDialogHisList () {
-      const dialogtList = [
+    cptdItemsTaskList () {
+      const tasktList = [
         {
           codeValue: this.$t('label.all'),
           codeId: ''
-        },
-        {
-          codeValue: 'Y',
-          codeId: 'Y'
-        },
-        {
-          codeValue: 'N',
-          codeId: 'N'
         }
       ]
-      // dialogtList.push(...this.dialogtList)
-      // console.log(' computed testList ' + JSON.stringify(testList))
-      return dialogtList
+      // tenantList.push(...this.searchForm.itemsTenantList.filter(s => s.value.indexOf(this.searchForm.system) === 0))
+      tasktList.push(...this.searchForm.tasktList)
+      return tasktList
     },
-    cptdCommYnList () {
-      const commYnList = [
+    cptdMouduleList () {
+      const moudules = [
         {
           text: this.$t('label.all'),
           value: ''
         }
       ]
-      commYnList.push(...this.commYns)
-      return commYnList
+      moudules.push(...this.moudules.filter(s => s.opt1.indexOf(this.searchForm.system) !== -1))
+      return moudules
     },
     dateRangeText: {
       get: function () {
@@ -420,7 +349,7 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getAiConciergeHistoryList()
+          this.fnc_getCategoryHistoryList()
         }
       }
     }
@@ -449,28 +378,22 @@ export default {
       }
       this.$refs.pickerMenu.save(this.searchForm.dates)
     },
-    async initAiConciergeView () {
-      this.getCmnCodeList()
-      await this.fnc_getAiConciergeSearchCondition()
-      this.fnc_getAiConciergeHistoryList()
-    },
-    fnc_getAiConciergeSearchCondition: function () {
-      getAiConciergeSearchCondition().then(
-        response => {
-          this.searchForm.itemsTenantList = response.data.result.tenantList
-          // this.searchForm.tenant = this.searchForm.itemsTenantList[0].value
-          this.searchForm.itemsTimeTypeList = response.data.result.timeTypeList
-          this.searchForm.timeType = this.searchForm.itemsTimeTypeList[0].value
-        }
-      )
-    },
-    dialog: function () {
-      return (this.popup.branchPopup === true)
-    },
-    // 검색버튼
-    searchBtn: function () {
-      this.pagination.page = 1
-      this.fnc_getAiConciergeHistoryList()
+    async getCmnCodeList () {
+      // param setting
+      let searchCondition = {
+        codeType: 'TEST_TYPE',
+        useYn: 'Y'
+      }
+      const resultTestType = await getCmnCodeList(searchCondition)
+      this.testTypeList = resultTestType.data.result.cmnCodeList ? resultTestType.data.result.cmnCodeList : []
+      // console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
+      searchCondition = {
+        codeType: 'SHBK_JOB_TYPE',
+        useYn: 'Y'
+      }
+      const resultTask = await getCmnCodeList(searchCondition)
+      this.searchForm.tasktList = resultTask.data.result.cmnCodeList ? resultTask.data.result.cmnCodeList : []
+      // console.log(' this.searchForm.tasktList ' + JSON.stringify(this.searchForm.tasktList))
     },
     searhPopup: function () {
       this.popup.branchPopup = true
@@ -491,7 +414,36 @@ export default {
       }
       this.popup[`${type}`] = !this.popup[`${type}`]
     },
-    fnc_getAiConciergeHistoryList: function () {
+    dialogBranch: function () {
+      return (this.popup.branchPopup === true)
+    },
+    getContents (str) {
+      let content
+      let setStr
+      if (str === null || str === undefined || str === '') {
+        content = ''
+      } else {
+        setStr = str // .replace('\\n', '')
+        // console.log(' setStr ' + setStr)
+        if (setStr.length > 10) {
+          content = setStr.substring(0, 9) + '...'
+        } else {
+          content = setStr
+        }
+      }
+      return content
+    },
+    convertContents (str) {
+      return str === null || str === '' ? '' : str // .replaceAll('\\n', '\n') //  setStr = str.replace('\\n', '&lt;br&gt;') .replace('\n', '<br>')
+    },
+    InitCategoryHistorysView () {
+      this.fnc_getCategoryHistorySearchCondition()
+    },
+    // 검색 조건 조회
+    fnc_getCategoryHistorySearchCondition: function () {
+      this.fnc_getCategoryHistoryList()
+    },
+    fnc_getCategoryHistoryList: function () {
       /* datepicker open */
       if (this.pickerMenu === true) {
         this.$refs.pickerMenu.save(this.searchForm.dates)
@@ -507,23 +459,22 @@ export default {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         itemsPerPage: this.pagination.itemsPerPage,
-        tenantId: this.searchForm.tenant,
-        branchNm: this.searchForm.branchNm,
         codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
-        deviceNo: this.searchForm.deviceNo,
-        deviceKind: this.searchForm.deviceKind,
-        commYn: this.searchForm.commYn,
+        recognition: this.searchForm.recognition, // 인식구분
+        deviceNo: this.searchForm.deviceNo, // 단말번호
+        workType: this.searchForm.jobCode, // 업무분류
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
         noBranchYn: this.searchForm.testType
       }
       console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
-      getAiConciergeHistoryList(searchCondition).then(
+      getCategoryHistoryList(searchCondition).then(
         response => {
-          this.aiConciergeHistoryList = response.data.result.aiConciergeHistoryList ? response.data.result.aiConciergeHistoryList : []
+          console.log(response.data)
+          this.taskCategoryHistoryList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
           // paging setting
-          this.pagination.totalRows = response.data.result.aiConciergeHistoryListCount
+          this.pagination.totalRows = response.data.result.digitalUsageViewCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
           this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
         },
@@ -540,52 +491,38 @@ export default {
         this.pagination.loading = false
       })
     },
-    // 상세버튼
-    detailRow: function (aiConciergeList) {
-      const stTmp = this.isEmpty(sessionStorage.getItem('airead')) ? '' : sessionStorage.getItem('airead')
-      if (stTmp.indexOf(aiConciergeList.callId) < 1) {
-        this.chkList = this.isEmpty(stTmp) ? [] : stTmp.split(',')
-        this.chkList.push(aiConciergeList.callId)
-        // console.log(' systemCall.callId ' + systemCall.callId)
-        sessionStorage.setItem('airead', this.chkList)
-        // console.log(' sessionStorage ' + JSON.stringify(sessionStorage.getItem('airead')))
-        this.totChkList = sessionStorage.getItem('airead').split(',')
-      }
-      const chat = {
-        callId: aiConciergeList.callId,
-        // extension: inboundCall.extension,
-        counselor: {
-          callYn: aiConciergeList.commYn,
-          tenantNm: aiConciergeList.tenantNm
-        },
-        visible: true
-      }
-      let idx = -1
-      if ((idx = this.chats.findIndex(ct => ct.callId === chat.callId)) > -1) {
-        this.chats.splice(idx, 1, chat)
-      } else {
-        this.chats.push(chat)
-      }
+    // 검색버튼
+    searchBtn: function () {
+      this.pagination.page = 1
+      this.fnc_getCategoryHistoryList()
+    },
+    isEmpty: function (x) {
+      return (x === null || x === undefined)
     },
     excelDown: function () {
+      /* datepicker open */
+      if (this.pickerMenu === true) {
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+      }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+      if (this.isEmpty(this.searchForm.branchNm)) {
+        this.searchForm.codeIdArr = []
+      }
       // param setting
       const searchCondition = {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
-        tenantId: this.searchForm.tenant,
-        branchNm: this.searchForm.branchNm,
         codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
-        deviceNo: this.searchForm.deviceNo,
-        deviceKind: this.searchForm.deviceKind,
-        commYn: this.searchForm.commYn,
+        recognition: this.searchForm.recognition, // 인식구분
+        deviceNo: this.searchForm.deviceNo, // 단말번호
+        workType: this.searchForm.jobCode, // 업무분류
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
         noBranchYn: this.searchForm.testType
       }
-      reqAiConciergeHistoryExcelDown(searchCondition).then(response => {
-        const filename = this.$moment().format('YYYY-MM-DD') + '_AIconcierge_처리이력.xlsx'
+      reqCategoryHistoryExcelDown(searchCondition).then(response => {
+        const filename = this.$moment().format('YYYY-MM-DD') + '_지점별_거래현황.xlsx'
 
         const url = window.URL.createObjectURL(
           new Blob([response.data], {
@@ -614,29 +551,11 @@ export default {
           })
         }
       })
-    },
-    // 공통코드유형 정보 조회
-    async getCmnCodeList () {
-      // param setting
-      let searchCondition = {
-        codeType: 'DEVICE',
-        useYn: 'Y'
-      }
-      const resultDevice = await getCmnCodeList(searchCondition)
-      this.deviceKindList = resultDevice.data.result.cmnCodeList ? resultDevice.data.result.cmnCodeList : []
-      console.log(' this.deviceKindList ' + JSON.stringify(this.deviceKindList))
-      // param setting
-      searchCondition = {
-        codeType: 'TEST_TYPE',
-        useYn: 'Y'
-      }
-      const resultTestType = await getCmnCodeList(searchCondition)
-      this.testTypeList = resultTestType.data.result.cmnCodeList ? resultTestType.data.result.cmnCodeList : []
-      console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
-    },
-    isEmpty: function (x) {
-      return (x === null || x === undefined || x === '')
     }
   }
 }
 </script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="scss">
+</style>
