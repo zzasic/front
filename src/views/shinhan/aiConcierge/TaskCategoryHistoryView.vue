@@ -392,7 +392,9 @@ export default {
       // console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
       searchCondition = {
         codeType: 'SHBK_JOB_TYPE',
-        useYn: 'Y'
+        useYn: 'Y',
+        page: 1,
+        itemsPerPage: 20
       }
       const resultTask = await getCmnCodeList(searchCondition)
       this.searchForm.tasktList = resultTask.data.result.cmnCodeList ? resultTask.data.result.cmnCodeList : []

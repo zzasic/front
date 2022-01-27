@@ -70,7 +70,7 @@ function getTaskCategoryStatiaticsChart (searchCondition) { /* 업무분류별 �
   return postRequest('/api/aiConcierge/digitalWorkTypeUsageChart', JSON.stringify(searchCondition))
 }
 
-function getTaskCategoryStatiaticsDetailList (searchCondition) { /* 업무분류별 사용현황 */
+function getTaskCategoryStatiaticsDetailList (searchCondition) { /* 업무분류별 상세 사용현황 */
   return postRequest('/api/aiConcierge/digitalWorkTypeUsageDetailView', JSON.stringify(searchCondition))
 }
 
@@ -92,6 +92,14 @@ function reqScreenCategoryStatiaticsExcelDown (searchCondition) { /* 화면분�
 
 function getScreenCategoryStatiaticsDetailList (searchCondition) { /* 화면분류별 상세 사용현황 */
   return postRequest('/api/aiConcierge/digitalScreenMiddleUsageView', JSON.stringify(searchCondition))
+}
+
+function getScreenCategoryStatiaticsMinorList (searchCondition) { /* 화면분류별 소분류 사용현황 */
+  return postRequest('/api/aiConcierge/digitalScreenMinorUsageView', JSON.stringify(searchCondition))
+}
+
+function getScreenCategoryTypeUsageDetailList (searchCondition) { /* 화면분류별 최종 상세 사용현황 */
+  return postRequest('/api/aiConcierge/digitalScreenTypeUsageDetailView', JSON.stringify(searchCondition))
 }
 
 export {
@@ -117,5 +125,7 @@ export {
   getScreenCategoryStatiaticsList,
   getScreenCategoryStatiaticsChart,
   getScreenCategoryStatiaticsDetailList,
-  reqScreenCategoryStatiaticsExcelDown
+  reqScreenCategoryStatiaticsExcelDown,
+  getScreenCategoryStatiaticsMinorList,
+  getScreenCategoryTypeUsageDetailList
 }

@@ -376,10 +376,19 @@ export default {
     }
   },
   watch: {
+    /*
     pickerYearMenu: function (newVal, oldVal) {
       newVal && this.$nextTick(() => {
         this.$refs.pickerYear.internalActivePicker = 'YEAR'
       })
+    }
+    */
+    pickerYearMenu: function (newVal, oldVal) {
+      if (newVal) {
+        setTimeout(() => {
+          this.$refs.pickerYear.internalActivePicker = 'YEAR'
+        }, 100)
+      }
     }
   },
   methods: {
