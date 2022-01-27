@@ -185,7 +185,7 @@
               >
                 <v-spacer></v-spacer>
                 <v-btn text :ripple="false" color="pink" @click="pickerMonthMenu = false">{{ $t('button.close')}}</v-btn>
-                <v-btn text :ripple="false" color="pink" @click="$refs.pickerMonthMenu.save(searchForm.months)">{{ $t('button.confirm')}}</v-btn>
+                <v-btn text :ripple="false" color="pink" @click="betweenMonth(searchForm)">{{ $t('button.confirm')}}</v-btn>
               </v-date-picker>
             </v-menu>
           </v-col>
@@ -828,6 +828,20 @@ export default {
       // console.log(' this.itemObj ' + JSON.stringify(this.itemObj))
       this.popup.statisticPopup = true
     },
+    betweenMonth: function (val) {
+      if (this.isEmpty(val.months[1])) {
+        this.searchForm.months[1] = val.months[0]
+      }
+      if (val.months[0] !== val.months[1]) {
+        alert('검색기간은 한달을 초과하여 조회할 수 없습니다.')
+        this.searchForm.months = [val.months[1], val.months[1]]
+        this.$refs.pickerMonthMenu.save(this.searchForm.months)
+        return false
+      } else {
+        this.$refs.pickerMonthMenu.save(this.searchForm.months)
+        return true
+      }
+    },
     betweenConfirm: function (val) {
       if (this.isEmpty(val.dates[1])) {
         this.searchForm.dates[1] = val.dates[0]
@@ -873,8 +887,8 @@ export default {
     },
     // 검색버튼
     searchBtn: function () {
-      if (this.searchForm.timeType === 'A') {
-        const isSuccess = this.betweenConfirm(this.searchForm)
+      if (this.searchForm.timeType === 'A' || this.searchForm.timeType === 'C' || this.searchForm.timeType === 'D') {
+        const isSuccess = this.searchForm.timeType === 'A' ? this.betweenConfirm(this.searchForm) : this.betweenMonth(this.searchForm)
         if (isSuccess) {
           this.pagination.page = 1
           this.fnc_getAiConciergeCartList(this.initSuccess)
@@ -988,7 +1002,7 @@ export default {
             }
             this.statisticsChartList = this.statTmp
           }
-          console.log(' ===== ' + JSON.stringify(this.statisticsChartList))
+          // console.log(' ===== ' + JSON.stringify(this.statisticsChartList))
         }
       ).finally(() => {
         this.pagination.loading = false

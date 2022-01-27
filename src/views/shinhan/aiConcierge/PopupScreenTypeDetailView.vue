@@ -5,10 +5,84 @@
       <span class="headline">상세내역</span>
     </v-card-title>
     <v-card-text>
+      <v-container class="search-group" no-gutters fluid>
+        <v-row no-gutters>
+          <v-col cols="auto">
+            <v-text-field
+              class="default"
+              v-model="item.betweenTxt"
+              label="검색기간"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+          <v-col cols="auto">
+            <v-text-field
+              class="default"
+              v-model="item.typeCode"
+              label="소분류코드"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+          <v-col cols="auto">
+            <v-text-field
+              class="default"
+              v-model="item.typeName"
+              label="소분류명"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              class="default"
+              v-model="item.voiceCnt"
+              label="음성(건)"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              class="default"
+              v-model="item.buttonCnt"
+              label="버튼(건)"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              class="default"
+              v-model="item.silenceCnt"
+              label="침묵(건)"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+          <v-col cols="2">
+            <v-text-field
+              class="default"
+              v-model="item.totalCnt"
+              label="전체(건)"
+              placeholder=" "
+              hide-details
+              disabled
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </v-container>
        <v-card class="data-grid-wrap default clickable">
         <v-data-table
           :headers="headers"
-          :items="branchStatisticsList"
+          :items="digitalUsageViewList"
           :server-items-length="pagination.totalRows"
           :options.sync="optionSync"
           :loading="pagination.loading"
@@ -18,14 +92,16 @@
         >
           <template v-slot:item="props">
             <tr :title="convertContents(props.item.contents)">
-              <td class="text-center">{{ props.item.systemNm }}</td>
-              <td class="text-center">{{ props.item.tenantNm }}</td>
               <td class="text-center">{{ props.item.callId }}</td>
               <td class="text-center">{{ props.item.branchCd }}</td>
               <td class="text-center">{{ props.item.branchNm }}</td>
               <td class="text-center">{{ props.item.deviceNo }}</td>
+              <td class="text-center">{{ props.item.topScreenCode }}</td>
+              <td class="text-center">{{ props.item.topScreenName }}</td>
+              <td class="text-center">{{ props.item.bottomScreenCode }}</td>
+              <td class="text-center">{{ props.item.bottomScreenName }}</td>
+              <td class="text-center">{{ props.item.customerNo }}</td>
               <td class="text-center">{{ props.item.moudule }}</td>
-              <td class="text-center">{{ props.item.tranId }}</td>
               <td class="text-center">{{ getContents(props.item.contents) }}</td>
               <td class="text-center">{{ props.item.convoDt }}</td>
             </tr>
@@ -44,7 +120,7 @@
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="fnc_getBranchStatisticsList"
+          @input="fnc_getScreenCategoryTypeUsageDetailList"
           :total-visible="10"
         ></v-pagination>
       </div>
@@ -65,14 +141,14 @@
 </div>
 </template>
 
-<script>
-import {
-  getBranchStatisticsList
-} from '../../../api/shinhan/aiConcierge' // solutionHistory'
+<script>import {
+  getScreenCategoryTypeUsageDetailList
+} from '../../../api/shinhan/aiConcierge'
+
 import datepicker from '@/plugins/datepicker'
 
 export default {
-  name: 'BranchStatiaticsView',
+  name: 'PopupScreenTypeDetailView',
   components: {
   },
   props: ['item'],
@@ -84,28 +160,25 @@ export default {
     }
   },
   mounted () {
-    this.fnc_getBranchStatisticsList()
+    this.fnc_getScreenCategoryTypeUsageDetailList()
   },
   data () {
     return {
-      moudules: [
-        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '음성', value: 'VO' },
-        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '버튼', value: 'BT' },
-        { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '침묵', value: 'SL' }
-      ],
       headers: [
-        { text: '시스템', value: 'systemNm', align: 'center', class: 'text-center', width: '120px' },
-        { text: '테넌트', value: 'tenantNm', align: 'center', class: 'text-center', width: '120px' },
-        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center', width: '240px' },
-        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '70px' },
-        { text: '지점명', value: 'branchNm', align: 'center', width: '100px' },
-        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '100px' },
-        { text: '인식구분', value: 'moudule', align: 'center', class: 'text-center', width: '120px' },
-        { text: '트랜잭션ID', value: 'tranId', align: 'center', class: 'text-center', width: '120px' },
-        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '120px' },
-        { text: '시작일시', value: 'convoDt', align: 'center', class: 'text-center', width: '120px' }
+        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center', width: '17%' },
+        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '5%' },
+        { text: '지점명', value: 'branchNm', align: 'center' },
+        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '5%' },
+        { text: '상단화면ID', value: 'topScreenCode', align: 'center', class: 'text-center', width: '5%' },
+        { text: '상단화면명', value: 'topScreenName', align: 'center', class: 'text-center', width: '10%' },
+        { text: '하단화면ID', value: 'bottomScreenCode', align: 'center', class: 'text-center', width: '6%' },
+        { text: '하단화면명', value: 'bottomScreenName', align: 'center', class: 'text-center', width: '8%' },
+        { text: '고객번호', value: 'customerNo', align: 'center', class: 'text-center', width: '5%' },
+        { text: '인식구분', value: 'recognition', align: 'center', class: 'text-center', width: '5%' },
+        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '7%' },
+        { text: '발생일시', value: 'convoDt', align: 'center', class: 'text-center', width: '10%' }
       ],
-      branchStatisticsList: [],
+      digitalUsageViewList: [],
       pagination: {
         page: 1, // 현재페이지
         length: 1, // 페이징숫자 갯수
@@ -118,30 +191,8 @@ export default {
       },
       options: null,
       callTypes: [],
-      searchForm: {
-        itemsSystemInfoList: [],
-        system: '',
-        solutionId: '',
-        itemsTenantList: [],
-        tenant: '',
-        branchNm: '',
-        branchCd: this.item.branchCd,
-        moudule: '',
-        deviceNo: '',
-        deviceKind: this.item.deviceKind,
-        status: '',
-        callType: '',
-        timeType: this.item.timeType,
-        searchDate: this.item.timeValue,
-        pageType: 'P',
-        dates: [this.item.startDate, this.item.endDate],
-        tenantId: this.item.tenantId
-      },
       chats: [],
-      authOpt: true,
-      popup: {
-        branchPopup: false
-      }
+      authOpt: true
     }
   },
 
@@ -160,7 +211,7 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getBranchStatisticsList()
+          this.fnc_getScreenCategoryTypeUsageDetailList()
         }
       }
     }
@@ -189,32 +240,26 @@ export default {
     convertContents (str) {
       return str === null || str === '' ? '' : str // .replaceAll('\\n', '\n') //  setStr = str.replace('\\n', '&lt;br&gt;') .replace('\n', '<br>')
     },
-    fnc_getBranchStatisticsList: function () {
+    fnc_getScreenCategoryTypeUsageDetailList: function () {
       // param setting
       const searchCondition = {
         page: this.pagination.page,
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
         itemsPerPage: this.pagination.itemsPerPage,
-        systemId: this.searchForm.system,
-        tenantId: this.searchForm.tenantId,
-        branchCd: this.searchForm.branchCd, // 지점명 배열
-        status: this.searchForm.status,
-        deviceKind: this.searchForm.deviceKind,
-        timeType: this.searchForm.timeType,
-        searchDate: this.searchForm.searchDate,
-        pageType: this.searchForm.pageType,
-        startMonth: this.searchForm.dates[0],
-        endMonth: this.searchForm.dates[1]
+        paramCode: this.item.typeCode,
+        startDate: this.item.betweenTxt.split('~')[0],
+        endDate: this.item.betweenTxt.split('~')[1]
       }
-      // console.log(' searchCondition pop' + JSON.stringify(searchCondition))
+      console.log(' searchCondition pop1' + JSON.stringify(searchCondition))
       this.pagination.loading = true
-      getBranchStatisticsList(searchCondition).then(
+      getScreenCategoryTypeUsageDetailList(searchCondition).then(
         response => {
-          this.branchStatisticsList = response.data.result.branchStatisticsList ? response.data.result.branchStatisticsList : []
-          // console.log(this.branchStatisticsList)
+          // console.log(' --- ' + JSON.stringify(response.data.result))
+          this.digitalUsageViewList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
+          // console.log(JSON.stringify(this.digitalUsageViewList))
           // paging setting
-          this.pagination.totalRows = response.data.result.branchStatisticsListCount
+          this.pagination.totalRows = response.data.result.digitalUsageViewCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
           this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
         },
@@ -234,14 +279,14 @@ export default {
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
-      this.fnc_getBranchStatisticsList()
+      this.fnc_getScreenCategoryTypeUsageDetailList()
     },
     // 취소버튼
     closeBtn: function () {
-      this.$emit('popupAction', 'statisticPopup')
+      this.$emit('popupAction', 'screenDetailPopup')
     },
     confirmBtn: function () {
-      this.$emit('popupAction', 'statisticPopup', this.selected)
+      this.$emit('popupAction', 'screenDetailPopup', this.selected)
     },
     isEmpty: function (x) {
       return (x === null || x === undefined)

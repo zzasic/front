@@ -470,11 +470,11 @@ export default {
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
         noBranchYn: this.searchForm.testType
       }
-      console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getCategoryHistoryList(searchCondition).then(
         response => {
-          console.log(response.data)
+          // console.log(response.data)
           this.taskCategoryHistoryList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
           // paging setting
           this.pagination.totalRows = response.data.result.digitalUsageViewCount

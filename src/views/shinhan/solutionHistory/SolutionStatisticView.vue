@@ -790,7 +790,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition 1 ' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition 1 ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSolutionHistoryUsageChartList(searchCondition).then(
         response => {
@@ -810,7 +810,7 @@ export default {
       this.fnc_getSolutionHistoryUsageList()
     },
     fnc_getSolutionHistoryUsageList: function () {
-      console.log('그리드 검색')
+      // console.log('그리드 검색')
       const dateRange = []
       if (this.searchForm.timeType === 'B') {
         if (this.pickerYearMenu === true) {
@@ -841,7 +841,7 @@ export default {
       if (this.isEmpty(this.searchForm.branchNm)) {
         this.searchForm.codeIdArr = []
       }
-      console.log('sortBy : ', this.options.sortBy === undefined)
+      // console.log('sortBy : ', this.options.sortBy === undefined)
       // param setting
       const searchCondition = {
         page: this.pagination.page,
@@ -857,7 +857,7 @@ export default {
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition 2 --' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition 2 --' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSolutionHistoryUsageList(searchCondition).then(
         response => {

@@ -299,7 +299,7 @@ export default {
         }
       ]
       testList.push(...this.testTypeList)
-      console.log(' computed testList ' + JSON.stringify(testList))
+      // console.log(' computed testList ' + JSON.stringify(testList))
       return testList
     },
     cptdItemsSystemInfoList () {
@@ -397,7 +397,7 @@ export default {
       }
       const resultURL = await getCmnCodeList(searchCondition)
       this.testTypeList = resultURL.data.result.cmnCodeList ? resultURL.data.result.cmnCodeList : ''
-      console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
+      // console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
     },
     searhPopup: function () {
       this.popup.branchPopup = true

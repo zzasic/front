@@ -421,13 +421,32 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
       // this.pagination.loading = true
       getScreenCategoryStatiaticsList(searchCondition).then(
         response => {
           this.digitalUsageViewList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
           // console.log('fnc_getScreenCategoryStatiaticsList' + JSON.stringify(this.digitalUsageViewList))
-          this.digitalUsageViewTotalCnt = response.data.result.digitalUsageViewTotalCnt
+          const totSum = (txt) => {
+            let totSum = 0
+            for (let i = 0; i < this.digitalUsageViewList.length; i++) {
+              if (txt === 'V') {
+                totSum = totSum + Number(this.digitalUsageViewList[i].voiceCnt)
+              } else if (txt === 'B') {
+                totSum = totSum + Number(this.digitalUsageViewList[i].buttonCnt)
+              } else if (txt === 'S') {
+                totSum = totSum + Number(this.digitalUsageViewList[i].silenceCnt)
+              } else if (txt === 'T') {
+                totSum = totSum + Number(this.digitalUsageViewList[i].totalCnt)
+              }
+            }
+            return totSum
+          }
+          this.digitalUsageViewTotalCnt.voiceCnt = totSum('V')
+          this.digitalUsageViewTotalCnt.buttonCnt = totSum('B')
+          this.digitalUsageViewTotalCnt.silenceCnt = totSum('S')
+          this.digitalUsageViewTotalCnt.totalCnt = totSum('T')
+          // response.data.result.digitalUsageViewTotalCnt
           // paging setting
           // this.pagination.totalRows = response.data.result.digitalUsageViewListCount
           // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
@@ -473,12 +492,12 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition 1' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition 1' + JSON.stringify(searchCondition))
       getScreenCategoryStatiaticsChart(searchCondition).then(
         response => {
-          console.log(' response.data.result 1' + JSON.stringify(response.data.result))
+          // console.log(' response.data.result 1' + JSON.stringify(response.data.result))
           this.digitalUsageChart = response.data.result.digitalUsageChart ? response.data.result.digitalUsageChart : []
-          console.log(' this.digitalUsageChart.length' + this.digitalUsageChart.length)
+          // console.log(' this.digitalUsageChart.length' + this.digitalUsageChart.length)
           this.pieChartJSData.labels = []
           this.pieChartJSData.datasets[0].backgroundColor = []
           this.pieChartJSData.datasets[0].data = []
@@ -517,10 +536,10 @@ export default {
         endDate: dt.endDt
       }
       this.pagination.loading = true
-      console.log(this.initSuccess + ' fnc_getScreenCategoryStatiaticsDetailList : ', JSON.stringify(searchCondition))
+      // console.log(this.initSuccess + ' fnc_getScreenCategoryStatiaticsDetailList : ', JSON.stringify(searchCondition))
       getScreenCategoryStatiaticsDetailList(searchCondition).then(
         response => {
-          console.log(' response.data.result : 2222', JSON.stringify(response.data.result))
+          // console.log(' response.data.result : 2222', JSON.stringify(response.data.result))
           this.digitalUsageViewDetailList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
           // paging setting
           this.pagination.totalRows = response.data.result.digitalUsageViewCount
@@ -532,14 +551,14 @@ export default {
       })
     },
     detailStatiatics: function (itemRow, selectDt) {
-      console.log(JSON.stringify(itemRow) + '====' + JSON.stringify(selectDt))
+      // console.log(JSON.stringify(itemRow) + '====' + JSON.stringify(selectDt))
       this.itemMiddleObj = itemRow
       this.itemMiddleObj.betweenTxt = this.betweenTxt
       this.popup.screenMinorPopup = true
     },
     // 상세버튼
     detailRow: function (itemRow, selectDt) {
-      console.log(' detailRow ' + JSON.stringify(itemRow))
+      // console.log(' detailRow ' + JSON.stringify(itemRow))
       this.rowkey = itemRow.typeCode
       this.itemObj = itemRow
       this.fnc_getScreenCategoryStatiaticsDetailList(this.itemObj, selectDt)

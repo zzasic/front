@@ -524,7 +524,7 @@ export default {
         noBranchYn: this.searchForm.testType,
         isHistoryYn: this.searchForm.dialogYn
       }
-      console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getAiConciergeHistoryList(searchCondition).then(
         response => {
@@ -632,7 +632,7 @@ export default {
       }
       const resultDevice = await getCmnCodeList(searchCondition)
       this.deviceKindList = resultDevice.data.result.cmnCodeList ? resultDevice.data.result.cmnCodeList : []
-      console.log(' this.deviceKindList ' + JSON.stringify(this.deviceKindList))
+      // console.log(' this.deviceKindList ' + JSON.stringify(this.deviceKindList))
       // param setting
       searchCondition = {
         codeType: 'TEST_TYPE',
@@ -640,7 +640,7 @@ export default {
       }
       const resultTestType = await getCmnCodeList(searchCondition)
       this.testTypeList = resultTestType.data.result.cmnCodeList ? resultTestType.data.result.cmnCodeList : []
-      console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
+      // console.log(' this.testTypeList ' + JSON.stringify(this.testTypeList))
     },
     isEmpty: function (x) {
       return (x === null || x === undefined || x === '')

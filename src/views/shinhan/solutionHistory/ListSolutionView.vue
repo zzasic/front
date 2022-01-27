@@ -153,8 +153,7 @@
           <td class="text-center">{{ props.item.moudule }}</td>
           <td class="text-center">{{ props.item.tranId }}</td>
           <td class="text-center">{{ getContents(props.item.contents) }}</td>
-          <td class="text-center">{{ props.item.startDt }}</td>
-          <td class="text-center" >{{ props.item.endDt }}</td>
+          <td class="text-center">{{ props.item.convoDt }}</td>
         </tr>
       </template>
         </v-data-table>
@@ -243,8 +242,7 @@ export default {
         { text: '솔루션', value: 'moudule', align: 'center', class: 'text-center', width: '120px' },
         { text: '트랜잭션ID', value: 'tranId', align: 'center', class: 'text-center', width: '120px' },
         { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '120px' },
-        { text: '사용시작', value: 'startDt', align: 'center', class: 'text-center', width: '120px' },
-        { text: '사용종료', value: 'endDt', align: 'center', class: 'text-center', width: '120px' }
+        { text: '시작일시', value: 'convoDt', align: 'center', class: 'text-center', width: '120px' }
       ],
       solutionHistoryList: [],
       pagination: {
@@ -437,11 +435,12 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
       getSolutionHistoryList(searchCondition).then(
         response => {
           this.solutionHistoryList = response.data.result.solutionHistoryList ? response.data.result.solutionHistoryList : []
+          // console.log(' this.solutionHistoryList ' + JSON.stringify(this.solutionHistoryList))
           // paging setting
           this.pagination.totalRows = response.data.result.solutionHistoryListCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)

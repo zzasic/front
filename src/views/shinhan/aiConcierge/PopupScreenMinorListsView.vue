@@ -21,7 +21,7 @@
             <v-text-field
               class="default"
               v-model="item.typeCode"
-              label="대분류코드"
+              label="중분류코드"
               placeholder=" "
               hide-details
               disabled
@@ -31,7 +31,7 @@
             <v-text-field
               class="default"
               v-model="item.typeName"
-              label="대분류명"
+              label="중분류명"
               placeholder=" "
               hide-details
               disabled
@@ -91,21 +91,13 @@
           :loading-text="$t('message.loading')"
         >
           <template v-slot:item="props">
-            <tr :title="convertContents(props.item.contents)">
-              <td class="text-center">{{ props.item.jobCode }}</td>
-              <td class="text-center">{{ props.item.jobName }}</td>
-              <td class="text-center">{{ props.item.callId }}</td>
-              <td class="text-center">{{ props.item.branchCd }}</td>
-              <td class="text-center">{{ props.item.branchNm }}</td>
-              <td class="text-center">{{ props.item.deviceNo }}</td>
-              <td class="text-center">{{ props.item.topScreenCode }}</td>
-              <td class="text-center">{{ props.item.topScreenName }}</td>
-              <td class="text-center">{{ props.item.bottomScreenCode }}</td>
-              <td class="text-center">{{ props.item.bottomScreenName }}</td>
-              <td class="text-center">{{ props.item.customerNo }}</td>
-              <td class="text-center">{{ props.item.recognition }}</td>
-              <td class="text-center">{{ getContents(props.item.contents) }}</td>
-              <td class="text-center">{{ props.item.convoDt }}</td>
+            <tr @click="detailStatiatics(props.item)" :title="convertContents(props.item.contents)">
+              <td class="text-center">{{ props.item.typeCode }}</td>
+              <td class="text-center">{{ props.item.typeName }}</td>
+              <td class="text-center">{{ props.item.voiceCnt }}</td>
+              <td class="text-center">{{ props.item.buttonCnt }}</td>
+              <td class="text-center">{{ props.item.silenceCnt }}</td>
+              <td class="text-center">{{ props.item.totalCnt }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -122,7 +114,7 @@
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="fnc_getTaskCategoryStatiaticsDetailList"
+          @input="fnc_getScreenCategoryStatiaticsMinorList"
           :total-visible="10"
         ></v-pagination>
       </div>
@@ -140,18 +132,31 @@
       <span class="hide">팝업 닫기</span>
     </v-btn>
   </v-card>
+<v-dialog
+        v-model="dialogStatiaticsView"
+        persistent
+        hide-overlay
+        scrollable
+        :max-width="'100%'"
+        >
+      <PopupScreenTypeDetailView
+      @popupAction="popupAction" :item="itemObj" v-if="popup.screenDetailPopup === true"
+      />
+    </v-dialog>
 </div>
 </template>
 
-<script>import {
-  getTaskCategoryStatiaticsDetailList
-} from '../../../api/shinhan/aiConcierge'
-
+<script>
+import {
+  getScreenCategoryStatiaticsMinorList
+} from '../../../api/shinhan/aiConcierge' // solutionHistory'
+import PopupScreenTypeDetailView from '@/views/shinhan/aiConcierge/PopupScreenTypeDetailView'
 import datepicker from '@/plugins/datepicker'
 
 export default {
-  name: 'PopupTaskStatiaticsView',
+  name: 'PopupScreenMinorListsView',
   components: {
+    PopupScreenTypeDetailView
   },
   props: ['item'],
   mixins: [datepicker],
@@ -162,25 +167,17 @@ export default {
     }
   },
   mounted () {
-    this.fnc_getTaskCategoryStatiaticsDetailList()
+    this.fnc_getScreenCategoryStatiaticsMinorList()
   },
   data () {
     return {
       headers: [
-        { text: '업무코드', value: 'jobCode', align: 'center', class: 'text-center', width: '5%' },
-        { text: '업무명', value: 'jobName', align: 'center', class: 'text-center', width: '10%' },
-        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center', width: '17%' },
-        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '5%' },
-        { text: '지점명', value: 'branchNm', align: 'center' },
-        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '5%' },
-        { text: '상단화면ID', value: 'topScreenCode', align: 'center', class: 'text-center', width: '5%' },
-        { text: '상단화면명', value: 'topScreenName', align: 'center', class: 'text-center', width: '10%' },
-        { text: '하단화면ID', value: 'bottomScreenCode', align: 'center', class: 'text-center', width: '6%' },
-        { text: '하단화면명', value: 'bottomScreenName', align: 'center', class: 'text-center', width: '8%' },
-        { text: '고객번호', value: 'customerNo', align: 'center', class: 'text-center', width: '5%' },
-        { text: '인식구분', value: 'moudule', align: 'center', class: 'text-center', width: '5%' },
-        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '7%' },
-        { text: '발생일시', value: 'convoDt', align: 'center', class: 'text-center', width: '10%' }
+        { text: '소분류코드', value: 'typeCode', align: 'center', class: 'text-center', width: '20%' },
+        { text: '소분류명', value: 'typeName', align: 'center', class: 'text-center', width: '30%' },
+        { text: '음성(건)', value: 'voiceCnt', align: 'center', class: 'text-center', width: '10%' },
+        { text: '버튼(건)', value: 'buttonCnt', align: 'center', class: 'text-center', width: '10%' },
+        { text: '침묵(건)', value: 'silenceCnt', align: 'center', class: 'text-center', width: '10%' },
+        { text: '전체(건)', value: 'totalCnt', align: 'center', class: 'text-center', width: '10%' }
       ],
       digitalUsageViewList: [],
       pagination: {
@@ -195,34 +192,20 @@ export default {
       },
       options: null,
       callTypes: [],
-      searchForm: {
-        itemsSystemInfoList: [],
-        system: '',
-        solutionId: '',
-        itemsTenantList: [],
-        tenant: '',
-        branchNm: '',
-        branchCd: this.item.branchCd,
-        moudule: '',
-        deviceNo: '',
-        deviceKind: this.item.deviceKind,
-        status: '',
-        callType: '',
-        timeType: this.item.timeType,
-        searchDate: this.item.timeValue,
-        pageType: 'P',
-        dates: [this.item.startDate, this.item.endDate],
-        tenantId: this.item.tenantId
-      },
       chats: [],
       authOpt: true,
       popup: {
-        branchPopup: false
-      }
+        screenDetailPopup: false
+      },
+      itemObj: []
     }
   },
 
   computed: {
+    dialogStatiaticsView: function () {
+      // console.log(' dialogStatiaticsView ')
+      return (this.popup.screenDetailPopup === true)
+    },
     pageTitle: function () {
       return this.$store.getters.pageTitle
     },
@@ -237,7 +220,7 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getTaskCategoryStatiaticsDetailList()
+          this.fnc_getScreenCategoryStatiaticsMinorList()
         }
       }
     }
@@ -247,6 +230,12 @@ export default {
   },
 
   methods: {
+    detailStatiatics: function (itemRow) {
+      // console.log(JSON.stringify(itemRow))
+      this.itemObj = itemRow
+      this.itemObj.betweenTxt = this.item.betweenTxt
+      this.popup.screenDetailPopup = true
+    },
     getContents (str) {
       let content
       let setStr
@@ -266,7 +255,7 @@ export default {
     convertContents (str) {
       return str === null || str === '' ? '' : str // .replaceAll('\\n', '\n') //  setStr = str.replace('\\n', '&lt;br&gt;') .replace('\n', '<br>')
     },
-    fnc_getTaskCategoryStatiaticsDetailList: function () {
+    fnc_getScreenCategoryStatiaticsMinorList: function () {
       // param setting
       const searchCondition = {
         page: this.pagination.page,
@@ -277,13 +266,12 @@ export default {
         startDate: this.item.betweenTxt.split('~')[0],
         endDate: this.item.betweenTxt.split('~')[1]
       }
-      // console.log(' searchCondition pop1' + JSON.stringify(searchCondition))
+      console.log(' searchCondition pop' + JSON.stringify(searchCondition))
       this.pagination.loading = true
-      getTaskCategoryStatiaticsDetailList(searchCondition).then(
+      getScreenCategoryStatiaticsMinorList(searchCondition).then(
         response => {
-          // console.log(' --- ' + JSON.stringify(response.data.result))
+          console.log(JSON.stringify(response.data.result))
           this.digitalUsageViewList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
-          // console.log(JSON.stringify(this.digitalUsageViewList))
           // paging setting
           this.pagination.totalRows = response.data.result.digitalUsageViewCount
           const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
@@ -305,17 +293,20 @@ export default {
     // 검색버튼
     searchBtn: function () {
       this.pagination.page = 1
-      this.fnc_getTaskCategoryStatiaticsDetailList()
+      this.fnc_getScreenCategoryStatiaticsMinorList()
     },
     // 취소버튼
     closeBtn: function () {
-      this.$emit('popupAction', 'statisticPopup')
+      this.$emit('popupAction', 'screenMinorPopup')
     },
     confirmBtn: function () {
-      this.$emit('popupAction', 'statisticPopup', this.selected)
+      this.$emit('popupAction', 'screenMinorPopup', this.selected)
     },
     isEmpty: function (x) {
       return (x === null || x === undefined)
+    },
+    popupAction: function (type, obj) {
+      this.popup[`${type}`] = !this.popup[`${type}`]
     }
   }
 }

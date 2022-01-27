@@ -403,7 +403,7 @@ export default {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      console.log(' searchCondition 1' + JSON.stringify(searchCondition))
+      // console.log(' searchCondition 1' + JSON.stringify(searchCondition))
       getTaskCategoryStatiaticsChart(searchCondition).then(
         response => {
           // console.log(' response.data.result 2' + JSON.stringify(response.data.result.digitalUsageChart))
