@@ -445,9 +445,12 @@ export default {
         tmpDate.setDate(tmpDate.getDate() - 30)
         const stDt = tmpDate.getFullYear() + '-' + ((tmpDate.getMonth() + 1) > 9 ? (tmpDate.getMonth() + 1).toString() : '0' + (tmpDate.getMonth() + 1)) + '-' + (tmpDate.getDate() > 9 ? tmpDate.getDate().toString() : '0' + tmpDate.getDate().toString())
         this.searchForm.dates = [stDt, val.dates[1]]
-        return
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+        return false
+      } else {
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+        return true
       }
-      this.$refs.pickerMenu.save(this.searchForm.dates)
     },
     async initAiConciergeView () {
       this.getCmnCodeList()
@@ -469,8 +472,11 @@ export default {
     },
     // 검색버튼
     searchBtn: function () {
-      this.pagination.page = 1
-      this.fnc_getAiConciergeHistoryList()
+      const isSuccess = this.betweenConfirm(this.searchForm)
+      if (isSuccess) {
+        this.pagination.page = 1
+        this.fnc_getAiConciergeHistoryList()
+      }
     },
     searhPopup: function () {
       this.popup.branchPopup = true
@@ -515,7 +521,8 @@ export default {
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
-        noBranchYn: this.searchForm.testType
+        noBranchYn: this.searchForm.testType,
+        isHistoryYn: this.searchForm.dialogYn
       }
       console.log(' searchCondition ' + JSON.stringify(searchCondition))
       this.pagination.loading = true
@@ -582,7 +589,8 @@ export default {
         commYn: this.searchForm.commYn,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
-        noBranchYn: this.searchForm.testType
+        noBranchYn: this.searchForm.testType,
+        isHistoryYn: this.searchForm.dialogYn
       }
       reqAiConciergeHistoryExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_AIconcierge_처리이력.xlsx'

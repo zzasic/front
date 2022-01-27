@@ -241,20 +241,20 @@ export default {
         { opt1: 'AIH', opt2: null, opt3: null, opt4: null, text: '침묵', value: 'SL' }
       ],
       headers: [
-        { text: '업무코드', value: 'jobCode', align: 'center', class: 'text-center', width: '100px' },
-        { text: '업무명', value: 'jobName', align: 'center', class: 'text-center', width: '120px' },
-        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center' },
-        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '80px' },
-        { text: '지점명', value: 'branchNm', align: 'center', width: '150px' },
-        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '80px' },
-        { text: '상단화면ID', value: 'topScreenCode', align: 'center', class: 'text-center', width: '100px' },
-        { text: '상단화면명', value: 'topScreenName', align: 'center', class: 'text-center', width: '150px' },
-        { text: '하단화면ID', value: 'bottomScreenCode', align: 'center', class: 'text-center', width: '100px' },
-        { text: '하단화면명', value: 'bottomScreenName', align: 'center', class: 'text-center', width: '150px' },
-        { text: '고객번호', value: 'customerNo', align: 'center', class: 'text-center', width: '80px' },
-        { text: '인식구분', value: 'recognition', align: 'center', class: 'text-center', width: '80px' },
-        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '120px' },
-        { text: '발생일시', value: 'convoDt', align: 'center', class: 'text-center', width: '200px' }
+        { text: '업무코드', value: 'jobCode', align: 'center', class: 'text-center', width: '5%' },
+        { text: '업무명', value: 'jobName', align: 'center', class: 'text-center', width: '10%' },
+        { text: 'CALL ID', value: 'callId', align: 'center', class: 'text-center', width: '17%' },
+        { text: '지점코드', value: 'branchCd', align: 'center', class: 'text-center', width: '5%' },
+        { text: '지점명', value: 'branchNm', align: 'center' },
+        { text: '단말번호', value: 'deviceNo', align: 'center', class: 'text-center', width: '5%' },
+        { text: '상단화면ID', value: 'topScreenCode', align: 'center', class: 'text-center', width: '5%' },
+        { text: '상단화면명', value: 'topScreenName', align: 'center', class: 'text-center', width: '10%' },
+        { text: '하단화면ID', value: 'bottomScreenCode', align: 'center', class: 'text-center', width: '6%' },
+        { text: '하단화면명', value: 'bottomScreenName', align: 'center', class: 'text-center', width: '8%' },
+        { text: '고객번호', value: 'customerNo', align: 'center', class: 'text-center', width: '5%' },
+        { text: '인식구분', value: 'recognition', align: 'center', class: 'text-center', width: '5%' },
+        { text: '컨텐츠', value: 'contents', align: 'center', class: 'text-center', width: '7%' },
+        { text: '발생일시', value: 'convoDt', align: 'center', class: 'text-center', width: '10%' }
       ],
       taskCategoryHistoryList: [],
       pagination: {
@@ -374,9 +374,12 @@ export default {
         tmpDate.setDate(tmpDate.getDate() - 30)
         const stDt = tmpDate.getFullYear() + '-' + ((tmpDate.getMonth() + 1) > 9 ? (tmpDate.getMonth() + 1).toString() : '0' + (tmpDate.getMonth() + 1)) + '-' + (tmpDate.getDate() > 9 ? tmpDate.getDate().toString() : '0' + tmpDate.getDate().toString())
         this.searchForm.dates = [stDt, val.dates[1]]
-        return
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+        return false
+      } else {
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+        return true
       }
-      this.$refs.pickerMenu.save(this.searchForm.dates)
     },
     async getCmnCodeList () {
       // param setting
@@ -493,8 +496,11 @@ export default {
     },
     // 검색버튼
     searchBtn: function () {
-      this.pagination.page = 1
-      this.fnc_getCategoryHistoryList()
+      const isSuccess = this.betweenConfirm(this.searchForm)
+      if (isSuccess) {
+        this.pagination.page = 1
+        this.fnc_getCategoryHistoryList()
+      }
     },
     isEmpty: function (x) {
       return (x === null || x === undefined)

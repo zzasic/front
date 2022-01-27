@@ -382,9 +382,12 @@ export default {
         tmpDate.setDate(tmpDate.getDate() - 30)
         const stDt = tmpDate.getFullYear() + '-' + ((tmpDate.getMonth() + 1) > 9 ? (tmpDate.getMonth() + 1).toString() : '0' + (tmpDate.getMonth() + 1)) + '-' + (tmpDate.getDate() > 9 ? tmpDate.getDate().toString() : '0' + tmpDate.getDate().toString())
         this.searchForm.dates = [stDt, val.dates[1]]
-        return
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+        return false
+      } else {
+        this.$refs.pickerMenu.save(this.searchForm.dates)
+        return true
       }
-      this.$refs.pickerMenu.save(this.searchForm.dates)
     },
     async getCmnCodeList () {
       // param setting
@@ -508,8 +511,11 @@ export default {
     },
     // 검색버튼
     searchBtn: function () {
-      this.pagination.page = 1
-      this.fnc_getBranchStatisticsList()
+      const isSuccess = this.betweenConfirm(this.searchForm)
+      if (isSuccess) {
+        this.pagination.page = 1
+        this.fnc_getBranchStatisticsList()
+      }
     },
     isEmpty: function (x) {
       return (x === null || x === undefined)

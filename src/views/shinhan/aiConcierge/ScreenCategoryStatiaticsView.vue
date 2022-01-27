@@ -72,7 +72,7 @@
       <v-container>
       <v-row>
       <v-col cols="5">
-      <v-card class="data-grid-wrap default clickable" :style="'width: 97%; height: 100%'">
+      <v-card class="data-grid-wrap default clickable" :style="'width: 97%; height: 90%'">
         <div class="db-card__chart">
            <div class="db-card__head db-card__head--noline">
               <h4 class="db-card__head-title"><br><br><br><br></h4>
@@ -93,31 +93,61 @@
           :single-select="true"
           :headers="headers"
           :items="digitalUsageViewList"
-          :server-items-length="pagination.totalRows"
           :options.sync="optionSync"
+          hide-default-footer
+          :no-data-text="$t('message.noData')"
+          :loading-text="$t('message.loading')"
+        >
+          <template v-slot:item="props">
+            <tr @click="detailRow(props.item, selectedDate)" :style=" props.item.typeCode === rowkey ? 'backgroundColor:#FBFBEF' : ''">
+              <td class="text-center">{{ props.item.typeName }}</td>
+              <td class="text-center">{{ toComma(props.item.voiceCnt) }}</td>
+              <td class="text-center">{{ toComma(props.item.buttonCnt) }}</td>
+              <td class="text-center">{{ toComma(props.item.silenceCnt) }}</td>
+              <td class="text-center">{{ toComma(props.item.totalCnt) }}</td>
+            </tr>
+          </template>
+          <template slot="body.append" v-if="digitalUsageViewList.length > 0">
+              <tr style="backgroundColor:#CEECF5">
+                  <th class="text-center title">Total</th>
+                  <th class="text-center title">{{ toComma(digitalUsageViewTotalCnt.voiceCnt) }}</th>
+                  <th class="text-center title">{{ toComma(digitalUsageViewTotalCnt.buttonCnt) }}</th>
+                  <th class="text-center title">{{ toComma(digitalUsageViewTotalCnt.silenceCnt) }}</th>
+                  <th class="text-center title">{{ toComma(digitalUsageViewTotalCnt.totalCnt) }}</th>
+              </tr>
+          </template>
+        </v-data-table>
+      </v-card>
+      </v-col>
+      </v-row>
+      </v-container>
+      <PageSectionTitle
+        :title="pagination.sectionTitle"
+        :totalRows="toComma(pagination.totalRows)"
+        :subtitle="pagination.sectionSubTitle"
+      >
+      </PageSectionTitle>
+      <v-card class="data-grid-wrap default">
+        <v-data-table
+          :headers="subHeaders"
+          :items="digitalUsageViewDetailList"
+          :page.sync="pagination.page"
+          :server-items-length="pagination.totalRows"
+          :options.sync="optionDetailSync"
           :loading="pagination.loading"
           hide-default-footer
           :no-data-text="$t('message.noData')"
           :loading-text="$t('message.loading')"
         >
           <template v-slot:item="props">
-            <tr @click="detailRow(props.item)">
+            <tr @click="detailStatiatics(props.item, selectedDate)">
               <td class="text-center">{{ props.item.typeCode }}</td>
               <td class="text-center">{{ props.item.typeName }}</td>
-              <td class="text-center">{{ props.item.voiceCnt }}</td>
-              <td class="text-center">{{ props.item.buttonCnt }}</td>
-              <td class="text-center">{{ props.item.silenceCnt }}</td>
-              <td class="text-center">{{ props.item.totalCnt }}</td>
+              <td class="text-center">{{ toComma(props.item.voiceCnt) }}</td>
+              <td class="text-center">{{ toComma(props.item.buttonCnt) }}</td>
+              <td class="text-center">{{ toComma(props.item.silenceCnt) }}</td>
+              <td class="text-center">{{ toComma(props.item.totalCnt) }}</td>
             </tr>
-          </template>
-          <template slot="body.append" v-if="digitalUsageViewList.length > 0">
-              <tr style="backgroundColor:#CEECF5">
-                  <th class="text-center title" colspan="2">Total</th>
-                  <th class="text-center title">{{ digitalUsageViewTotalCnt.voiceCnt }}</th>
-                  <th class="text-center title">{{ digitalUsageViewTotalCnt.buttonCnt }}</th>
-                  <th class="text-center title">{{ digitalUsageViewTotalCnt.silenceCnt }}</th>
-                  <th class="text-center title">{{ digitalUsageViewTotalCnt.totalCnt }}</th>
-              </tr>
           </template>
         </v-data-table>
       </v-card>
@@ -126,32 +156,29 @@
           :menu-props="{ top: true, offsetY: true }"
           v-model="pagination.itemsPerPage"
           :items="pagination.itemsPerPages"
-          @change="searchBtn"
+          @change="detailRow(itemObj, selectedDate)"
           solo
         ></v-select>
         <v-pagination
           v-model="pagination.page"
           :page="pagination.page"
           :length="pagination.length"
-          @input="fnc_getTaskCategoryStatiaticsList"
+          @input="detailRow(itemObj, selectedDate)"
           :total-visible="10"
         ></v-pagination>
-        <div v-auth="['SAU', 'CAU', 'AU']" class="btn-group align-right">
-          <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown">엑셀 다운로드</v-btn>
-        </div>
       </div>
-      </v-col>
-      </v-row>
-      </v-container>
+    <div class="btn-group align-right">
+      <v-btn class="btn-naked-primary ml-1" text :ripple="false" @click="excelDown" v-auth="['SAU', 'CAU', 'AU']">엑셀 다운로드</v-btn>
+    </div>
       <v-dialog
-        v-model="dialogStatiaticsView"
+        v-model="dialogView"
         persistent
         hide-overlay
         scrollable
-        :max-width="'100%'"
+        :max-width="'80%'"
         >
-      <PopupTaskStatiaticsView
-      @popupAction="popupAction" :item="itemObj" v-if="popup.statisticPopup === true"
+      <PopupScreenMinorListsView
+      @popupAction="popupAction" :item="itemMiddleObj" v-if="popup.screenMinorPopup === true"
       />
     </v-dialog>
     </vuescroll>
@@ -160,41 +187,51 @@
 
 <script>
 import PieCharts from '@/components/chart/PieCharts'
-import PopupTaskStatiaticsView from '@/views/shinhan/aiConcierge/PopupTaskStatiaticsView'
+import PopupScreenMinorListsView from '@/views/shinhan/aiConcierge/PopupScreenMinorListsView'
 import {
-  getTaskCategoryStatiaticsList,
-  getTaskCategoryStatiaticsChart,
-  reqTaskCategoryStatiaticsExcelDown
+  getScreenCategoryStatiaticsList,
+  getScreenCategoryStatiaticsChart,
+  getScreenCategoryStatiaticsDetailList,
+  reqScreenCategoryStatiaticsExcelDown
 } from '../../../api/shinhan/aiConcierge'
+
 import datepicker from '@/plugins/datepicker'
 
 export default {
-  name: 'ListAiConciergeView',
+  name: 'ScreenCategoryStatiaticsView',
   components: {
     PieCharts,
-    PopupTaskStatiaticsView
+    PopupScreenMinorListsView
   },
   mixins: [datepicker],
   created () {
   },
   mounted () {
-    this.init()
+    this.initAiConciergeView(this.initSuccess)
   },
   data () {
     return {
       testValue: '',
       headers: [
-        { text: '대분류코드', value: 'typeCode', align: 'center', class: 'text-center', width: '15%', sortable: false }, // sortable: false
-        { text: '대분류명', value: 'typeName', align: 'center', class: 'text-center', width: '25%', sortable: false },
-        { text: '음성(건)', value: 'voiceCnt', align: 'center', class: 'text-center', width: '15%', sortable: false },
-        { text: '버튼(건)', value: 'buttonCnt', align: 'center', class: 'text-center', width: '15%', sortable: false },
-        { text: '침묵(건)', value: 'silenceCnt', align: 'center', class: 'text-center', width: '15%', sortable: false },
-        { text: '전체(건)', value: 'totalCnt', align: 'center', class: 'text-center', width: '15%', sortable: false }
+        { text: '대분류명', value: 'typeCode', align: 'center', class: 'text-center', width: '20%', sortable: false }, // sortable: false
+        { text: '음성(건)', value: 'voiceCnt', align: 'center', class: 'text-center', width: '20%', sortable: false },
+        { text: '버튼(건)', value: 'buttonCnt', align: 'center', width: '20%', sortable: false },
+        { text: '침묵(건)', value: 'silenceCnt', align: 'center', class: 'text-center', width: '20%', sortable: false },
+        { text: '전체(건)', value: 'totalCnt', align: 'center', class: 'text-center', width: '20%', sortable: false }
       ],
+      subHeaders: [
+        { text: '중분류코드', value: 'typeCode', align: 'center', class: 'text-center', width: '25%' },
+        { text: '중분류명', value: 'typeName', align: 'center', class: 'text-center', width: '30%' },
+        { text: '음성(건)', value: 'voiceCnt', align: 'center', class: 'text-center', width: '10%' },
+        { text: '버튼(건)', value: 'buttonCnt', align: 'center', class: 'text-center', width: '10%' },
+        { text: '침묵(건)', value: 'silenceCnt', align: 'center', class: 'text-center', width: '10%' },
+        { text: '전체(건)', value: 'totalCnt', align: 'center', class: 'text-center', width: '15%' }
+      ],
+      aiConciergeHistoryList: [],
       digitalUsageViewList: [],
+      digitalUsageViewDetailList: [],
       digitalUsageChart: [],
       chartBgColor: ['#A684B7', '#DD7445', '#DE9D11', '#E0D295', '#B1D166', '#78BAA1', '#ffb0c1', '#ffe6aa', '#9ad0f5', '#a4dfdf', '#ccb2ff', '#ffb0c1', '#81f7f3', '#f5a9e1', '#bcf5a9', '#f3e2a9'],
-      digitalUsageChartColor: [],
       deviceKindList: [],
       pagination: {
         page: 1, // 현재페이지
@@ -218,17 +255,24 @@ export default {
         }
       ],
       searchForm: {
-        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')]
+        itemsTenantList: [],
+        tenant: '',
+        branchNm: '',
+        codeIdArr: [],
+        commYn: '',
+        dates: [this.$moment().add(-7, 'days').format('YYYY-MM-DD'), this.$moment().format('YYYY-MM-DD')],
+        deviceNo: '',
+        deviceKind: '',
+        testType: ''
       },
       chats: [],
       chkList: [],
       totChkList: [],
       popup: {
-        statisticPopup: false
+        screenMinorPopup: false
       },
       testTypeList: [],
-      itemObj: [],
-      betweenTxt: '',
+      rowkey: '',
       pieChartJSData: {
         labels: [],
         datasets: [
@@ -238,15 +282,20 @@ export default {
           }
         ]
       },
-      isChart: false,
-      digitalUsageViewTotalCnt: []
+      digitalUsageViewTotalCnt: [],
+      initSuccess: true,
+      selectedDate: { startDt: '', endDt: '' },
+      itemObj: [],
+      itemMiddleObj: [],
+      betweenTxt: '',
+      isChart: false
     }
   },
 
   computed: {
-    dialogStatiaticsView: function () {
+    dialogView: function () {
       // console.log(' dialogStatiaticsView ')
-      return (this.popup.statisticPopup === true)
+      return (this.popup.screenMinorPopup === true)
     },
     pieChartJSOptions: function () {
       return {
@@ -295,7 +344,20 @@ export default {
         const doit = !!this.options
         this.options = options
         if (doit) {
-          this.fnc_getTaskCategoryStatiaticsList()
+          this.fnc_getScreenCategoryStatiaticsList()
+        }
+      }
+    },
+    optionDetailSync: {
+      get: function () {
+        return this.options
+      },
+      set: function (options) {
+        const doit = !!this.options
+        this.options = options
+        if (doit) {
+          // this.fnc_getScreenCategoryStatiaticsList()
+          this.detailRow(this.itemObj, this.selectedDate)
         }
       }
     }
@@ -305,6 +367,9 @@ export default {
   },
 
   methods: {
+    toComma: function (x) {
+      return (x) ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0'
+    },
     betweenConfirm: function (val) {
       if (this.isEmpty(val.dates[1])) {
         this.searchForm.dates[1] = val.dates[0]
@@ -327,54 +392,57 @@ export default {
         return true
       }
     },
-    init: function () {
-      this.fnc_getTaskCategoryStatiaticsList()
-      this.fnc_getTaskCategoryStatiaticsChart()
+    async initAiConciergeView (first) {
+      this.fnc_getScreenCategoryStatiaticsList(first)
+      this.fnc_getScreenCategoryStatiaticsChart()
     },
     dialog: function () {
-      return (this.popup.branchPopup === true)
+      return (this.popup.screenMinorPopup === true)
     },
     // 검색버튼
     searchBtn: function () {
       const isSuccess = this.betweenConfirm(this.searchForm)
       if (isSuccess) {
-        this.pagination.page = 1
-        this.fnc_getTaskCategoryStatiaticsList()
-        this.fnc_getTaskCategoryStatiaticsChart()
+        this.initSuccess = true
+        this.fnc_getScreenCategoryStatiaticsList(this.initSuccess)
+        this.fnc_getScreenCategoryStatiaticsChart()
       }
     },
-    searhPopup: function () {
-      this.popup.branchPopup = true
-    },
-    popupAction: function (type, obj) {
-      this.popup[`${type}`] = !this.popup[`${type}`]
-    },
-    fnc_getTaskCategoryStatiaticsList: function () {
+    fnc_getScreenCategoryStatiaticsList: function (first) {
       /* datepicker open */
       if (this.pickerMenu === true) {
         this.$refs.pickerMenu.save(this.searchForm.dates)
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+
       // param setting
       const searchCondition = {
-        page: this.pagination.page,
-        sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
-        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
-        itemsPerPage: this.pagination.itemsPerPage,
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
-      // console.log(' dateRange ' + JSON.stringify(dateRange))
-      this.pagination.loading = true
-      getTaskCategoryStatiaticsList(searchCondition).then(
+      console.log(' searchCondition ' + JSON.stringify(searchCondition))
+      // this.pagination.loading = true
+      getScreenCategoryStatiaticsList(searchCondition).then(
         response => {
           this.digitalUsageViewList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
-          // paging setting
+          // console.log('fnc_getScreenCategoryStatiaticsList' + JSON.stringify(this.digitalUsageViewList))
           this.digitalUsageViewTotalCnt = response.data.result.digitalUsageViewTotalCnt
-          this.pagination.totalRows = response.data.result.digitalUsageViewCount
-          const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
-          this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+          // paging setting
+          // this.pagination.totalRows = response.data.result.digitalUsageViewListCount
+          // const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
+          // this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+          if (this.digitalUsageViewList.length > 0) {
+            if (first) {
+              this.initSuccess = !first
+              this.selectedDate.startDt = dateRange[0]
+              this.selectedDate.endDt = dateRange[1]
+              // this.fnc_getScreenCategoryStatiaticsDetailList(this.digitalUsageViewList[0], this.selectedDate)
+              this.detailRow(this.digitalUsageViewList[0], this.selectedDate)
+            }
+          } else {
+            this.digitalUsageViewDetailList = []
+          }
           this.betweenTxt = dateRange[0] + '~' + dateRange[1]
         },
         error => {
@@ -387,10 +455,11 @@ export default {
           }
         }
       ).finally(() => {
-        this.pagination.loading = false
+        // this.pagination.loading = false
       })
     },
-    fnc_getTaskCategoryStatiaticsChart: function () {
+
+    fnc_getScreenCategoryStatiaticsChart: function () {
       this.isChart = false
       /* datepicker open */
       if (this.pickerMenu === true) {
@@ -398,18 +467,18 @@ export default {
       }
       const dateRange = this.searchForm.dates
       dateRange.sort((a, b) => { return a >= b ? a === b ? 0 : 1 : -1 })
+
       // param setting
       const searchCondition = {
         startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
       }
       console.log(' searchCondition 1' + JSON.stringify(searchCondition))
-      getTaskCategoryStatiaticsChart(searchCondition).then(
+      getScreenCategoryStatiaticsChart(searchCondition).then(
         response => {
-          // console.log(' response.data.result 2' + JSON.stringify(response.data.result.digitalUsageChart))
+          console.log(' response.data.result 1' + JSON.stringify(response.data.result))
           this.digitalUsageChart = response.data.result.digitalUsageChart ? response.data.result.digitalUsageChart : []
-          // this.digitalUsageChart = [{ name: '일반', value: '25%' }, { name: '입금/출금/송금', value: '45%' }, { name: '외환', value: '30%' }]
-          // console.log(' digitalUsageChart ' + JSON.stringify(this.digitalUsageChart))
+          console.log(' this.digitalUsageChart.length' + this.digitalUsageChart.length)
           this.pieChartJSData.labels = []
           this.pieChartJSData.datasets[0].backgroundColor = []
           this.pieChartJSData.datasets[0].data = []
@@ -422,10 +491,6 @@ export default {
               this.pieChartJSData.datasets[0].backgroundColor[i] = this.chartBgColor[i]
             }
             this.isChart = true
-            // this.pieChartJSData.labels = labelList
-            // this.pieChartJSData.datasets[0].backgroundColor = this.digitalUsageChartColor
-            // this.pieChartJSData.datasets[0].data = dataList
-            // console.log(this.pieChartJSData.datasets[0].backgroundColor + '--' + JSON.stringify(this.digitalUsageChartColor))
           }
         },
         error => {
@@ -440,12 +505,44 @@ export default {
       ).finally(() => {
       })
     },
+    fnc_getScreenCategoryStatiaticsDetailList: function (obj, dt) {
+      // param setting
+      const searchCondition = {
+        page: this.pagination.page,
+        sortBy: this.options.sortBy && this.options.sortBy.length ? this.options.sortBy[0] : '',
+        sortDesc: this.options.sortDesc && this.options.sortDesc.length ? 'DESC' : 'ASC',
+        itemsPerPage: this.pagination.itemsPerPage,
+        paramCode: obj.typeCode,
+        startDate: dt.startDt,
+        endDate: dt.endDt
+      }
+      this.pagination.loading = true
+      console.log(this.initSuccess + ' fnc_getScreenCategoryStatiaticsDetailList : ', JSON.stringify(searchCondition))
+      getScreenCategoryStatiaticsDetailList(searchCondition).then(
+        response => {
+          console.log(' response.data.result : 2222', JSON.stringify(response.data.result))
+          this.digitalUsageViewDetailList = response.data.result.digitalUsageViewList ? response.data.result.digitalUsageViewList : []
+          // paging setting
+          this.pagination.totalRows = response.data.result.digitalUsageViewCount
+          const pageLength = parseInt(this.pagination.totalRows / this.pagination.itemsPerPage)
+          this.pagination.length = parseInt(this.pagination.totalRows % this.pagination.itemsPerPage) === 0 ? pageLength : pageLength + 1
+        }
+      ).finally(() => {
+        this.pagination.loading = false
+      })
+    },
+    detailStatiatics: function (itemRow, selectDt) {
+      console.log(JSON.stringify(itemRow) + '====' + JSON.stringify(selectDt))
+      this.itemMiddleObj = itemRow
+      this.itemMiddleObj.betweenTxt = this.betweenTxt
+      this.popup.screenMinorPopup = true
+    },
     // 상세버튼
-    detailRow: function (itemRow) {
-      // console.log(this.betweenTxt + ' itemRow ' + JSON.stringify(itemRow))
+    detailRow: function (itemRow, selectDt) {
+      console.log(' detailRow ' + JSON.stringify(itemRow))
+      this.rowkey = itemRow.typeCode
       this.itemObj = itemRow
-      this.itemObj.betweenTxt = this.betweenTxt
-      this.popup.statisticPopup = true
+      this.fnc_getScreenCategoryStatiaticsDetailList(this.itemObj, selectDt)
     },
     excelDown: function () {
       const dateRange = this.searchForm.dates
@@ -454,10 +551,11 @@ export default {
       const searchCondition = {
         sortBy: this.options.sortBy[0] ? this.options.sortBy[0] : '',
         sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC',
-        startDate: dateRange && dateRange.length > 0 ? dateRange[0] : '',
-        endDate: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : ''
+        paramCode: this.itemObj.typeCode,
+        startDate: this.selectedDate.startDt,
+        endDate: this.selectedDate.endDt
       }
-      reqTaskCategoryStatiaticsExcelDown(searchCondition).then(response => {
+      reqScreenCategoryStatiaticsExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_AIconcierge_처리이력.xlsx'
 
         const url = window.URL.createObjectURL(
@@ -490,6 +588,9 @@ export default {
     },
     isEmpty: function (x) {
       return (x === null || x === undefined || x === '')
+    },
+    popupAction: function (type, obj) {
+      this.popup[`${type}`] = !this.popup[`${type}`]
     }
   }
 }
