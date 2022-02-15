@@ -538,13 +538,14 @@ export default {
         tenantId: this.searchForm.tenant,
         // branchNm: this.searchForm.branchNm,
         codeIdArr: this.searchForm.codeIdArr, // 지점명 배열
-        moudule: this.searchForm.moudule,
+        recognition: this.searchForm.moudule,
         deviceNo: this.searchForm.deviceNo,
         status: this.searchForm.status,
         startMonth: dateRange && dateRange.length > 0 ? dateRange[0] : '',
         endMonth: dateRange && dateRange.length > 0 ? dateRange.length > 1 ? dateRange[1] : dateRange[0] : '',
         noBranchYn: this.searchForm.testType
       }
+      // console.log(' searchCondition ' + JSON.stringify(searchCondition))
       reqBranchStatisticsExcelDown(searchCondition).then(response => {
         const filename = this.$moment().format('YYYY-MM-DD') + '_지점별_거래현황.xlsx'
 

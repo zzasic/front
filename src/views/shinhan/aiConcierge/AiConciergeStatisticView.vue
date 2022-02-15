@@ -962,6 +962,7 @@ export default {
       }
       // console.log(isSuccess + ' fnc_getAiConciergeCartList : ', JSON.stringify(searchCondition))
       this.pagination.loading = true
+      this.statisticsChartList = []
       getAiConciergeStatisticsChartList(searchCondition).then(
         response => {
           // this.statisticsChartList = response.data.result.aiConciergeStatisticsChartList ? (response.data.result.aiConciergeStatisticsChartList) : []
@@ -973,8 +974,12 @@ export default {
             const dtText = this.statTmp[0].dayText
             const dtValue = this.statTmp[0].dayValue
             let cnt = 0
-            cnt = dtText === this.statTmp[1].dayText ? cnt + 1 : cnt + 0
-            cnt = dtText === this.statTmp[2].dayText ? cnt + 1 : cnt + 0
+            if (this.statTmp.length === 2) {
+              cnt = dtText === this.statTmp[1].dayText ? cnt + 1 : cnt + 0
+            } else if (this.statTmp.length > 2) {
+              cnt = dtText === this.statTmp[1].dayText ? cnt + 1 : cnt + 0
+              cnt = dtText === this.statTmp[2].dayText ? cnt + 1 : cnt + 0
+            }
             // 음성, 버튼, 침묵
             if (cnt === 0) {
               if (this.statTmp[0].moudule === '음성') {
@@ -1001,6 +1006,7 @@ export default {
               }
             }
             this.statisticsChartList = this.statTmp
+            this.statTmp = []
           }
           // console.log(' ===== ' + JSON.stringify(this.statisticsChartList))
         }
@@ -1069,7 +1075,7 @@ export default {
       const searchCondition = {
         page: this.pagination.page,
         sortBy: this.options.sortBy && this.options.sortBy.length ? this.options.sortBy[0] : '',
-        sortDesc: this.options.sortDesc && this.options.sortDesc.length ? 'DESC' : 'ASC',
+        sortDesc: this.options.sortDesc[0] === false ? 'DESC' : 'ASC', // this.options.sortDesc && this.options.sortDesc.length ? 'DESC' : 'ASC',
         itemsPerPage: this.pagination.itemsPerPage,
         tenantId: this.searchForm.tenant,
         branchNm: this.searchForm.branchNm,

@@ -443,9 +443,11 @@ export default {
     // 상세버튼
     detailRow: function (itemRow) {
       // console.log(this.betweenTxt + ' itemRow ' + JSON.stringify(itemRow))
-      this.itemObj = itemRow
-      this.itemObj.betweenTxt = this.betweenTxt
-      this.popup.statisticPopup = true
+      if (!this.isEmpty(itemRow.typeCode)) {
+        this.itemObj = itemRow
+        this.itemObj.betweenTxt = this.betweenTxt
+        this.popup.statisticPopup = true
+      }
     },
     excelDown: function () {
       const dateRange = this.searchForm.dates

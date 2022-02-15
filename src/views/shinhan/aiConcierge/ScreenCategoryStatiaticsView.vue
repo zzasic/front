@@ -357,7 +357,9 @@ export default {
         this.options = options
         if (doit) {
           // this.fnc_getScreenCategoryStatiaticsList()
-          this.detailRow(this.itemObj, this.selectedDate)
+          if (!this.initSuccess) {
+            this.detailRow(this.itemObj, this.selectedDate)
+          }
         }
       }
     }

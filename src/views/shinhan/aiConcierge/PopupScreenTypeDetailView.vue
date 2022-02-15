@@ -101,7 +101,7 @@
               <td class="text-center">{{ props.item.bottomScreenCode }}</td>
               <td class="text-center">{{ props.item.bottomScreenName }}</td>
               <td class="text-center">{{ props.item.customerNo }}</td>
-              <td class="text-center">{{ props.item.moudule }}</td>
+              <td class="text-center">{{ props.item.recognition }}</td>
               <td class="text-center">{{ getContents(props.item.contents) }}</td>
               <td class="text-center">{{ props.item.convoDt }}</td>
             </tr>
